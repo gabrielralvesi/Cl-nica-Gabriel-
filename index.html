@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Login Clínica</title>
+
+<style>
+body{
+font-family:Arial;
+background:#0b1220;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:#111827;
+padding:20px;
+border-radius:10px;
+}
+
+input{
+display:block;
+margin:10px 0;
+padding:10px;
+width:200px;
+}
+
+button{
+padding:10px;
+background:#0ea5e9;
+color:white;
+border:none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h2>Login Clínica</h2>
+
+<input id="user" placeholder="Usuário">
+<input id="pass" type="password" placeholder="Senha">
+
+<button onclick="login()">Entrar</button>
+
+</div>
+
+<script>
+
+function login(){
+
+let user = document.getElementById("user").value;
+let pass = document.getElementById("pass").value;
+
+if(user==="gabriel" && pass==="1234"){
+
+location.href="painel.html";
+
+}else{
+
+alert("Login incorreto");
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
