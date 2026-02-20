@@ -14,7 +14,7 @@
     header{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:16px; border-bottom:1px solid var(--line); flex-wrap:wrap;}
     h1{margin:0; font-size:1.1rem;}
     .muted{color:var(--muted); font-size:.92rem;}
-    main{padding:16px; display:grid; gap:14px; max-width:1100px; margin:0 auto;}
+    main{padding:16px; display:grid; gap:14px; max-width:1200px; margin:0 auto;}
     .card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); padding:14px;}
     .row{display:flex; gap:10px; flex-wrap:wrap; align-items:end;}
     .row > *{flex:1; min-width:160px;}
@@ -46,10 +46,10 @@
     .sum{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
     .sum .cardMini{flex:1; min-width:220px; border:1px solid var(--line); border-radius:14px; padding:10px; background:rgba(255,255,255,.03);}
     small{color:var(--muted);}
-    a.link{color:var(--text); text-decoration:none; border-bottom:1px dashed rgba(255,255,255,.25);}
     .hidden{display:none !important;}
-    .split{display:grid; grid-template-columns: 1.1fr .9fr; gap:12px;}
+    .split{display:grid; grid-template-columns: 1fr 1.2fr; gap:12px;}
     @media(max-width:1000px){ .split{grid-template-columns:1fr;} }
+    .btnSmall{padding:8px 10px; font-size:.9rem;}
   </style>
 </head>
 <body>
@@ -157,11 +157,14 @@
     <div class="list" id="dayList"></div>
   </section>
 
-  <!-- ====== PACIENTES ====== -->
+  <!-- ====== PACIENTES (PASTAS) ====== -->
   <section id="viewPatients" class="card hidden">
     <div class="split">
+
+      <!-- Cadastro -->
       <div class="card">
         <b>Cadastrar paciente</b>
+
         <div class="grid2">
           <div>
             <label>Nome do paciente</label>
@@ -174,59 +177,91 @@
           <div>
             <label>WhatsApp (opcional)</label>
             <input id="cPhone" placeholder="Ex: 67999999999" />
-            <small>Sem espaços, só números (opcional).</small>
+            <small>Sem espaços, só números.</small>
           </div>
           <div>
             <label>Valor padrão (opcional)</label>
             <input id="cDefaultValue" inputmode="decimal" placeholder="Ex: 80,00" />
           </div>
         </div>
+
         <label style="margin-top:10px;">Observações (opcional)</label>
-        <textarea id="cNotes" rows="3" placeholder="Ex: foco /s/ e /z/, ceceio, generalização..."></textarea>
+        <textarea id="cNotes" rows="3" placeholder="Ex: foco /s/ e /z/, ceceio..."></textarea>
 
         <div class="row">
           <button id="addPatient" class="primary" type="button">Adicionar paciente</button>
-          <button id="exportPatient" type="button">Exportar paciente selecionado (JSON)</button>
         </div>
 
-        <small>
-          Dica: no Diário, quando você escolhe o paciente, o sistema mostra o valor padrão (se tiver).
-        </small>
+        <small>Depois clique no paciente na lista para abrir a “pasta”.</small>
       </div>
 
+      <!-- Pastas -->
       <div class="card">
-        <b>Lista de pacientes</b>
-        <div class="row">
-          <div>
-            <label>Pesquisar paciente</label>
-            <input id="pSearch" placeholder="Digite parte do nome..." />
+        <div id="foldersPane">
+          <b>Pastas de pacientes</b>
+          <div class="row" style="margin-top:10px;">
+            <div>
+              <label>Pesquisar</label>
+              <input id="pSearch" placeholder="Digite parte do nome..." />
+            </div>
+            <div style="display:flex; gap:8px; justify-content:flex-end; align-items:end;">
+              <button id="onlyDebtFolders" class="btnSmall" type="button">Mostrar só com débito</button>
+            </div>
           </div>
-          <div>
-            <label>Selecionar</label>
-            <select id="patientPicker"></select>
+          <div id="patientFolders" class="list"></div>
+        </div>
+
+        <!-- Pasta aberta -->
+        <div id="folderOpenPane" class="hidden">
+          <div class="row" style="align-items:center;">
+            <button id="backToFolders" type="button">← Voltar</button>
+            <div style="flex:3;">
+              <b id="openPatientTitle">Paciente</b>
+              <div class="muted" id="openPatientMeta"></div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+              <button id="openWhats" type="button">WhatsApp</button>
+              <button id="exportPatient" type="button">Exportar paciente</button>
+              <button id="renamePatient" type="button">Renomear</button>
+              <button id="deletePatient" class="danger" type="button">Excluir</button>
+            </div>
           </div>
-        </div>
 
-        <div id="patientCard" class="item">
-          <b>Selecione um paciente</b>
-          <div class="muted">Aqui vai aparecer o resumo e o histórico.</div>
-        </div>
+          <div class="sum">
+            <div class="cardMini">
+              <b>Resumo</b>
+              <div class="muted" id="patientSummary">—</div>
+            </div>
+            <div class="cardMini">
+              <b>Filtros</b>
+              <div class="muted" id="filterLabel">Todos</div>
+              <div class="actions" style="margin-top:8px;">
+                <button id="toggleOnlyUnpaid" class="btnSmall" type="button">Só não pagos: OFF</button>
+              </div>
+            </div>
+          </div>
 
-        <div class="actions">
-          <button id="openWhats" type="button">Abrir WhatsApp</button>
-          <button id="renamePatient" type="button">Renomear</button>
-          <button id="deletePatient" class="danger" type="button">Excluir paciente</button>
-        </div>
+          <div style="margin-top:12px;">
+            <b>Ano</b>
+            <div class="actions" id="yearButtons" style="margin-top:8px;"></div>
+          </div>
 
-        <div class="list" id="patientHistory"></div>
+          <div style="margin-top:12px;">
+            <b>Mês</b>
+            <div class="actions" id="monthButtons" style="margin-top:8px;"></div>
+          </div>
+
+          <div class="list" id="patientHistory"></div>
+        </div>
       </div>
+
     </div>
   </section>
 
 </main>
 
 <script>
-  // ======= trava simples do login (se estiver usando index.html com sessão) =======
+  // ======= trava simples do login =======
   function mustAuth(){
     try{
       const data = JSON.parse(localStorage.getItem("clinica_auth") || "{}");
@@ -238,7 +273,7 @@
   mustAuth();
 
   // ======= Keys =======
-  const KEY_SESS = "clinica_sessions_v2";
+  const KEY_SESS = "clinica_sessions_v3";
   const KEY_PAT  = "clinica_patients_v1";
   const $ = (id) => document.getElementById(id);
 
@@ -297,52 +332,7 @@
   $("date").value = todayISO();
   $("today").textContent = new Intl.DateTimeFormat("pt-BR", { dateStyle:"full" }).format(new Date());
 
-  // ======= Patient selects (Diário + Pacientes) =======
-  function renderPatientSelects(){
-    const pats = loadPatients().sort((a,b)=> (a.name||"").localeCompare(b.name||""));
-    const selDaily = $("pPatient");
-    const selPick = $("patientPicker");
-
-    selDaily.innerHTML = "";
-    selPick.innerHTML = "";
-
-    if(!pats.length){
-      selDaily.innerHTML = `<option value="">(Cadastre pacientes)</option>`;
-      selPick.innerHTML = `<option value="">(Cadastre pacientes)</option>`;
-      $("hintDefault").textContent = "";
-      return;
-    }
-
-    pats.forEach(p=>{
-      const opt1 = document.createElement("option");
-      opt1.value = p.id;
-      opt1.textContent = p.name;
-      selDaily.appendChild(opt1);
-
-      const opt2 = document.createElement("option");
-      opt2.value = p.id;
-      opt2.textContent = p.name;
-      selPick.appendChild(opt2);
-    });
-
-    // atualizar dica do valor padrão no diário
-    updateDefaultHint();
-    // atualizar cartão do paciente selecionado
-    renderPatientPanel();
-  }
-
-  function updateDefaultHint(){
-    const pid = $("pPatient").value;
-    const p = getPatientById(pid);
-    if(p && p.defaultValue && Number(p.defaultValue) > 0){
-      $("hintDefault").textContent = `Valor padrão desse paciente: ${fmtBRL(p.defaultValue)} (se quiser, deixe o valor vazio e use o padrão manualmente).`;
-    }else{
-      $("hintDefault").textContent = "";
-    }
-  }
-  $("pPatient").addEventListener("change", updateDefaultHint);
-
-  // ======= Diário: listar sessões do dia =======
+  // ======= Badges =======
   function badgeFor(r){
     if(r.did === "realizou") return `<span class="pill ok">✅ Realizou</span>`;
     if(r.did === "nao"){
@@ -358,6 +348,40 @@
       : `<span class="pill bad">💸 Não pago</span>`;
   }
 
+  // ======= Select de pacientes no Diário =======
+  function renderPatientSelectDaily(){
+    const pats = loadPatients().sort((a,b)=> (a.name||"").localeCompare(b.name||""));
+    const selDaily = $("pPatient");
+    selDaily.innerHTML = "";
+
+    if(!pats.length){
+      selDaily.innerHTML = `<option value="">(Cadastre pacientes)</option>`;
+      $("hintDefault").textContent = "";
+      return;
+    }
+
+    pats.forEach(p=>{
+      const opt = document.createElement("option");
+      opt.value = p.id;
+      opt.textContent = p.name;
+      selDaily.appendChild(opt);
+    });
+
+    updateDefaultHint();
+  }
+
+  function updateDefaultHint(){
+    const pid = $("pPatient").value;
+    const p = getPatientById(pid);
+    if(p && p.defaultValue && Number(p.defaultValue) > 0){
+      $("hintDefault").textContent = `Valor padrão: ${fmtBRL(p.defaultValue)} (você pode digitar outro valor).`;
+    }else{
+      $("hintDefault").textContent = "";
+    }
+  }
+  $("pPatient").addEventListener("change", updateDefaultHint);
+
+  // ======= Diário =======
   function daySessions(){
     const date = $("date").value;
     const q = $("search").value.trim().toLowerCase();
@@ -367,6 +391,22 @@
       .map(s => ({...s, patient: getPatientById(s.patientId)}))
       .filter(s => !q || ((s.patient?.name||"").toLowerCase().includes(q)))
       .sort((a,b)=> (a.time||"").localeCompare(b.time||""));
+  }
+
+  function updateDaySummary(rows){
+    const total = rows.length;
+    const realizou = rows.filter(r => r.did === "realizou").length;
+    const faltou = rows.filter(r => r.did === "nao").length;
+    const semJust = rows.filter(r => r.did === "nao" && r.just === "nao_justificada").length;
+
+    const pagos = rows.filter(r => r.paid === "pago").length;
+    const naoPagos = rows.filter(r => r.paid !== "pago").length;
+
+    const totalPago = rows.filter(r => r.paid === "pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
+    const totalAberto = rows.filter(r => r.paid !== "pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
+
+    $("sumDay").textContent = `Total: ${total} | Realizou: ${realizou} | Não realizou: ${faltou} | Sem justificativa: ${semJust}`;
+    $("sumMoney").textContent = `Pagos: ${pagos} (${fmtBRL(totalPago)}) | Em aberto: ${naoPagos} (${fmtBRL(totalAberto)})`;
   }
 
   function renderDaily(){
@@ -408,29 +448,13 @@
     });
 
     list.querySelectorAll("button[data-act]").forEach(btn=>{
-      btn.addEventListener("click", ()=> dailyAction(btn.dataset.act, btn.dataset.id));
+      btn.addEventListener("click", ()=> sessionAction(btn.dataset.act, btn.dataset.id));
     });
 
     updateDaySummary(rows);
   }
 
-  function updateDaySummary(rows){
-    const total = rows.length;
-    const realizou = rows.filter(r => r.did === "realizou").length;
-    const faltou = rows.filter(r => r.did === "nao").length;
-    const semJust = rows.filter(r => r.did === "nao" && r.just === "nao_justificada").length;
-
-    const pagos = rows.filter(r => r.paid === "pago").length;
-    const naoPagos = rows.filter(r => r.paid !== "pago").length;
-
-    const totalPago = rows.filter(r => r.paid === "pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
-    const totalAberto = rows.filter(r => r.paid !== "pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
-
-    $("sumDay").textContent = `Total: ${total} | Realizou: ${realizou} | Não realizou: ${faltou} | Sem justificativa: ${semJust}`;
-    $("sumMoney").textContent = `Pagos: ${pagos} (${fmtBRL(totalPago)}) | Em aberto: ${naoPagos} (${fmtBRL(totalAberto)})`;
-  }
-
-  function dailyAction(act, id){
+  function sessionAction(act, id){
     const all = loadSessions();
     const idx = all.findIndex(x => x.id === id);
     if(idx < 0) return;
@@ -441,7 +465,8 @@
       all.splice(idx,1);
       saveSessions(all);
       renderDaily();
-      renderPatientPanel();
+      renderPatientFolders(); // atualiza débitos nas pastas
+      if(openedPatientId) renderPatientHistoryFolder();
       return;
     }
     if(act === "toggleDid"){
@@ -469,10 +494,11 @@
     all[idx] = r;
     saveSessions(all);
     renderDaily();
-    renderPatientPanel();
+    renderPatientFolders();
+    if(openedPatientId) renderPatientHistoryFolder();
   }
 
-  // ======= Diário: adicionar sessão =======
+  // Adicionar sessão
   $("addSession").addEventListener("click", ()=>{
     const date = $("date").value;
     const patientId = $("pPatient").value;
@@ -487,8 +513,7 @@
     }
 
     let value = parseMoney($("pValue").value);
-    // se valor ficou vazio/0, mantém 0 (manual), mas mostra dica do padrão
-    // você pode digitar quando quiser; também dá pra editar depois no item.
+
     const row = {
       id: uid(),
       date,
@@ -511,7 +536,8 @@
     $("pPaid").value = "nao_pago";
 
     renderDaily();
-    renderPatientPanel();
+    renderPatientFolders();
+    if(openedPatientId) renderPatientHistoryFolder();
   });
 
   $("date").addEventListener("change", renderDaily);
@@ -523,183 +549,19 @@
     const all = loadSessions().filter(s => s.date !== date);
     saveSessions(all);
     renderDaily();
-    renderPatientPanel();
+    renderPatientFolders();
+    if(openedPatientId) renderPatientHistoryFolder();
   });
 
   $("resetAll").addEventListener("click", ()=>{
     if(!confirm("Isso apaga TODOS os pacientes e registros. Tem certeza?")) return;
     localStorage.removeItem(KEY_SESS);
     localStorage.removeItem(KEY_PAT);
-    renderPatientSelects();
+    openedPatientId = null;
+    renderPatientSelectDaily();
     renderDaily();
-  });
-
-  // ======= Pacientes: adicionar =======
-  $("addPatient").addEventListener("click", ()=>{
-    const name = $("cName").value.trim();
-    if(!name){ alert("Digite o nome do paciente."); return; }
-
-    const p = {
-      id: uid(),
-      name,
-      resp: $("cResp").value.trim(),
-      phone: $("cPhone").value.trim(),
-      defaultValue: parseMoney($("cDefaultValue").value),
-      notes: $("cNotes").value.trim(),
-      createdAt: Date.now()
-    };
-
-    const pats = loadPatients();
-    pats.push(p);
-    savePatients(pats);
-
-    $("cName").value = "";
-    $("cResp").value = "";
-    $("cPhone").value = "";
-    $("cDefaultValue").value = "";
-    $("cNotes").value = "";
-
-    renderPatientSelects();
-    alert("Paciente cadastrado!");
-  });
-
-  // ======= Pacientes: filtro / picker =======
-  $("pSearch").addEventListener("input", ()=>{
-    const q = $("pSearch").value.trim().toLowerCase();
-    const pats = loadPatients().sort((a,b)=> (a.name||"").localeCompare(b.name||""));
-    const sel = $("patientPicker");
-    sel.innerHTML = "";
-
-    const filtered = pats.filter(p => !q || (p.name||"").toLowerCase().includes(q));
-    if(!filtered.length){
-      sel.innerHTML = `<option value="">(Sem resultados)</option>`;
-      renderPatientPanel();
-      return;
-    }
-    filtered.forEach(p=>{
-      const opt = document.createElement("option");
-      opt.value = p.id; opt.textContent = p.name;
-      sel.appendChild(opt);
-    });
-    renderPatientPanel();
-  });
-
-  $("patientPicker").addEventListener("change", renderPatientPanel);
-
-  // ======= Painel do paciente: resumo + histórico =======
-  function sessionsOfPatient(pid){
-    return loadSessions()
-      .filter(s => s.patientId === pid)
-      .sort((a,b)=> (a.date||"").localeCompare(b.date||""));
-  }
-
-  function renderPatientPanel(){
-    const pid = $("patientPicker").value;
-    const card = $("patientCard");
-    const hist = $("patientHistory");
-    hist.innerHTML = "";
-
-    if(!pid){
-      card.innerHTML = `<b>Selecione um paciente</b><div class="muted">Aqui vai aparecer o resumo e o histórico.</div>`;
-      return;
-    }
-
-    const p = getPatientById(pid);
-    if(!p){
-      card.innerHTML = `<b>Paciente não encontrado</b><div class="muted">Talvez tenha sido removido.</div>`;
-      return;
-    }
-
-    const rows = sessionsOfPatient(pid);
-    const total = rows.length;
-    const faltasSemJust = rows.filter(r => r.did === "nao" && r.just === "nao_justificada").length;
-    const totalPago = rows.filter(r => r.paid === "pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
-    const totalAberto = rows.filter(r => r.paid !== "pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
-
-    card.innerHTML = `
-      <b>${escapeHtml(p.name)}</b>
-      <div class="muted">
-        ${p.resp ? `Resp.: ${escapeHtml(p.resp)}<br>` : ``}
-        ${p.phone ? `WhatsApp: ${escapeHtml(p.phone)}<br>` : ``}
-        ${p.defaultValue ? `Valor padrão: ${fmtBRL(p.defaultValue)}<br>` : ``}
-        ${p.notes ? `Obs.: ${escapeHtml(p.notes)}` : ``}
-      </div>
-      <div style="margin-top:10px;">
-        <span class="pill">Sessões: ${total}</span>
-        <span class="pill bad">Faltas sem just.: ${faltasSemJust}</span>
-        <span class="pill ok">Pago: ${fmtBRL(totalPago)}</span>
-        <span class="pill bad">Em aberto: ${fmtBRL(totalAberto)}</span>
-      </div>
-    `;
-
-    if(!rows.length){
-      hist.innerHTML = `<div class="item"><b>Sem registros ainda.</b><div class="muted">As sessões aparecerão aqui automaticamente.</div></div>`;
-      return;
-    }
-
-    rows.slice().reverse().slice(0, 30).forEach(r=>{
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = `
-        <div class="itemTop">
-          <div>
-            <b>${escapeHtml(r.date)}${r.time ? " — " + escapeHtml(r.time) : ""}</b>
-            <div class="muted">${badgeFor(r)} ${payBadge(r)} <span class="pill">Valor: ${fmtBRL(r.value)}</span></div>
-          </div>
-          <div class="muted">ID: ${escapeHtml(r.id)}</div>
-        </div>
-      `;
-      hist.appendChild(div);
-    });
-  }
-
-  // ======= Ações do paciente =======
-  $("openWhats").addEventListener("click", ()=>{
-    const pid = $("patientPicker").value;
-    const p = getPatientById(pid);
-    if(!p || !p.phone){ alert("Esse paciente não tem WhatsApp cadastrado."); return; }
-    const msg = encodeURIComponent(`Olá, tudo bem?`);
-    window.open(`https://wa.me/55${p.phone}?text=${msg}`, "_blank");
-  });
-
-  $("renamePatient").addEventListener("click", ()=>{
-    const pid = $("patientPicker").value;
-    const pats = loadPatients();
-    const idx = pats.findIndex(x => x.id === pid);
-    if(idx < 0) return;
-    const nv = prompt("Novo nome do paciente:", pats[idx].name || "");
-    if(!nv) return;
-    pats[idx].name = nv.trim();
-    savePatients(pats);
-    renderPatientSelects();
-  });
-
-  $("deletePatient").addEventListener("click", ()=>{
-    const pid = $("patientPicker").value;
-    if(!pid) return;
-    if(!confirm("Excluir paciente? (Os registros de sessão dele também serão removidos)")) return;
-
-    const pats = loadPatients().filter(p => p.id !== pid);
-    savePatients(pats);
-
-    const sess = loadSessions().filter(s => s.patientId !== pid);
-    saveSessions(sess);
-
-    renderPatientSelects();
-    renderDaily();
-  });
-
-  $("exportPatient").addEventListener("click", ()=>{
-    const pid = $("patientPicker").value;
-    const p = getPatientById(pid);
-    if(!p){ alert("Selecione um paciente."); return; }
-    const data = { patient: p, sessions: sessionsOfPatient(pid) };
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `paciente_${(p.name||"").replace(/\s+/g,"_")}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    renderPatientFolders();
+    closePatientFolder(true);
   });
 
   // ======= Export geral =======
@@ -749,9 +611,344 @@
     location.href = "./index.html";
   });
 
+  // ======= PACIENTES: cadastro =======
+  $("addPatient").addEventListener("click", ()=>{
+    const name = $("cName").value.trim();
+    if(!name){ alert("Digite o nome do paciente."); return; }
+
+    const p = {
+      id: uid(),
+      name,
+      resp: $("cResp").value.trim(),
+      phone: $("cPhone").value.trim(),
+      defaultValue: parseMoney($("cDefaultValue").value),
+      notes: $("cNotes").value.trim(),
+      createdAt: Date.now()
+    };
+
+    const pats = loadPatients();
+    pats.push(p);
+    savePatients(pats);
+
+    $("cName").value = "";
+    $("cResp").value = "";
+    $("cPhone").value = "";
+    $("cDefaultValue").value = "";
+    $("cNotes").value = "";
+
+    renderPatientSelectDaily();
+    renderPatientFolders();
+    alert("Paciente cadastrado!");
+  });
+
+  // ======= PASTAS + FILTROS (mês/ano/não pagos) =======
+  const MONTHS = [
+    {m:"01", t:"Jan"}, {m:"02", t:"Fev"}, {m:"03", t:"Mar"}, {m:"04", t:"Abr"},
+    {m:"05", t:"Mai"}, {m:"06", t:"Jun"}, {m:"07", t:"Jul"}, {m:"08", t:"Ago"},
+    {m:"09", t:"Set"}, {m:"10", t:"Out"}, {m:"11", t:"Nov"}, {m:"12", t:"Dez"},
+  ];
+
+  let openedPatientId = null;
+  let openedMonth = "ALL"; // "ALL" ou "01".."12"
+  let openedYear = "ALL";  // "ALL" ou "2026"...
+  let onlyUnpaid = false;  // filtro dentro da pasta
+  let onlyDebtFolders = false; // filtro nas pastas
+
+  $("pSearch").addEventListener("input", renderPatientFolders);
+
+  $("onlyDebtFolders").addEventListener("click", ()=>{
+    onlyDebtFolders = !onlyDebtFolders;
+    $("onlyDebtFolders").textContent = onlyDebtFolders ? "Mostrar todos" : "Mostrar só com débito";
+    $("onlyDebtFolders").classList.toggle("primary", onlyDebtFolders);
+    renderPatientFolders();
+  });
+
+  function renderPatientFolders(){
+    const q = $("pSearch").value.trim().toLowerCase();
+    const pats = loadPatients()
+      .filter(p => !q || (p.name||"").toLowerCase().includes(q))
+      .sort((a,b)=> (a.name||"").localeCompare(b.name||""));
+
+    const box = $("patientFolders");
+    box.innerHTML = "";
+
+    if(!pats.length){
+      box.innerHTML = `<div class="item"><b>Nenhum paciente.</b><div class="muted">Cadastre ao lado.</div></div>`;
+      return;
+    }
+
+    const allSess = loadSessions();
+
+    const filtered = pats.filter(p=>{
+      if(!onlyDebtFolders) return true;
+      const rows = allSess.filter(s => s.patientId === p.id);
+      const aberto = rows.filter(r => r.paid !== "pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
+      return aberto > 0;
+    });
+
+    if(!filtered.length){
+      box.innerHTML = `<div class="item"><b>Sem pacientes com débito.</b><div class="muted">Desative o filtro para ver todos.</div></div>`;
+      return;
+    }
+
+    filtered.forEach(p=>{
+      const rows = allSess.filter(s => s.patientId === p.id);
+      const aberto = rows.filter(r => r.paid !== "pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
+      const faltasSemJust = rows.filter(r => r.did==="nao" && r.just==="nao_justificada").length;
+
+      const div = document.createElement("div");
+      div.className = "item";
+      div.style.cursor = "pointer";
+      div.innerHTML = `
+        <div class="itemTop">
+          <div>
+            <b>📁 ${escapeHtml(p.name)}</b>
+            <div class="muted">
+              <span class="pill bad">Em aberto: ${fmtBRL(aberto)}</span>
+              <span class="pill bad">Sem just.: ${faltasSemJust}</span>
+            </div>
+          </div>
+          <div class="muted">${rows.length} registros</div>
+        </div>
+        <div class="muted" style="margin-top:8px;">Toque para abrir a pasta</div>
+      `;
+      div.addEventListener("click", ()=> openPatientFolder(p.id));
+      box.appendChild(div);
+    });
+  }
+
+  function openPatientFolder(pid){
+    openedPatientId = pid;
+    openedMonth = "ALL";
+    openedYear = "ALL";
+    onlyUnpaid = false;
+    $("toggleOnlyUnpaid").textContent = "Só não pagos: OFF";
+    $("toggleOnlyUnpaid").classList.remove("primary");
+
+    $("foldersPane").classList.add("hidden");
+    $("folderOpenPane").classList.remove("hidden");
+
+    renderOpenPatientHeader();
+    renderYearButtons();
+    renderMonthButtons();
+    renderPatientHistoryFolder();
+  }
+
+  function closePatientFolder(silent=false){
+    openedPatientId = null;
+    openedMonth = "ALL";
+    openedYear = "ALL";
+    onlyUnpaid = false;
+    $("folderOpenPane").classList.add("hidden");
+    $("foldersPane").classList.remove("hidden");
+    if(!silent) renderPatientFolders();
+  }
+
+  $("backToFolders").addEventListener("click", ()=> closePatientFolder());
+
+  function renderOpenPatientHeader(){
+    const p = getPatientById(openedPatientId);
+    if(!p) return closePatientFolder();
+
+    $("openPatientTitle").textContent = `📁 ${p.name}`;
+    const meta = [];
+    if(p.resp) meta.push(`Resp.: ${p.resp}`);
+    if(p.phone) meta.push(`Whats: ${p.phone}`);
+    if(p.defaultValue) meta.push(`Valor padrão: ${fmtBRL(p.defaultValue)}`);
+    if(p.notes) meta.push(`Obs.: ${p.notes}`);
+    $("openPatientMeta").textContent = meta.join(" • ") || "—";
+  }
+
+  function yearsAvailableForPatient(pid){
+    const years = new Set(loadSessions().filter(s=>s.patientId===pid).map(s => (s.date||"").slice(0,4)));
+    const arr = Array.from(years).filter(Boolean).sort((a,b)=> b.localeCompare(a));
+    // se não tiver, mostra ano atual como opção também
+    const cur = String(new Date().getFullYear());
+    if(!arr.includes(cur)) arr.unshift(cur);
+    return arr;
+  }
+
+  function renderYearButtons(){
+    const box = $("yearButtons");
+    box.innerHTML = "";
+
+    const btnAll = document.createElement("button");
+    btnAll.textContent = "Todos";
+    btnAll.className = (openedYear==="ALL") ? "primary" : "";
+    btnAll.addEventListener("click", ()=>{
+      openedYear = "ALL";
+      updateFilterLabel();
+      renderYearButtons();
+      renderPatientHistoryFolder();
+    });
+    box.appendChild(btnAll);
+
+    yearsAvailableForPatient(openedPatientId).forEach(y=>{
+      const b = document.createElement("button");
+      b.textContent = y;
+      b.className = (openedYear===y) ? "primary" : "";
+      b.addEventListener("click", ()=>{
+        openedYear = y;
+        updateFilterLabel();
+        renderYearButtons();
+        renderPatientHistoryFolder();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function renderMonthButtons(){
+    const box = $("monthButtons");
+    box.innerHTML = "";
+
+    const btnAll = document.createElement("button");
+    btnAll.textContent = "Todos";
+    btnAll.className = (openedMonth==="ALL") ? "primary" : "";
+    btnAll.addEventListener("click", ()=>{
+      openedMonth = "ALL";
+      updateFilterLabel();
+      renderMonthButtons();
+      renderPatientHistoryFolder();
+    });
+    box.appendChild(btnAll);
+
+    MONTHS.forEach(x=>{
+      const b = document.createElement("button");
+      b.textContent = x.t;
+      b.className = (openedMonth===x.m) ? "primary" : "";
+      b.addEventListener("click", ()=>{
+        openedMonth = x.m;
+        updateFilterLabel();
+        renderMonthButtons();
+        renderPatientHistoryFolder();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function updateFilterLabel(){
+    const parts = [];
+    if(openedYear !== "ALL") parts.push(`Ano ${openedYear}`);
+    if(openedMonth !== "ALL") parts.push(`Mês ${MONTHS.find(m=>m.m===openedMonth)?.t || openedMonth}`);
+    if(onlyUnpaid) parts.push("Só não pagos");
+    $("filterLabel").textContent = parts.length ? parts.join(" • ") : "Todos";
+  }
+
+  $("toggleOnlyUnpaid").addEventListener("click", ()=>{
+    onlyUnpaid = !onlyUnpaid;
+    $("toggleOnlyUnpaid").textContent = onlyUnpaid ? "Só não pagos: ON" : "Só não pagos: OFF";
+    $("toggleOnlyUnpaid").classList.toggle("primary", onlyUnpaid);
+    updateFilterLabel();
+    renderPatientHistoryFolder();
+  });
+
+  function renderPatientHistoryFolder(){
+    const hist = $("patientHistory");
+    hist.innerHTML = "";
+
+    const p = getPatientById(openedPatientId);
+    if(!p) return closePatientFolder();
+
+    let rows = loadSessions().filter(s => s.patientId === openedPatientId);
+
+    if(openedYear !== "ALL"){
+      rows = rows.filter(r => (r.date||"").slice(0,4) === openedYear);
+    }
+    if(openedMonth !== "ALL"){
+      rows = rows.filter(r => (r.date||"").slice(5,7) === openedMonth);
+    }
+    if(onlyUnpaid){
+      rows = rows.filter(r => r.paid !== "pago");
+    }
+
+    rows.sort((a,b)=> (b.date||"").localeCompare(a.date||""));
+
+    const total = rows.length;
+    const faltasSemJust = rows.filter(r => r.did==="nao" && r.just==="nao_justificada").length;
+    const pago = rows.filter(r => r.paid==="pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
+    const aberto = rows.filter(r => r.paid!=="pago").reduce((s,r)=> s + (Number(r.value)||0), 0);
+
+    $("patientSummary").textContent =
+      `Registros: ${total} | Sem justificativa: ${faltasSemJust} | Pago: ${fmtBRL(pago)} | Em aberto: ${fmtBRL(aberto)}`;
+    updateFilterLabel();
+
+    if(!rows.length){
+      hist.innerHTML = `<div class="item"><b>Sem registros neste filtro.</b><div class="muted">Tente outro mês/ano ou “Todos”.</div></div>`;
+      return;
+    }
+
+    rows.slice(0, 80).forEach(r=>{
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <div class="itemTop">
+          <div>
+            <b>${escapeHtml(r.date)}${r.time ? " — " + escapeHtml(r.time) : ""}</b>
+            <div class="muted">
+              ${badgeFor(r)} ${payBadge(r)} <span class="pill">Valor: ${fmtBRL(r.value)}</span>
+            </div>
+          </div>
+          <div class="muted">ID: ${escapeHtml(r.id)}</div>
+        </div>
+        <div class="actions">
+          <button data-act="togglePaid" data-id="${r.id}">Pago/Não pago</button>
+          <button data-act="editValue" data-id="${r.id}">Editar valor</button>
+          <button data-act="del" data-id="${r.id}" class="danger">Excluir</button>
+        </div>
+      `;
+      div.querySelectorAll("button[data-act]").forEach(btn=>{
+        btn.addEventListener("click", ()=> sessionAction(btn.dataset.act, btn.dataset.id));
+      });
+      hist.appendChild(div);
+    });
+  }
+
+  // Ações da pasta
+  $("openWhats").addEventListener("click", ()=>{
+    const p = getPatientById(openedPatientId);
+    if(!p || !p.phone) return alert("Esse paciente não tem WhatsApp cadastrado.");
+    const msg = encodeURIComponent("Olá, tudo bem?");
+    window.open(`https://wa.me/55${p.phone}?text=${msg}`, "_blank");
+  });
+
+  $("exportPatient").addEventListener("click", ()=>{
+    const p = getPatientById(openedPatientId);
+    if(!p) return;
+    const sessions = loadSessions().filter(s => s.patientId === openedPatientId);
+    const data = { patient: p, sessions };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `paciente_${(p.name||"").replace(/\s+/g,"_")}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $("renamePatient").addEventListener("click", ()=>{
+    const pats = loadPatients();
+    const idx = pats.findIndex(x => x.id === openedPatientId);
+    if(idx < 0) return;
+    const nv = prompt("Novo nome do paciente:", pats[idx].name || "");
+    if(!nv) return;
+    pats[idx].name = nv.trim();
+    savePatients(pats);
+    renderPatientSelectDaily();
+    renderPatientFolders();
+    renderOpenPatientHeader();
+  });
+
+  $("deletePatient").addEventListener("click", ()=>{
+    if(!confirm("Excluir paciente? (os registros dele também serão removidos)")) return;
+    savePatients(loadPatients().filter(p => p.id !== openedPatientId));
+    saveSessions(loadSessions().filter(s => s.patientId !== openedPatientId));
+    renderPatientSelectDaily();
+    closePatientFolder();
+  });
+
   // ======= Init =======
-  renderPatientSelects();
+  renderPatientSelectDaily();
   renderDaily();
+  renderPatientFolders();
 </script>
 
 </body>
