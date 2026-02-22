@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>ClínicaHub — Login</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:#111827; --line:rgba(255,255,255,.12);
+      --text:#e7eefc; --muted:#a7b2c5; --pri:#2563eb; --err:#fecaca;
+    }
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Arial;min-height:100vh;display:grid;place-items:center;padding:16px}
+    .box{width:min(380px, 96vw);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:16px;padding:16px}
+    h2{margin:0 0 6px}
+    .muted{color:var(--muted);font-size:.95rem}
+    label{display:block;margin:12px 0 6px;color:var(--muted);font-size:.9rem}
+    input{width:100%;box-sizing:border-box;padding:12px;border-radius:12px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:var(--text);font-size:1rem;outline:none}
+    button{width:100%;margin-top:12px;padding:12px;border:0;border-radius:12px;background:var(--pri);color:white;font-weight:800;font-size:1rem}
+    .err{display:none;margin-top:10px;color:var(--err);font-weight:700}
+    .row{display:flex;gap:10px;margin-top:12px}
+    .ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+    a{color:#93c5fd}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Acesso restrito</h2>
+    <div class="muted">Entre com usuário e senha para abrir o painel.</div>
+
+    <label>Usuário</label>
+    <input id="user" autocomplete="username" placeholder="ex: gabriel" />
+
+    <label>Senha</label>
+    <input id="pass" type="password" autocomplete="current-password" placeholder="••••••••" />
+
+    <button id="btn">Entrar</button>
+    <div id="err" class="err">Usuário ou senha inválidos.</div>
+
+    <div class="row">
+      <button id="btnGo" class="ghost" type="button">Abrir painel direto</button>
+      <button id="btnOut" class="ghost" type="button">Sair</button>
+    </div>
+
+    <div class="muted" style="margin-top:12px">
+      Dica: se der “tela preta”, abra com <b>?x=1</b> no final do link para atualizar o cache.
+    </div>
+  </div>
+
+<script>
+  // ✅ Ajuste aqui se quiser trocar login/senha
+  const USER_OK = "gabriel";
+  const PASS_OK = "1234";
+
+  // Sessão (mesma chave que já usamos no sistema)
+  const AUTH_KEY = "clinica_auth_v1";
+  const AUTH_HOURS = 8;
+
+  function setSession(){
+    const until = Date.now() + (AUTH_HOURS * 60 * 60 * 1000);
+    localStorage.setItem(AUTH_KEY, JSON.stringify({ ok:true, until }));
+  }
+  function clearSession(){ localStorage.removeItem(AUTH_KEY); }
+  function hasSession(){
+    try{
+      const data = JSON.parse(localStorage.getItem(AUTH_KEY) || "{}");
+      return !!(data.ok && Date.now() <= data.until);
+    }catch(e){ return false; }
+  }
+
+  function goPanel(){
+    // abre painel.html (pós-login)
+    window.location.href = "painel.html?x=" + Date.now();
+  }
+
+  if(hasSession()){
+    goPanel();
+  }
+
+  const $ = (id)=>document.getElementById(id);
+  $("btn").addEventListener("click", ()=>{
+    $("err").style.display = "none";
+    const u = $("user").value.trim();
+    const p = $("pass").value;
+    if(u === USER_OK && p === PASS_OK){
+      setSession();
+      goPanel();
+    }else{
+      $("err").style.display = "block";
+    }
+  });
+
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter") $("btn").click();
+  });
+
+  $("btnGo").addEventListener("click", goPanel);
+  $("btnOut").addEventListener("click", ()=>{ clearSession(); alert("Sessão apagada."); });
+
+</script>
+</body>
+</html>
