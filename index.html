@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ClínicaHub — Pacientes</title>
+  <title>ClínicaHub — Sistema Completo</title>
   <style>
     :root {
       --bg: #0a0f1c;
@@ -42,7 +42,6 @@
       font-size: .92rem;
     }
 
-    /* Cards e badges */
     .pill {
       display: inline-block;
       padding: 4px 10px;
@@ -73,12 +72,6 @@
       background: rgba(245, 158, 11, .12);
     }
 
-    .pill.pri {
-      border-color: rgba(14, 165, 233, .35);
-      background: rgba(14, 165, 233, .12);
-    }
-
-    /* Botões */
     button {
       padding: 12px 16px;
       border-radius: 12px;
@@ -109,19 +102,12 @@
       background: rgba(239, 68, 68, .18);
     }
 
-    button.danger:hover {
-      background: rgba(239, 68, 68, .28);
-    }
-
     button.small {
       padding: 8px 12px;
       font-size: .9rem;
     }
 
-    /* Formulários */
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
       padding: 12px;
       border-radius: 12px;
@@ -133,9 +119,7 @@
       font-size: .95rem;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: rgba(14, 165, 233, .5);
       box-shadow: 0 0 0 2px rgba(14, 165, 233, .2);
     }
@@ -158,7 +142,6 @@
       margin: 14px 0;
     }
 
-    /* Layout principal */
     header {
       display: flex;
       justify-content: space-between;
@@ -173,9 +156,6 @@
     h1 {
       margin: 0;
       font-size: 1.3rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     main {
@@ -269,13 +249,6 @@
       background: rgba(255, 255, 255, .05);
     }
 
-    .itemTop {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
     .actions {
       display: flex;
       gap: 8px;
@@ -293,6 +266,88 @@
       .split {
         grid-template-columns: 1fr;
       }
+    }
+
+    /* Scheduler */
+    .schedWrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .02);
+      max-height: 600px;
+    }
+
+    table.sched {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 900px;
+    }
+
+    .sched th, .sched td {
+      border: 1px solid rgba(255, 255, 255, .10);
+      padding: 12px;
+      vertical-align: top;
+    }
+
+    .sched th {
+      background: rgba(255, 255, 255, .04);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .sched td {
+      min-width: 160px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .sched td:hover {
+      background: rgba(255, 255, 255, .08);
+    }
+
+    .timeCell {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      background: rgba(255, 255, 255, .04);
+      font-weight: 800;
+    }
+
+    .slotBox {
+      border-radius: 10px;
+      padding: 12px;
+      height: 100%;
+    }
+
+    .slotGreen {
+      background: rgba(34, 197, 94, .15);
+      border-left: 4px solid #22c55e;
+    }
+
+    .slotAmber {
+      background: rgba(245, 158, 11, .15);
+      border-left: 4px solid #f59e0b;
+    }
+
+    .slotRed {
+      background: rgba(239, 68, 68, .15);
+      border-left: 4px solid #ef4444;
+    }
+
+    .slotBlue {
+      background: rgba(14, 165, 233, .15);
+      border-left: 4px solid #0ea5e9;
+    }
+
+    .slotPurple {
+      background: rgba(139, 92, 246, .15);
+      border-left: 4px solid #8b5cf6;
+    }
+
+    .iconAlert {
+      font-size: 1.1rem;
+      margin-right: 5px;
     }
 
     /* Progress bar */
@@ -337,7 +392,6 @@
       overflow-y: auto;
     }
 
-    /* Alertas */
     .alert {
       position: fixed;
       top: 20px;
@@ -366,40 +420,106 @@
 
 <body>
 
-  <!-- Painel Principal -->
   <section id="appWrap">
     <header>
       <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-        <h1>🏥 ClínicaHub — Pacientes</h1>
+        <h1>🏥 ClínicaHub</h1>
         <div id="today" class="muted"></div>
       </div>
 
       <div class="tabs">
-        <button class="tab" id="tabDaily">📅 Diário</button>
-        <button class="tab active" id="tabPatients">👥 Pacientes</button>
+        <button class="tab active" id="tabDaily">📅 Diário</button>
+        <button class="tab" id="tabPatients">👥 Pacientes</button>
         <button class="tab" id="tabSchedule">📆 Agendamento</button>
       </div>
     </header>
 
     <main>
-      <!-- Diário (simplificado) -->
-      <section id="viewDaily" class="card hidden">
+      <!-- DIÁRIO -->
+      <section id="viewDaily" class="card">
         <div class="row">
           <div>
-            <label>Data</label>
+            <label>Data do atendimento</label>
             <input id="date" type="date" />
           </div>
           <div>
-            <button id="goToPatients" class="small">👥 Ir para Pacientes</button>
+            <label>Buscar paciente</label>
+            <input id="search" placeholder="Nome..." />
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button id="findInDay" class="small primary">🔍 Procurar</button>
+            <button id="clearDay" class="small danger">🗑️ Limpar dia</button>
           </div>
         </div>
+
+        <div class="sum">
+          <div class="cardMini">
+            <b>Resumo do dia</b>
+            <div class="muted" id="sumDay">—</div>
+          </div>
+          <div class="cardMini">
+            <b>Financeiro</b>
+            <div class="muted" id="sumMoney">—</div>
+          </div>
+          <div class="cardMini">
+            <b>Faltas hoje</b>
+            <div class="muted" id="sumAbsences">—</div>
+          </div>
+        </div>
+
+        <hr>
+
+        <b>➕ Adicionar sessão</b>
+        <div class="grid2">
+          <div>
+            <label>Paciente</label>
+            <select id="pPatient"></select>
+          </div>
+          <div>
+            <label>Horário</label>
+            <input id="pTime" placeholder="14:30" />
+          </div>
+          <div>
+            <label>Sessão</label>
+            <select id="pDid">
+              <option value="realizou">✅ Realizou</option>
+              <option value="nao">❌ Não realizou</option>
+            </select>
+          </div>
+          <div>
+            <label>Justificativa</label>
+            <select id="pJust">
+              <option value="na">—</option>
+              <option value="justificada">📝 Justificada</option>
+              <option value="nao_justificada">⚠️ Não justificada</option>
+            </select>
+          </div>
+          <div>
+            <label>Pagamento</label>
+            <select id="pPaid">
+              <option value="nao_pago">💸 Não pago</option>
+              <option value="pago">💰 Pago</option>
+            </select>
+          </div>
+          <div>
+            <label>Valor (R$)</label>
+            <input id="pValue" placeholder="80,00" />
+            <small id="hintDefault" class="muted"></small>
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="addSession" class="primary">➕ Adicionar</button>
+          <button id="resetAll" class="danger">⚠️ Zerar tudo</button>
+        </div>
+
         <div class="list" id="dayList"></div>
       </section>
 
-      <!-- PACIENTES - TOTALMENTE CORRIGIDO -->
-      <section id="viewPatients" class="card">
+      <!-- PACIENTES -->
+      <section id="viewPatients" class="card hidden">
         <div class="split">
-          <!-- Cadastro de Paciente -->
+          <!-- Cadastro -->
           <div class="card">
             <b>👤 Cadastro de Paciente</b>
             <div class="grid2" style="margin-top:15px;">
@@ -475,7 +595,7 @@
             </div>
           </div>
 
-          <!-- LISTA DE PACIENTES (CORRIGIDA - APARECE SEMPRE) -->
+          <!-- Lista de Pacientes -->
           <div class="card">
             <div id="foldersPane">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -485,15 +605,12 @@
                   <button id="onlyDebtFolders" class="small">💸 Com débito</button>
                 </div>
               </div>
-              
-              <!-- LISTA DE PACIENTES - SEMPRE VISÍVEL -->
               <div id="patientFolders" class="list"></div>
             </div>
 
-            <!-- PASTA ABERTA DO PACIENTE -->
             <div id="folderOpenPane" class="hidden">
               <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
-                <button id="backToFolders" class="small">← Voltar para lista</button>
+                <button id="backToFolders" class="small">← Voltar</button>
                 <div style="flex:1;">
                   <b id="openPatientTitle">Paciente</b>
                   <div class="muted" id="openPatientMeta"></div>
@@ -506,28 +623,45 @@
                 </div>
               </div>
 
-              <!-- Progresso do pacote -->
               <div id="pacoteProgresso" style="margin:10px 0; padding:10px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
-
-              <!-- Histórico do paciente -->
               <div id="patientHistory" class="list" style="max-height:400px;"></div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Agendamento (simplificado) -->
+      <!-- AGENDAMENTO -->
       <section id="viewSchedule" class="card hidden">
         <div class="row">
           <div>
-            <label>Data</label>
+            <label>Data referência</label>
             <input id="schedRef" type="date" />
           </div>
           <div>
-            <button id="goToPatientsFromSchedule" class="small">👥 Ir para Pacientes</button>
+            <label>Adicionar horário</label>
+            <div style="display:flex; gap:8px;">
+              <input id="newTime" placeholder="07:00" />
+              <button id="addTime" class="small primary">➕</button>
+            </div>
+          </div>
+          <div>
+            <label>Horários padrão</label>
+            <button id="resetTimes" class="small">🔄 Resetar</button>
           </div>
         </div>
-        <div class="schedWrap" id="schedTable"></div>
+
+        <div class="schedWrap">
+          <table class="sched" id="schedTable"></table>
+        </div>
+
+        <div class="muted" style="margin-top:15px; padding:10px; background:rgba(255,255,255,.03); border-radius:12px;">
+          <span class="pill ok">🟢 Cassems</span>
+          <span class="pill warn">🟡 Particular</span>
+          <span class="pill info">🟣 Unimed/Outros</span>
+          <span class="pill bad">🔴 Vago</span>
+          <span class="pill">⚠️ Falta 1</span>
+          <span class="pill">🏁 Última</span>
+        </div>
       </section>
     </main>
   </section>
@@ -564,6 +698,12 @@
     };
 
     const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+    const SERVICE_COLORS = {
+      "cassems": "slotGreen",
+      "particular": "slotAmber",
+      "unimed": "slotPurple",
+      "outros": "slotBlue"
+    };
 
     let openedPatientId = null;
     let alertTimeout = null;
@@ -609,7 +749,6 @@
       }
     }
 
-    // ========== ALERTAS ==========
     function showAlert(message, type = "info") {
       if (alertTimeout) clearTimeout(alertTimeout);
       
@@ -624,9 +763,7 @@
                                 "#0ea5e9";
       document.body.appendChild(alert);
       
-      alertTimeout = setTimeout(() => {
-        alert.remove();
-      }, 3000);
+      alertTimeout = setTimeout(() => alert.remove(), 3000);
     }
 
     // ========== PACIENTES ==========
@@ -642,25 +779,341 @@
     function saveSessions(s) { saveData(KEYS.SESSIONS, s); }
 
     // ========== AGENDA ==========
-    function loadSchedule() { return loadData(KEYS.SCHEDULE, { times: [], recurring: {} }); }
+    function loadSchedule() {
+      return loadData(KEYS.SCHEDULE, { 
+        times: ["07:00", "07:40", "08:20", "09:00", "09:40", "10:20", "11:00", "13:20", "14:00", "14:40", "15:20", "16:00", "16:40", "17:20"], 
+        recurring: {} 
+      });
+    }
     function saveSchedule(s) { saveData(KEYS.SCHEDULE, s); }
 
     function recurKey(day, time) { return `${day}|${time}`; }
 
-    // ========== FUNÇÃO PRINCIPAL - LISTA DE PACIENTES (CORRIGIDA) ==========
+    // ========== DIÁRIO ==========
+    function renderPatientSelect() {
+      const pats = loadPatients();
+      const sel = $("pPatient");
+      sel.innerHTML = pats.length ?
+        pats.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("") :
+        `<option value="">(Cadastre pacientes)</option>`;
+    }
+
+    function updateDefaultHint() {
+      const pid = $("pPatient").value;
+      const p = getPatientById(pid);
+      $("hintDefault").textContent = p ? `${p.serviceType || "Particular"} • Valor: ${fmtMoney(p.defaultValue || 0)}` : "";
+    }
+
+    function renderDaily() {
+      const date = $("date").value;
+      const search = $("search").value.toLowerCase();
+      const sessions = loadSessions().filter(s => s.date === date);
+
+      const filtered = sessions.filter(s => {
+        const p = getPatientById(s.patientId);
+        return !search || (p?.name || "").toLowerCase().includes(search);
+      });
+
+      const list = $("dayList");
+      list.innerHTML = filtered.map(s => {
+        const p = getPatientById(s.patientId);
+        return `
+          <div class="item" id="session-${s.id}">
+            <div style="display:flex; justify-content:space-between;">
+              <div>
+                <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
+                <div class="muted">
+                  ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
+                  ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
+                </div>
+              </div>
+              <div>
+                <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
+                <span class="pill">${fmtMoney(s.value)}</span>
+              </div>
+            </div>
+            <div class="actions" style="margin-top:10px;">
+              <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
+              <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
+              <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
+            </div>
+          </div>
+        `;
+      }).join("") || "<div class='muted'>Nenhuma sessão neste dia</div>";
+
+      $("sumDay").innerHTML = `Total: ${filtered.length}`;
+      $("sumMoney").innerHTML = `Total: ${fmtMoney(filtered.reduce((s, r) => s + (Number(r.value) || 0), 0))}`;
+      $("sumAbsences").innerHTML = filtered.filter(s => s.did === "nao").length.toString();
+    }
+
+    window.toggleSessionDid = (id) => {
+      const sessions = loadSessions();
+      const idx = sessions.findIndex(s => s.id === id);
+      if (idx >= 0) {
+        sessions[idx].did = sessions[idx].did === "realizou" ? "nao" : "realizou";
+        if (sessions[idx].did === "nao" && !sessions[idx].just) {
+          sessions[idx].just = "nao_justificada";
+        }
+        saveSessions(sessions);
+        renderDaily();
+        showAlert("✅ Sessão atualizada!", "success");
+      }
+    };
+
+    window.toggleSessionPaid = (id) => {
+      const sessions = loadSessions();
+      const idx = sessions.findIndex(s => s.id === id);
+      if (idx >= 0) {
+        sessions[idx].paid = sessions[idx].paid === "pago" ? "nao_pago" : "pago";
+        saveSessions(sessions);
+        renderDaily();
+        showAlert("💰 Status de pagamento atualizado!", "success");
+      }
+    };
+
+    window.deleteSession = (id) => {
+      if (confirm("Excluir esta sessão?")) {
+        const sessions = loadSessions().filter(s => s.id !== id);
+        saveSessions(sessions);
+        renderDaily();
+        showAlert("🗑️ Sessão excluída!", "success");
+      }
+    };
+
+    function addSession() {
+      const date = $("date").value;
+      const patientId = $("pPatient").value;
+      const time = $("pTime").value;
+      const did = $("pDid").value;
+      const just = $("pJust").value;
+      const paid = $("pPaid").value;
+      const manualValue = $("pValue").value;
+
+      if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
+
+      const p = getPatientById(patientId);
+      let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
+      if (p?.serviceType === "cassems") value = 26;
+
+      const session = {
+        id: uid(),
+        date, patientId, time,
+        did: did,
+        just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
+        paid, value
+      };
+
+      const sessions = loadSessions();
+      sessions.push(session);
+      saveSessions(sessions);
+
+      $("pTime").value = "";
+      $("pValue").value = "";
+      renderDaily();
+      showAlert("✅ Sessão adicionada!", "success");
+    }
+
+    function findInDay() {
+      const term = $("search").value.toLowerCase();
+      const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
+      if (patient) {
+        $("pPatient").value = patient.id;
+        updateDefaultHint();
+        showAlert(`🔍 Paciente ${patient.name} selecionado`, "success");
+      }
+      renderDaily();
+    }
+
+    function clearDay() {
+      const date = $("date").value;
+      if (confirm(`Limpar todas as sessões de ${date}?`)) {
+        const sessions = loadSessions().filter(s => s.date !== date);
+        saveSessions(sessions);
+        renderDaily();
+        showAlert("🗑️ Dia limpo!", "success");
+      }
+    }
+
+    // ========== AGENDAMENTO ==========
+    function renderSchedule() {
+      const sch = loadSchedule();
+      const patients = loadPatients();
+      const times = (sch.times || []).sort();
+
+      let html = "<thead><tr><th class='timeCell'>Horário</th>";
+      DAYS.forEach(day => html += `<th>${day}</th>`);
+      html += "</tr></thead><tbody>";
+
+      for (const time of times) {
+        html += `<tr><td class="timeCell">${escapeHtml(time)}</td>`;
+
+        for (let day = 0; day < 7; day++) {
+          const key = recurKey(day, time);
+          const entry = sch.recurring?.[key];
+
+          if (entry) {
+            const patient = getPatientById(entry.patientId);
+            const colorClass = SERVICE_COLORS[entry.serviceType] || "slotAmber";
+            const serviceLabel = entry.serviceType === "cassems" ? "Cassems" :
+                                entry.serviceType === "unimed" ? "Unimed" :
+                                entry.serviceType === "outros" ? "Outros" : "Particular";
+
+            let progressHtml = "";
+            let warningIcon = "";
+            if (entry.plannedTotal > 1) {
+              const sessions = loadSessions().filter(s =>
+                s.patientId === entry.patientId &&
+                s.did === "realizou" &&
+                s.date >= entry.startDate
+              ).length;
+              const remaining = entry.plannedTotal - sessions;
+
+              const percent = (sessions / entry.plannedTotal) * 100;
+              progressHtml = `
+                <div style="margin-top:8px;">
+                  <div class="progress-bar" style="height:4px;">
+                    <div class="progress-fill" style="width:${percent}%; background:#22c55e;"></div>
+                  </div>
+                  <div style="font-size:0.8rem; display:flex; justify-content:space-between; margin-top:4px;">
+                    <span>${sessions}/${entry.plannedTotal}</span>
+                    <span>${remaining} restam</span>
+                  </div>
+                </div>
+              `;
+
+              if (remaining === 1) warningIcon = `<span class="iconAlert">⚠️</span>`;
+              if (remaining === 0) warningIcon = `<span class="iconAlert">🏁</span>`;
+            }
+
+            html += `<td data-day="${day}" data-time="${time}" class="slotBox ${colorClass}">
+              <div style="font-weight:600;">${warningIcon} ${escapeHtml(patient?.name || "?")}</div>
+              <div class="muted" style="font-size:0.85rem;">${serviceLabel}</div>
+              ${progressHtml}
+            </td>`;
+          } else {
+            html += `<td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor:pointer;">
+              <div style="opacity:0.7;">🟥 Vago</div>
+              <div class="muted" style="font-size:0.8rem;">Clique para agendar</div>
+            </td>`;
+          }
+        }
+        html += "</tr>";
+      }
+
+      html += "</tbody>";
+      $("schedTable").innerHTML = html;
+
+      document.querySelectorAll("td[data-day]").forEach(td => {
+        td.addEventListener("click", (e) => {
+          const day = td.dataset.day;
+          const time = td.dataset.time;
+          scheduleClickHandler(parseInt(day), time);
+        });
+      });
+    }
+
+    function scheduleClickHandler(day, time) {
+      const sch = loadSchedule();
+      const key = recurKey(day, time);
+      const current = sch.recurring?.[key];
+      const patients = loadPatients();
+
+      if (current) {
+        const patient = getPatientById(current.patientId);
+        if (confirm(`Remover ${patient?.name} deste horário?`)) {
+          delete sch.recurring[key];
+          saveSchedule(sch);
+          renderSchedule();
+          showAlert("✅ Horário liberado!", "success");
+        }
+      } else {
+        const patientList = patients.map((p, i) => `${i + 1} - ${p.name}`).join("\n");
+        const choice = prompt(
+          `Agendar em ${DAYS[day]} às ${time}\n\n` +
+          `Digite o NÚMERO do paciente:\n${patientList}\n\n` +
+          `Ou 0 para cancelar`
+        );
+
+        if (choice && choice !== "0") {
+          const idx = parseInt(choice) - 1;
+          if (idx >= 0 && idx < patients.length) {
+            const patient = patients[idx];
+
+            const serviceType = prompt(
+              `Tipo de atendimento para ${patient.name}:\n` +
+              `1 - Particular\n2 - Cassems\n3 - Unimed\n4 - Outros`,
+              patient.serviceType === "cassems" ? "2" : "1"
+            );
+
+            let finalService = "particular";
+            if (serviceType === "2") finalService = "cassems";
+            else if (serviceType === "3") finalService = "unimed";
+            else if (serviceType === "4") finalService = "outros";
+
+            const packageType = prompt(
+              `Tipo de pacote:\n` +
+              `1 - Individual\n2 - Pacote 4\n3 - Pacote 8`,
+              patient.billingType === "pack4" ? "2" :
+              patient.billingType === "pack8" ? "3" : "1"
+            );
+
+            let plannedTotal = 1;
+            if (packageType === "2") plannedTotal = 4;
+            else if (packageType === "3") plannedTotal = 8;
+
+            sch.recurring = sch.recurring || {};
+            sch.recurring[key] = {
+              patientId: patient.id,
+              serviceType: finalService,
+              startDate: todayISO(),
+              plannedTotal: plannedTotal
+            };
+
+            saveSchedule(sch);
+            renderSchedule();
+            showAlert(`✅ ${patient.name} agendado!`, "success");
+          }
+        }
+      }
+    }
+
+    function addTime() {
+      const time = $("newTime").value.trim();
+      if (!time) return;
+      if (!/^\d{1,2}:\d{2}$/.test(time)) {
+        return showAlert("❌ Formato inválido. Use HH:MM", "error");
+      }
+
+      const sch = loadSchedule();
+      if (!sch.times.includes(time)) {
+        sch.times.push(time);
+        sch.times.sort();
+        saveSchedule(sch);
+        renderSchedule();
+        showAlert(`✅ Horário ${time} adicionado!`, "success");
+      }
+      $("newTime").value = "";
+    }
+
+    function resetTimes() {
+      if (confirm("Restaurar horários padrão?")) {
+        const sch = loadSchedule();
+        sch.times = ["07:00", "07:40", "08:20", "09:00", "09:40", "10:20", "11:00", "13:20", "14:00", "14:40", "15:20", "16:00", "16:40", "17:20"];
+        saveSchedule(sch);
+        renderSchedule();
+        showAlert("✅ Horários restaurados!", "success");
+      }
+    }
+
+    // ========== PACIENTES ==========
     function renderPatientFolders() {
-      console.log("Renderizando lista de pacientes...");
       const search = $("pSearch")?.value?.toLowerCase() || "";
       const allPatients = loadPatients();
       
-      console.log("Total de pacientes:", allPatients.length);
-      
-      // Filtrar por busca
       let filteredPatients = allPatients.filter(p => 
         !search || (p.name || "").toLowerCase().includes(search)
       );
 
-      // Filtrar por débito
       if (debtFilterActive) {
         const sessions = loadSessions();
         filteredPatients = filteredPatients.filter(p => {
@@ -673,11 +1126,10 @@
       if (!container) return;
 
       if (filteredPatients.length === 0) {
-        container.innerHTML = '<div class="item muted">Nenhum paciente cadastrado. Clique em "Salvar paciente" para adicionar.</div>';
+        container.innerHTML = '<div class="item muted">Nenhum paciente cadastrado.</div>';
         return;
       }
 
-      // Ordenar por nome
       filteredPatients.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
 
       container.innerHTML = filteredPatients.map(p => {
@@ -686,7 +1138,6 @@
         const totalSessoes = sessions.length;
         const realizadas = sessions.filter(s => s.did === "realizou").length;
 
-        // Determinar cor do convênio
         const convenioClass = p.serviceType === "cassems" ? "ok" : 
                              p.serviceType === "unimed" ? "info" : 
                              p.serviceType === "outros" ? "pri" : "warn";
@@ -711,7 +1162,6 @@
         `;
       }).join("");
 
-      // Adicionar evento de clique em cada item
       document.querySelectorAll('#patientFolders .item[data-patient-id]').forEach(item => {
         item.addEventListener('click', (e) => {
           const patientId = item.dataset.patientId;
@@ -720,22 +1170,15 @@
       });
     }
 
-    // ========== ABRIR PASTA DO PACIENTE (CORRIGIDA) ==========
     window.openPatientFolder = function(id) {
-      console.log("Abrindo pasta do paciente:", id);
       openedPatientId = id;
       const p = getPatientById(id);
       
-      if (!p) {
-        showAlert("Paciente não encontrado", "error");
-        return;
-      }
+      if (!p) return;
 
-      // Mostrar painel da pasta
       $("foldersPane").classList.add("hidden");
       $("folderOpenPane").classList.remove("hidden");
       
-      // Título e meta
       $("openPatientTitle").textContent = `📁 ${p.name}`;
       $("openPatientMeta").innerHTML = `
         ${p.serviceType || "Particular"} • 
@@ -743,7 +1186,6 @@
         ${p.email ? `📧 ${p.email}` : ""}
       `;
 
-      // Progresso do pacote
       const schedule = loadSchedule();
       let pacoteHtml = '<div class="muted">Nenhum pacote ativo</div>';
       
@@ -771,7 +1213,6 @@
       });
       $("pacoteProgresso").innerHTML = pacoteHtml;
 
-      // Histórico de sessões
       const sessions = loadSessions()
         .filter(s => s.patientId === id)
         .sort((a, b) => b.date.localeCompare(a.date));
@@ -795,15 +1236,13 @@
       `).join("") : "<div class='muted'>Nenhuma sessão registrada</div>";
     };
 
-    // ========== BOTÕES DA PASTA (CORRIGIDOS) ==========
     $("backToFolders").addEventListener("click", () => {
       openedPatientId = null;
       $("folderOpenPane").classList.add("hidden");
       $("foldersPane").classList.remove("hidden");
-      renderPatientFolders(); // Atualizar lista ao voltar
+      renderPatientFolders();
     });
 
-    // Anamnese
     $("btnAnamnese").addEventListener("click", () => {
       const p = getPatientById(openedPatientId);
       if (p) {
@@ -833,7 +1272,6 @@
       }
     });
 
-    // WhatsApp
     $("openWhats").addEventListener("click", () => {
       const p = getPatientById(openedPatientId);
       if (p?.phone) {
@@ -843,7 +1281,6 @@
       }
     });
 
-    // Renomear
     $("renamePatient").addEventListener("click", () => {
       const patients = loadPatients();
       const idx = patients.findIndex(p => p.id === openedPatientId);
@@ -859,13 +1296,11 @@
       }
     });
 
-    // Excluir
     $("deletePatient").addEventListener("click", () => {
       if (confirm("Excluir paciente e todo seu histórico?")) {
         const patients = loadPatients().filter(p => p.id !== openedPatientId);
         const sessions = loadSessions().filter(s => s.patientId !== openedPatientId);
         
-        // Remover da agenda
         const sch = loadSchedule();
         if (sch.recurring) {
           Object.keys(sch.recurring).forEach(key => {
@@ -886,7 +1321,6 @@
       }
     });
 
-    // ========== ADICIONAR PACIENTE ==========
     $("addPatient").addEventListener("click", () => {
       const name = $("cName").value.trim();
       if (!name) {
@@ -916,7 +1350,6 @@
       patients.push(patient);
       savePatients(patients);
 
-      // Se tiver horário fixo, agendar automaticamente
       if (patient.fixedDay && patient.fixedHour) {
         const sch = loadSchedule();
         sch.recurring = sch.recurring || {};
@@ -939,7 +1372,6 @@
         }
       }
 
-      // Limpar formulário
       $("cName").value = "";
       $("cBirth").value = "";
       $("cCpf").value = "";
@@ -950,16 +1382,13 @@
       $("cFixHour").value = "";
       $("cNotes").value = "";
 
-      // Atualizar lista
+      renderPatientSelect();
       renderPatientFolders();
+      renderSchedule();
       showAlert("✅ Paciente cadastrado!", "success");
     });
 
-    // ========== FILTROS ==========
-    $("pSearch").addEventListener("input", () => {
-      renderPatientFolders();
-    });
-
+    $("pSearch").addEventListener("input", renderPatientFolders);
     $("onlyDebtFolders").addEventListener("click", () => {
       debtFilterActive = !debtFilterActive;
       $("onlyDebtFolders").classList.toggle("primary", debtFilterActive);
@@ -967,7 +1396,7 @@
       renderPatientFolders();
     });
 
-    // ========== NAVEGAÇÃO ENTRE ABAS ==========
+    // ========== NAVEGAÇÃO ==========
     function setTab(tab) {
       $("viewDaily").classList.toggle("hidden", tab !== "daily");
       $("viewPatients").classList.toggle("hidden", tab !== "patients");
@@ -977,38 +1406,49 @@
       $("tabPatients").classList.toggle("active", tab === "patients");
       $("tabSchedule").classList.toggle("active", tab === "schedule");
 
-      if (tab === "patients") {
-        renderPatientFolders();
-      }
+      if (tab === "schedule") renderSchedule();
+      if (tab === "patients") renderPatientFolders();
+      if (tab === "daily") renderDaily();
     }
 
     $("tabDaily").addEventListener("click", () => setTab("daily"));
     $("tabPatients").addEventListener("click", () => setTab("patients"));
     $("tabSchedule").addEventListener("click", () => setTab("schedule"));
 
-    $("goToPatients").addEventListener("click", () => setTab("patients"));
-    $("goToPatientsFromSchedule").addEventListener("click", () => setTab("patients"));
+    // ========== EVENT LISTENERS DIÁRIO ==========
+    $("date").addEventListener("change", renderDaily);
+    $("search").addEventListener("input", renderDaily);
+    $("pPatient").addEventListener("change", updateDefaultHint);
+    $("addSession").addEventListener("click", addSession);
+    $("findInDay").addEventListener("click", findInDay);
+    $("clearDay").addEventListener("click", clearDay);
+    $("resetAll").addEventListener("click", () => {
+      if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
+        localStorage.clear();
+        location.reload();
+      }
+    });
+
+    // ========== EVENT LISTENERS AGENDAMENTO ==========
+    $("schedRef").addEventListener("change", renderSchedule);
+    $("addTime").addEventListener("click", addTime);
+    $("resetTimes").addEventListener("click", resetTimes);
 
     // ========== INICIALIZAÇÃO ==========
     function init() {
-      console.log("Inicializando sistema...");
-      
-      // Data atual
       $("today").textContent = new Date().toLocaleDateString("pt-BR", {
         weekday: "long", year: "numeric", month: "long", day: "numeric"
       });
 
-      // CARREGAR LISTA DE PACIENTES IMEDIATAMENTE
-      renderPatientFolders();
-
-      // Diário básico
       $("date").value = todayISO();
-      
-      // Schedule básico
       $("schedRef").value = todayISO();
+
+      renderPatientSelect();
+      renderDaily();
+      renderPatientFolders();
+      renderSchedule();
     }
 
-    // Iniciar
     init();
   </script>
 </body>
