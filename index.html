@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ClínicaHub Ultra — Agenda com Calendário</title>
+  <title>ClínicaHub — Sistema Completo</title>
   <style>
     :root {
       --bg: #0a0f1c;
@@ -19,7 +19,6 @@
       --r: 14px;
     }
 
-    /* Modo claro */
     .light-mode {
       --bg: #f0f4fa;
       --card: #ffffff;
@@ -52,7 +51,6 @@
       font-size: .92rem;
     }
 
-    /* Cards e badges */
     .pill {
       display: inline-block;
       padding: 4px 10px;
@@ -88,7 +86,6 @@
       background: rgba(14, 165, 233, .12);
     }
 
-    /* Botões */
     button {
       padding: 12px 16px;
       border-radius: 12px;
@@ -128,7 +125,6 @@
       font-size: .9rem;
     }
 
-    /* Formulários */
     input,
     select,
     textarea {
@@ -168,7 +164,6 @@
       margin: 14px 0;
     }
 
-    /* Layout principal */
     header {
       display: flex;
       justify-content: space-between;
@@ -264,6 +259,8 @@
       flex-direction: column;
       gap: 10px;
       margin-top: 15px;
+      max-height: 500px;
+      overflow-y: auto;
     }
 
     .item {
@@ -271,10 +268,16 @@
       background: rgba(255, 255, 255, .03);
       border-radius: 14px;
       padding: 15px;
+      transition: .2s;
     }
 
     .item:hover {
-      background: rgba(255, 255, 255, .05);
+      background: rgba(255, 255, 255, .08);
+      border-color: var(--pri);
+    }
+
+    .item.clickable {
+      cursor: pointer;
     }
 
     .itemTop {
@@ -303,7 +306,6 @@
       }
     }
 
-    /* Backup bar */
     .backup-bar {
       display: flex;
       gap: 10px;
@@ -316,12 +318,6 @@
       margin-right: 10px;
     }
 
-    .backup-bar button {
-      padding: 6px 12px;
-      background: rgba(255, 255, 255, .08);
-    }
-
-    /* Dashboard */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -359,7 +355,6 @@
       transition: width .3s;
     }
 
-    /* Scheduler */
     .schedWrap {
       overflow: auto;
       border: 1px solid var(--line);
@@ -442,28 +437,6 @@
       margin-right: 5px;
     }
 
-    /* Timeline */
-    .timeline {
-      border-left: 2px solid var(--pri);
-      margin-left: 10px;
-      padding-left: 20px;
-    }
-
-    .timeline-item {
-      border-left: 2px solid var(--line);
-      padding: 15px;
-      margin-bottom: 15px;
-      background: rgba(255, 255, 255, .02);
-      border-radius: 0 12px 12px 0;
-    }
-
-    .timeline-date {
-      color: var(--pri);
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-
-    /* Modal */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -489,67 +462,6 @@
       overflow-y: auto;
     }
 
-    /* Calendário */
-    .calendario-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin: 15px 0;
-    }
-
-    .calendario-dia {
-      aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255, 255, 255, .03);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: .2s;
-      font-size: .95rem;
-    }
-
-    .calendario-dia:hover {
-      background: var(--pri);
-      color: white;
-    }
-
-    .calendario-dia.selecionado {
-      background: var(--pri);
-      color: white;
-      border-color: var(--pri);
-    }
-
-    .calendario-dia.outro-mes {
-      opacity: 0.3;
-    }
-
-    .calendario-dia.tem-agenda {
-      position: relative;
-    }
-
-    .calendario-dia.tem-agenda::after {
-      content: '';
-      position: absolute;
-      bottom: 4px;
-      width: 4px;
-      height: 4px;
-      background: var(--ok);
-      border-radius: 50%;
-    }
-
-    .calendario-semana {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-bottom: 8px;
-      font-weight: 600;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    /* Alertas */
     .alert {
       position: fixed;
       top: 20px;
@@ -568,14 +480,92 @@
         transform: translateX(100%);
         opacity: 0;
       }
-
       to {
         transform: translateX(0);
         opacity: 1;
       }
     }
 
-    /* Atalhos */
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: .8rem;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: rgba(34, 197, 94, .2);
+      color: #22c55e;
+    }
+
+    .badge-warning {
+      background: rgba(245, 158, 11, .2);
+      color: #f59e0b;
+    }
+
+    .badge-danger {
+      background: rgba(239, 68, 68, .2);
+      color: #ef4444;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .search-box input {
+      padding-left: 40px;
+    }
+
+    .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.5;
+    }
+
+    .folder-header {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .folder-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .info-item {
+      background: rgba(255, 255, 255, .03);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .info-label {
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-weight: 600;
+    }
+
     .shortcuts-hint {
       position: fixed;
       bottom: 20px;
@@ -614,35 +604,24 @@
       border-radius: 6px;
       font-family: monospace;
     }
-
-    /* Agendamento rápido */
-    .agendamento-rapido {
-      background: rgba(14, 165, 233, .1);
-      border: 1px solid rgba(14, 165, 233, .3);
-      border-radius: 14px;
-      padding: 15px;
-      margin-top: 15px;
-    }
   </style>
 </head>
 
 <body>
 
-  <!-- Painel Principal -->
   <section id="appWrap">
     <header>
       <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-        <h1>🏥 ClínicaHub Ultra</h1>
+        <h1>🏥 ClínicaHub</h1>
         <div id="today" class="muted"></div>
         <button id="themeToggle" class="small" style="border-radius:30px;">🌓 Tema</button>
       </div>
 
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <!-- Barra de Backup -->
         <div class="backup-bar">
           <span class="muted">💾 Backup:</span>
-          <button id="backupNow" class="small" title="Baixar backup agora">⬇️ Baixar</button>
-          <button id="restoreBackup" class="small" title="Restaurar de um arquivo">📂 Restaurar</button>
+          <button id="backupNow" class="small">⬇️ Baixar</button>
+          <button id="restoreBackup" class="small">📂 Restaurar</button>
           <button id="autoBackupToggle" class="small pri">🔵 Auto: ON</button>
         </div>
 
@@ -696,7 +675,7 @@
         </div>
       </section>
 
-      <!-- Diário -->
+      <!-- DIÁRIO -->
       <section id="viewDaily" class="card hidden">
         <div class="row">
           <div>
@@ -777,13 +756,13 @@
         <div class="list" id="dayList"></div>
       </section>
 
-      <!-- Pacientes -->
+      <!-- PACIENTES (CORRIGIDO) -->
       <section id="viewPatients" class="card hidden">
         <div class="split">
           <!-- Cadastro -->
           <div class="card">
-            <b>👤 Cadastro de Paciente</b>
-            <div class="grid2" style="margin-top:15px;">
+            <h3 style="margin-bottom:15px;">👤 Cadastro de Paciente</h3>
+            <div class="grid2">
               <div>
                 <label>Nome completo *</label>
                 <input id="cName" placeholder="João Silva" />
@@ -803,6 +782,7 @@
               <div>
                 <label>WhatsApp</label>
                 <input id="cPhone" placeholder="67999999999" />
+                <small class="muted">Com DDD, só números</small>
               </div>
               <div>
                 <label>E-mail</label>
@@ -844,56 +824,91 @@
                   </select>
                   <input id="cFixHour" placeholder="07:40" style="flex:1;" />
                 </div>
-                <small class="muted">Agenda automática</small>
+                <small class="muted">Agenda automaticamente</small>
               </div>
             </div>
 
-            <label style="margin-top:15px;">Observações iniciais</label>
-            <textarea id="cNotes" rows="2" placeholder="Observações relevantes..."></textarea>
+            <label style="margin-top:15px;">Observações</label>
+            <textarea id="cNotes" rows="3" placeholder="Observações importantes..."></textarea>
 
-            <div class="row" style="margin-top:15px;">
-              <button id="addPatient" class="primary">💾 Salvar paciente</button>
-            </div>
+            <button id="addPatient" class="primary" style="margin-top:15px; width:100%;">💾 Salvar Paciente</button>
           </div>
 
-          <!-- Pastas -->
+          <!-- Lista de Pacientes -->
           <div class="card">
             <div id="foldersPane">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <b>📁 Pastas</b>
+                <h3>📁 Pacientes</h3>
                 <div style="display:flex; gap:8px;">
-                  <input id="pSearch" placeholder="Buscar paciente..." style="width:200px;" />
+                  <div class="search-box" style="width:200px;">
+                    <input id="pSearch" placeholder="Buscar..." />
+                  </div>
                   <button id="onlyDebtFolders" class="small">💸 Com débito</button>
                 </div>
               </div>
-              <div id="patientFolders" class="list"></div>
+              <div id="patientFolders" class="list" style="max-height:600px;"></div>
             </div>
 
+            <!-- PASTA DO PACIENTE (CORRIGIDO) -->
             <div id="folderOpenPane" class="hidden">
-              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
+              <div class="folder-header">
                 <button id="backToFolders" class="small">← Voltar</button>
-                <div style="flex:1;">
-                  <b id="openPatientTitle">Paciente</b>
-                  <div class="muted" id="openPatientMeta"></div>
-                </div>
-                <div style="display:flex; gap:8px;">
+                <h3 id="openPatientTitle" style="margin:0;">Paciente</h3>
+                <div class="folder-actions">
                   <button id="btnAnamnese" class="small info">📋 Anamnese</button>
+                  <button id="btnEvolucao" class="small primary">📈 Evolução</button>
+                  <button id="btnMetas" class="small warn">🎯 Metas</button>
                   <button id="openWhats" class="small">📱 WhatsApp</button>
-                  <button id="renamePatient" class="small">✏️ Renomear</button>
+                  <button id="editPatient" class="small">✏️ Editar</button>
                   <button id="deletePatient" class="small danger">🗑️ Excluir</button>
                 </div>
               </div>
 
-              <!-- Barra de progresso do pacote -->
-              <div id="pacoteProgresso" style="margin:10px 0; padding:10px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
+              <!-- Informações do Paciente -->
+              <div id="patientInfo" class="info-grid"></div>
 
-              <div id="patientHistory" class="list"></div>
+              <!-- Progresso do Pacote -->
+              <div id="pacoteProgresso" style="margin:15px 0; padding:15px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
+
+              <!-- Abas -->
+              <div style="display:flex; gap:10px; margin:15px 0; border-bottom:1px solid var(--line); padding-bottom:10px;">
+                <button class="tab active" id="tabHistory">📋 Histórico</button>
+                <button class="tab" id="tabEvolution">📈 Evolução</button>
+                <button class="tab" id="tabGoals">🎯 Metas</button>
+                <button class="tab" id="tabDocuments">📎 Documentos</button>
+              </div>
+
+              <!-- Conteúdo das Abas -->
+              <div id="tabHistoryContent">
+                <div style="margin-bottom:15px;">
+                  <b>Filtros:</b>
+                  <select id="historyYear" style="width:auto; display:inline-block; margin-left:10px;"></select>
+                  <select id="historyMonth" style="width:auto; display:inline-block; margin-left:10px;"></select>
+                  <button id="clearHistoryFilter" class="small" style="margin-left:10px;">Limpar</button>
+                </div>
+                <div id="patientHistory" class="list"></div>
+              </div>
+
+              <div id="tabEvolutionContent" class="hidden">
+                <button id="addEvolucao" class="primary small" style="margin-bottom:15px;">➕ Nova Evolução</button>
+                <div id="evolutionList" class="list"></div>
+              </div>
+
+              <div id="tabGoalsContent" class="hidden">
+                <button id="addMeta" class="primary small" style="margin-bottom:15px;">➕ Nova Meta</button>
+                <div id="goalsList" class="list"></div>
+              </div>
+
+              <div id="tabDocumentsContent" class="hidden">
+                <button id="addDocumento" class="primary small" style="margin-bottom:15px;">📎 Adicionar Documento</button>
+                <div id="documentsList" class="list"></div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Agendamento com CALENDÁRIO -->
+      <!-- AGENDAMENTO -->
       <section id="viewSchedule" class="card hidden">
         <div class="row">
           <div>
@@ -917,36 +932,7 @@
           </div>
         </div>
 
-        <!-- NOVO: Calendário Visual -->
-        <div class="agendamento-rapido">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <b>📅 Calendário de Agendamento</b>
-            <div>
-              <button id="calendarioMesAnterior" class="small">◀</button>
-              <span id="calendarioMesAno" style="margin:0 15px;">Março 2024</span>
-              <button id="calendarioMesProximo" class="small">▶</button>
-            </div>
-          </div>
-          
-          <div class="calendario-semana">
-            <div>Dom</div>
-            <div>Seg</div>
-            <div>Ter</div>
-            <div>Qua</div>
-            <div>Qui</div>
-            <div>Sex</div>
-            <div>Sáb</div>
-          </div>
-          
-          <div id="calendarioGrid" class="calendario-grid"></div>
-          
-          <div style="margin-top:15px; display:flex; gap:15px; justify-content:center;">
-            <div><span class="pill ok" style="margin:0;">●</span> Com agendamento</div>
-            <div><span class="pill pri" style="margin:0;">●</span> Data selecionada</div>
-          </div>
-        </div>
-
-        <div class="schedWrap" style="margin-top:15px;">
+        <div class="schedWrap">
           <table class="sched" id="schedTable"></table>
         </div>
 
@@ -955,13 +941,10 @@
           <span class="pill warn">🟡 Particular</span>
           <span class="pill info">🟣 Unimed/Outros</span>
           <span class="pill bad">🔴 Vago</span>
-          <span class="pill">⚠️ Falta 1</span>
-          <span class="pill">🏁 Última</span>
-          <span class="pill pri">ℹ️ Clique na data ou horário</span>
         </div>
       </section>
 
-      <!-- Relatórios -->
+      <!-- RELATÓRIOS -->
       <section id="viewReports" class="card hidden">
         <h2 style="margin-bottom:20px;">📈 Relatórios</h2>
 
@@ -988,33 +971,27 @@
           <b>Pacientes com maior débito</b>
           <div id="topDebtors" class="list" style="margin-top:10px;"></div>
         </div>
-
-        <div style="margin-top:20px;">
-          <b>📊 Por Convênio</b>
-          <div id="porConvenio" class="grid2" style="margin-top:10px;"></div>
-        </div>
       </section>
     </main>
 
-    <!-- Atalhos -->
     <div class="shortcuts-hint" id="shortcutsHint">⌨️ Atalhos</div>
     <div class="shortcuts-panel hidden" id="shortcutsPanel">
       <h4 style="margin-bottom:10px;">Atalhos de Teclado</h4>
       <div class="shortcut-item"><span>Novo paciente</span> <span class="shortcut-key">Ctrl+N</span></div>
       <div class="shortcut-item"><span>Buscar</span> <span class="shortcut-key">Ctrl+F</span></div>
-      <div class="shortcut-item"><span>Salvar</span> <span class="shortcut-key">Ctrl+S</span></div>
       <div class="shortcut-item"><span>Dashboard</span> <span class="shortcut-key">Ctrl+1</span></div>
       <div class="shortcut-item"><span>Diário</span> <span class="shortcut-key">Ctrl+2</span></div>
       <div class="shortcut-item"><span>Pacientes</span> <span class="shortcut-key">Ctrl+3</span></div>
       <div class="shortcut-item"><span>Agenda</span> <span class="shortcut-key">Ctrl+4</span></div>
+      <div class="shortcut-item"><span>Relatórios</span> <span class="shortcut-key">Ctrl+5</span></div>
     </div>
   </section>
 
-  <!-- Modais -->
+  <!-- MODAIS -->
   <div id="backupModal" class="modal-overlay hidden">
     <div class="modal-content">
-      <h3 style="margin-bottom:15px;">💾 Restaurar Backup</h3>
-      <p class="muted">Selecione um arquivo de backup (.json) para restaurar. Isso substituirá todos os dados atuais.</p>
+      <h3>💾 Restaurar Backup</h3>
+      <p class="muted">Selecione um arquivo de backup (.json)</p>
       <input type="file" id="backupFile" accept=".json" style="margin:15px 0;" />
       <div style="display:flex; gap:10px; justify-content:flex-end;">
         <button id="cancelBackup" class="small">Cancelar</button>
@@ -1032,7 +1009,7 @@
       </div>
       <div style="margin:15px 0;">
         <label>Histórico</label>
-        <textarea id="aHistorico" rows="2"></textarea>
+        <textarea id="aHistorico" rows="3"></textarea>
       </div>
       <div style="margin:15px 0;">
         <label>Observações</label>
@@ -1045,53 +1022,46 @@
     </div>
   </div>
 
-  <!-- MODAL DE AGENDAMENTO RÁPIDO -->
-  <div id="agendamentoModal" class="modal-overlay hidden">
+  <div id="evolucaoModal" class="modal-overlay hidden">
     <div class="modal-content">
-      <h3 id="agendamentoModalTitulo">📅 Agendar Horário</h3>
-      
-      <div style="margin:20px 0;">
-        <div class="grid2">
-          <div>
-            <label>Data</label>
-            <input type="date" id="agendamentoData" />
-          </div>
-          <div>
-            <label>Horário</label>
-            <input type="time" id="agendamentoHora" />
-          </div>
-        </div>
-        
-        <div style="margin-top:15px;">
-          <label>Paciente</label>
-          <select id="agendamentoPaciente">
-            <option value="">Selecione...</option>
-          </select>
-        </div>
-        
-        <div style="margin-top:15px;">
-          <label>Tipo de Atendimento</label>
-          <select id="agendamentoTipo">
-            <option value="particular">Particular</option>
-            <option value="cassems">Cassems</option>
-            <option value="unimed">Unimed</option>
-            <option value="outros">Outros</option>
-          </select>
-        </div>
-        
-        <div style="margin-top:15px;">
-          <label>Pacote</label>
-          <select id="agendamentoPacote">
-            <option value="1">Individual (1 sessão)</option>
-            <option value="4">Pacote 4 sessões</option>
-            <option value="8">Pacote 8 sessões</option>
-          </select>
-        </div>
+      <h3>📈 Nova Evolução</h3>
+      <div style="margin:15px 0;">
+        <label>Data</label>
+        <input type="date" id="evoData" />
       </div>
-      
+      <div style="margin:15px 0;">
+        <label>Evolução</label>
+        <textarea id="evoTexto" rows="4" placeholder="Descreva a evolução do paciente..."></textarea>
+      </div>
       <div style="display:flex; gap:10px; justify-content:flex-end;">
-        <button id="cancelarAgendamento" class="small">Cancelar</button>
-        <button id="salvarAgendamento" class="primary small">Agendar</button>
+        <button id="cancelEvo" class="small">Cancelar</button>
+        <button id="saveEvo" class="primary small">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="metaModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3>🎯 Nova Meta</h3>
+      <div style="margin:15px 0;">
+        <label>Descrição</label>
+        <input type="text" id="metaDesc" placeholder="Ex: Produzir som de /r/..." />
+      </div>
+      <div style="margin:15px 0;">
+        <label>Prazo</label>
+        <input type="date" id="metaPrazo" />
+      </div>
+      <div style="margin:15px 0;">
+        <label>Status</label>
+        <select id="metaStatus">
+          <option value="em_andamento">⏳ Em andamento</option>
+          <option value="concluida">✅ Concluída</option>
+          <option value="cancelada">❌ Cancelada</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button id="cancelMeta" class="small">Cancelar</button>
+        <button id="saveMeta" class="primary small">Salvar</button>
       </div>
     </div>
   </div>
@@ -1099,11 +1069,14 @@
   <script>
     // ========== CONFIGURAÇÕES ==========
     const KEYS = {
-      PATIENTS: "clinica_ultra_patients",
-      SESSIONS: "clinica_ultra_sessions",
-      SCHEDULE: "clinica_ultra_schedule",
-      BACKUP: "clinica_ultra_backup",
-      THEME: "clinica_ultra_theme"
+      PATIENTS: "clinica_pro_patients",
+      SESSIONS: "clinica_pro_sessions",
+      SCHEDULE: "clinica_pro_schedule",
+      EVOLUTIONS: "clinica_pro_evolutions",
+      GOALS: "clinica_pro_goals",
+      DOCUMENTS: "clinica_pro_documents",
+      BACKUP: "clinica_pro_backup",
+      THEME: "clinica_pro_theme"
     };
 
     const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -1117,10 +1090,7 @@
     let autoBackup = localStorage.getItem("autoBackup") !== "false";
     let openedPatientId = null;
     let alertTimeout = null;
-    
-    // Variáveis do calendário
-    let calendarioData = new Date();
-    let calendarioDataSelecionada = new Date();
+    let historyFilters = { year: "all", month: "all" };
 
     const $ = id => document.getElementById(id);
 
@@ -1156,6 +1126,9 @@
 
     function saveData(key, data) {
       localStorage.setItem(key, JSON.stringify(data));
+      if (autoBackup && key !== KEYS.BACKUP) {
+        createAutoBackup();
+      }
     }
 
     function loadData(key, defaultValue = null) {
@@ -1167,12 +1140,11 @@
       }
     }
 
-    // ========== ALERTAS ==========
     function showAlert(message, type = "info") {
       if (alertTimeout) clearTimeout(alertTimeout);
       
       const alert = document.createElement("div");
-      alert.className = `alert alert-${type}`;
+      alert.className = `alert`;
       alert.innerHTML = message;
       alert.style.background = type === "success" ? "rgba(34,197,94,.2)" : 
                               type === "warning" ? "rgba(245,158,11,.2)" : 
@@ -1182,9 +1154,7 @@
                                 "#0ea5e9";
       document.body.appendChild(alert);
       
-      alertTimeout = setTimeout(() => {
-        alert.remove();
-      }, 3000);
+      alertTimeout = setTimeout(() => alert.remove(), 3000);
     }
 
     // ========== TEMA ==========
@@ -1195,7 +1165,6 @@
       $("themeToggle").innerHTML = isLight ? "🌙 Tema" : "☀️ Tema";
     }
 
-    // Carregar tema salvo
     if (localStorage.getItem(KEYS.THEME) === "light") {
       document.body.classList.add("light-mode");
       $("themeToggle").innerHTML = "🌙 Tema";
@@ -1209,7 +1178,10 @@
         data: {
           patients: loadData(KEYS.PATIENTS, []),
           sessions: loadData(KEYS.SESSIONS, []),
-          schedule: loadData(KEYS.SCHEDULE, { times: defaultTimes(), recurring: {} })
+          schedule: loadData(KEYS.SCHEDULE, { times: defaultTimes(), recurring: {} }),
+          evolutions: loadData(KEYS.EVOLUTIONS, {}),
+          goals: loadData(KEYS.GOALS, {}),
+          documents: loadData(KEYS.DOCUMENTS, {})
         }
       };
     }
@@ -1223,7 +1195,7 @@
       a.download = `clinica_backup_${todayISO()}.json`;
       a.click();
       URL.revokeObjectURL(url);
-      showAlert("✅ Backup baixado com sucesso!", "success");
+      showAlert("✅ Backup baixado!", "success");
     }
 
     function restoreFromFile(file) {
@@ -1235,17 +1207,28 @@
             saveData(KEYS.PATIENTS, backup.data.patients || []);
             saveData(KEYS.SESSIONS, backup.data.sessions || []);
             saveData(KEYS.SCHEDULE, backup.data.schedule || { times: defaultTimes(), recurring: {} });
+            saveData(KEYS.EVOLUTIONS, backup.data.evolutions || {});
+            saveData(KEYS.GOALS, backup.data.goals || {});
+            saveData(KEYS.DOCUMENTS, backup.data.documents || {});
 
-            showAlert("✅ Backup restaurado com sucesso!", "success");
+            showAlert("✅ Backup restaurado!", "success");
             setTimeout(() => location.reload(), 1500);
           } else {
-            showAlert("❌ Arquivo de backup inválido", "error");
+            showAlert("❌ Arquivo inválido", "error");
           }
         } catch (err) {
-          showAlert("❌ Erro ao ler o arquivo", "error");
+          showAlert("❌ Erro ao ler arquivo", "error");
         }
       };
       reader.readAsText(file);
+    }
+
+    function createAutoBackup() {
+      const backups = loadData(KEYS.BACKUP, []);
+      const newBackup = createBackup();
+      backups.unshift(newBackup);
+      if (backups.length > 10) backups.pop();
+      saveData(KEYS.BACKUP, backups);
     }
 
     // ========== PACIENTES ==========
@@ -1260,6 +1243,42 @@
     function loadSessions() { return loadData(KEYS.SESSIONS, []); }
     function saveSessions(s) { saveData(KEYS.SESSIONS, s); }
 
+    // ========== EVOLUÇÕES ==========
+    function loadEvolutions(patientId) {
+      const all = loadData(KEYS.EVOLUTIONS, {});
+      return all[patientId] || [];
+    }
+
+    function saveEvolution(patientId, evolutions) {
+      const all = loadData(KEYS.EVOLUTIONS, {});
+      all[patientId] = evolutions;
+      saveData(KEYS.EVOLUTIONS, all);
+    }
+
+    // ========== METAS ==========
+    function loadGoals(patientId) {
+      const all = loadData(KEYS.GOALS, {});
+      return all[patientId] || [];
+    }
+
+    function saveGoals(patientId, goals) {
+      const all = loadData(KEYS.GOALS, {});
+      all[patientId] = goals;
+      saveData(KEYS.GOALS, all);
+    }
+
+    // ========== DOCUMENTOS ==========
+    function loadDocuments(patientId) {
+      const all = loadData(KEYS.DOCUMENTS, {});
+      return all[patientId] || [];
+    }
+
+    function saveDocuments(patientId, docs) {
+      const all = loadData(KEYS.DOCUMENTS, {});
+      all[patientId] = docs;
+      saveData(KEYS.DOCUMENTS, all);
+    }
+
     // ========== AGENDA ==========
     function loadSchedule() {
       return loadData(KEYS.SCHEDULE, { times: defaultTimes(), recurring: {} });
@@ -1272,103 +1291,6 @@
 
     function recurKey(day, time) { return `${day}|${time}`; }
 
-    // ========== CALENDÁRIO ==========
-    function renderCalendario() {
-      const ano = calendarioData.getFullYear();
-      const mes = calendarioData.getMonth();
-      
-      // Atualizar título
-      const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-      $("calendarioMesAno").textContent = `${meses[mes]} ${ano}`;
-      
-      // Primeiro dia do mês
-      const primeiroDia = new Date(ano, mes, 1);
-      const ultimoDia = new Date(ano, mes + 1, 0);
-      
-      // Ajustar para começar no domingo (0 = domingo)
-      let diaSemanaInicio = primeiroDia.getDay();
-      
-      const grid = $("calendarioGrid");
-      grid.innerHTML = "";
-      
-      // Dias do mês anterior
-      const diasMesAnterior = new Date(ano, mes, 0).getDate();
-      for (let i = diaSemanaInicio - 1; i >= 0; i--) {
-        const dia = diasMesAnterior - i;
-        const data = new Date(ano, mes - 1, dia);
-        grid.appendChild(criarDiaCalendario(data, true));
-      }
-      
-      // Dias do mês atual
-      for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
-        const data = new Date(ano, mes, dia);
-        grid.appendChild(criarDiaCalendario(data, false));
-      }
-      
-      // Dias do próximo mês (completar 42 dias para manter grid)
-      const diasRestantes = 42 - grid.children.length;
-      for (let dia = 1; dia <= diasRestantes; dia++) {
-        const data = new Date(ano, mes + 1, dia);
-        grid.appendChild(criarDiaCalendario(data, true));
-      }
-    }
-    
-    function criarDiaCalendario(data, outroMes) {
-      const div = document.createElement("div");
-      div.className = `calendario-dia ${outroMes ? 'outro-mes' : ''}`;
-      div.textContent = data.getDate();
-      
-      // Verificar se tem agendamento neste dia
-      const dataStr = data.toISOString().split('T')[0];
-      const schedule = loadSchedule();
-      let temAgenda = false;
-      
-      // Verificar na agenda recorrente
-      const diaSemana = (data.getDay() + 6) % 7; // Converter para Seg=0
-      Object.keys(schedule.recurring || {}).forEach(key => {
-        const [keyDay] = key.split('|');
-        if (parseInt(keyDay) === diaSemana) {
-          temAgenda = true;
-        }
-      });
-      
-      if (temAgenda) {
-        div.classList.add('tem-agenda');
-      }
-      
-      // Verificar se é a data selecionada
-      if (data.toDateString() === calendarioDataSelecionada.toDateString()) {
-        div.classList.add('selecionado');
-      }
-      
-      div.addEventListener('click', () => {
-        calendarioDataSelecionada = data;
-        renderCalendario();
-        
-        // Atualizar campo de data referência
-        $("schedRef").value = dataStr;
-        
-        // Mostrar modal de agendamento
-        abrirModalAgendamento(data);
-      });
-      
-      return div;
-    }
-    
-    function abrirModalAgendamento(data) {
-      // Preencher data no modal
-      $("agendamentoData").value = data.toISOString().split('T')[0];
-      $("agendamentoHora").value = "08:00";
-      
-      // Carregar pacientes no select
-      const patients = loadPatients();
-      const select = $("agendamentoPaciente");
-      select.innerHTML = '<option value="">Selecione...</option>' + 
-        patients.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
-      
-      $("agendamentoModal").classList.remove("hidden");
-    }
-
     // ========== DASHBOARD ==========
     function renderDashboard() {
       const hoje = todayISO();
@@ -1376,15 +1298,13 @@
       const sessions = loadSessions();
       const patients = loadPatients();
       
-      // Pacientes hoje
       const hojeSessions = sessions.filter(s => s.date === hoje);
       $("dashHoje").textContent = hojeSessions.length;
       
       const realizadasHoje = hojeSessions.filter(s => s.did === "realizou").length;
       const faltasHoje = hojeSessions.filter(s => s.did === "nao").length;
-      $("dashHojeDetalhe").innerHTML = `✅ ${realizadasHoje} realizadas • ❌ ${faltasHoje} faltas`;
+      $("dashHojeDetalhe").innerHTML = `✅ ${realizadasHoje} • ❌ ${faltasHoje}`;
       
-      // Próximos 15 minutos
       const proximos = [];
       const schedule = loadSchedule();
       
@@ -1403,9 +1323,8 @@
       });
       
       $("dashProximos").textContent = proximos.length;
-      $("dashProximosNomes").innerHTML = proximos.map(p => `${p.time} - ${p.name}`).join("<br>") || "Nenhum";
+      $("dashProximosNomes").innerHTML = proximos.map(p => `${p.time} ${p.name}`).join("<br>") || "—";
       
-      // Faturamento hoje
       const faturamentoHoje = hojeSessions
         .filter(s => s.did === "realizou" && s.paid === "pago")
         .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
@@ -1414,9 +1333,8 @@
         .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
       
       $("dashFaturamento").textContent = fmtMoney(faturamentoHoje);
-      $("dashFaturamentoDetalhe").innerHTML = `💰 Recebido: ${fmtMoney(faturamentoHoje)}<br>💸 A receber: ${fmtMoney(aReceberHoje)}`;
+      $("dashFaturamentoDetalhe").innerHTML = `💰 ${fmtMoney(faturamentoHoje)}<br>💸 ${fmtMoney(aReceberHoje)}`;
       
-      // Taxa de faltas do mês
       const currentMonth = hoje.slice(0, 7);
       const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
       const monthFaltas = monthSessions.filter(s => s.did === "nao").length;
@@ -1424,7 +1342,6 @@
       $("dashTaxaFaltas").textContent = `${taxa}%`;
       $("dashProgresso").style.width = `${taxa}%`;
       
-      // Aniversariantes
       const currentMonthNum = new Date().getMonth() + 1;
       const aniversariantes = patients.filter(p => {
         if (!p.birth) return false;
@@ -1437,51 +1354,16 @@
           <div class="item">
             <b>🎂 ${escapeHtml(p.name)}</b>
             <div class="muted">${new Date(p.birth).toLocaleDateString("pt-BR")}</div>
-            <button class="small" onclick="sendBirthdayMessage('${p.id}')">📱 Enviar mensagem</button>
+            <button class="small" onclick="sendBirthdayMessage('${p.id}')">📱 WhatsApp</button>
           </div>
         `).join("") : 
-        "<div class='muted'>Nenhum aniversariante este mês</div>";
-      
-      // Próximos atendimentos
-      const proximosAtendimentos = [];
-      const refDate = hoje;
-      const refDay = (new Date().getDay() + 6) % 7;
-      
-      Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
-        const [day, time] = key.split("|");
-        const dayNum = parseInt(day);
-        
-        let daysToAdd = dayNum - refDay;
-        if (daysToAdd < 0) daysToAdd += 7;
-        if (daysToAdd === 0 && time < agora) daysToAdd += 7;
-        
-        const nextDate = new Date();
-        nextDate.setDate(nextDate.getDate() + daysToAdd);
-        
-        const patient = getPatientById(entry.patientId);
-        proximosAtendimentos.push({
-          date: nextDate,
-          time,
-          patient: patient?.name || "?",
-          days: daysToAdd
-        });
-      });
-      
-      proximosAtendimentos.sort((a, b) => a.days - b.days);
-      
-      $("proximosAtendimentos").innerHTML = proximosAtendimentos.slice(0, 5).map(p => `
-        <div class="item">
-          <b>${escapeHtml(p.patient)}</b>
-          <div class="muted">${p.time} - ${p.days === 0 ? "Hoje" : p.days === 1 ? "Amanhã" : `Em ${p.days} dias`}</div>
-        </div>
-      `).join("") || "<div class='muted'>Nenhum agendamento</div>";
+        "<div class='muted'>Nenhum aniversariante</div>";
     }
 
-    // ========== ENVIAR WHATSAPP ==========
     window.sendBirthdayMessage = (patientId) => {
       const p = getPatientById(patientId);
       if (p?.phone) {
-        const msg = encodeURIComponent(`🎂 Feliz aniversário! Desejo um dia maravilhoso e muitas realizações!`);
+        const msg = encodeURIComponent(`🎂 Feliz aniversário!`);
         window.open(`https://wa.me/55${p.phone}?text=${msg}`, "_blank");
       }
     };
@@ -1491,7 +1373,6 @@
       const sch = loadSchedule();
       const patients = loadPatients();
       const times = (sch.times || []).sort();
-      const refDate = $("schedRef").value || todayISO();
 
       let html = "<thead><tr><th class='timeCell'>Horário</th>";
       DAYS.forEach(day => html += `<th>${day}</th>`);
@@ -1508,72 +1389,23 @@
             const patient = getPatientById(entry.patientId);
             const colorClass = SERVICE_COLORS[entry.serviceType] || "slotAmber";
             const serviceLabel = entry.serviceType === "cassems" ? "Cassems" :
-              entry.serviceType === "unimed" ? "Unimed" :
-                entry.serviceType === "outros" ? "Outros" : "Particular";
-
-            let progressHtml = "";
-            let warningIcon = "";
-            if (entry.plannedTotal > 1) {
-              const sessions = loadSessions().filter(s =>
-                s.patientId === entry.patientId &&
-                s.did === "realizou" &&
-                s.date >= entry.startDate
-              ).length;
-              const remaining = Math.max(0, entry.plannedTotal - sessions);
-
-              const percent = (sessions / entry.plannedTotal) * 100;
-              progressHtml = `
-                <div style="margin-top:8px;">
-                  <div class="progress-bar" style="height:4px;">
-                    <div class="progress-fill" style="width:${percent}%; background:#22c55e;"></div>
-                  </div>
-                  <div style="font-size:0.8rem; display:flex; justify-content:space-between; margin-top:4px;">
-                    <span>${sessions}/${entry.plannedTotal}</span>
-                    <span>${remaining} restam</span>
-                  </div>
-                </div>
-              `;
-
-              if (remaining === 1) warningIcon = `<span class="iconAlert">⚠️</span>`;
-              if (remaining === 0) warningIcon = `<span class="iconAlert">🏁</span>`;
-            }
+                                entry.serviceType === "unimed" ? "Unimed" : "Particular";
 
             html += `<td data-day="${day}" data-time="${time}" class="slotBox ${colorClass}">
-              <div style="font-weight:600;">${warningIcon} ${escapeHtml(patient?.name || "?")}</div>
-              <div class="muted" style="font-size:0.85rem;">${serviceLabel}</div>
-              ${progressHtml}
+              <div style="font-weight:600;">${escapeHtml(patient?.name || "?")}</div>
+              <div class="muted">${serviceLabel}</div>
             </td>`;
           } else {
             html += `<td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor:pointer;">
-              <div style="opacity:0.7;">🟥 Vago</div>
-              <div class="muted" style="font-size:0.8rem;">Clique para agendar</div>
+              <div>🟥 Vago</div>
+              <div class="muted">Clique para agendar</div>
             </td>`;
           }
         }
         html += "</tr>";
       }
 
-      html += "</tbody>";
       $("schedTable").innerHTML = html;
-
-      // Adicionar eventos de clique
-      document.querySelectorAll("td[data-day]").forEach(td => {
-        td.addEventListener("click", (e) => {
-          const day = td.dataset.day;
-          const time = td.dataset.time;
-          
-          // Calcular a próxima data para este dia da semana
-          const hoje = new Date();
-          const diaSemanaHoje = (hoje.getDay() + 6) % 7;
-          let diasParaAdicionar = parseInt(day) - diaSemanaHoje;
-          if (diasParaAdicionar < 0) diasParaAdicionar += 7;
-          
-          const dataAgendamento = new Date();
-          dataAgendamento.setDate(hoje.getDate() + diasParaAdicionar);
-          
-          abrirModalAgendamento(dataAgendamento);
-        });
-      });
     }
 
     // ========== RELATÓRIOS ==========
@@ -1588,23 +1420,11 @@
       const faturamento = realizacoes.reduce((sum, s) => sum + (Number(s.value) || 0), 0);
       const aReceber = monthSessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
 
-      $("monthSummary").innerHTML = `
-        Sessões: ${monthSessions.length}<br>
-        Realizadas: ${realizacoes.length}<br>
-        Faltas: ${faltas.length}
-      `;
+      $("monthSummary").innerHTML = `Sessões: ${monthSessions.length}<br>✅ ${realizacoes.length}<br>❌ ${faltas.length}`;
+      $("absenceRate").innerHTML = monthSessions.length ? `${((faltas.length / monthSessions.length) * 100).toFixed(1)}%` : "0%";
+      $("revenueStats").innerHTML = `💰 ${fmtMoney(faturamento)}<br>💸 ${fmtMoney(aReceber)}`;
+      $("activePatients").innerHTML = patients.length;
 
-      $("absenceRate").innerHTML = monthSessions.length ?
-        `${((faltas.length / monthSessions.length) * 100).toFixed(1)}%` : "0%";
-
-      $("revenueStats").innerHTML = `
-        Faturado: ${fmtMoney(faturamento)}<br>
-        A receber: ${fmtMoney(aReceber)}
-      `;
-
-      $("activePatients").innerHTML = patients.length.toString();
-
-      // Top devedores
       const debtors = patients.map(p => {
         const patientSessions = sessions.filter(s => s.patientId === p.id && s.paid !== "pago");
         const debt = patientSessions.reduce((sum, s) => sum + (Number(s.value) || 0), 0);
@@ -1614,33 +1434,9 @@
       $("topDebtors").innerHTML = debtors.length ? debtors.map(d => `
         <div class="item">
           <b>${escapeHtml(d.name)}</b>
-          <div class="muted">Débito: ${fmtMoney(d.debt)}</div>
+          <div class="muted">${fmtMoney(d.debt)}</div>
         </div>
-      `).join("") : "<div class='muted'>Nenhum devedor</div>";
-
-      // Por convênio
-      const convenios = {};
-      sessions.forEach(s => {
-        const p = getPatientById(s.patientId);
-        const convenio = p?.serviceType || "particular";
-        if (!convenios[convenio]) {
-          convenios[convenio] = { total: 0, realizadas: 0, valor: 0 };
-        }
-        convenios[convenio].total++;
-        if (s.did === "realizou") {
-          convenios[convenio].realizadas++;
-          convenios[convenio].valor += Number(s.value) || 0;
-        }
-      });
-
-      $("porConvenio").innerHTML = Object.entries(convenios).map(([conv, data]) => `
-        <div class="cardMini">
-          <b>${conv.toUpperCase()}</b>
-          <div class="muted">Sessões: ${data.total}</div>
-          <div class="muted">Realizadas: ${data.realizadas}</div>
-          <div class="muted">Valor: ${fmtMoney(data.valor)}</div>
-        </div>
-      `).join("");
+      `).join("") : "<div class='muted'>Nenhum</div>";
     }
 
     // ========== DIÁRIO ==========
@@ -1649,7 +1445,7 @@
       const sel = $("pPatient");
       sel.innerHTML = pats.length ?
         pats.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("") :
-        `<option value="">(Cadastre pacientes)</option>`;
+        `<option value="">(Nenhum paciente)</option>`;
     }
 
     function renderDaily() {
@@ -1662,53 +1458,42 @@
         return !search || (p?.name || "").toLowerCase().includes(search);
       });
 
-      const list = $("dayList");
-      list.innerHTML = filtered.map(s => {
+      $("dayList").innerHTML = filtered.map(s => {
         const p = getPatientById(s.patientId);
         return `
-        <div class="item" id="session-${s.id}">
+        <div class="item">
           <div style="display:flex; justify-content:space-between;">
             <div>
               <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
               <div class="muted">
-                ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
-                ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
+                ${s.did === "realizou" ? "✅" : "❌"} 
+                ${s.paid === "pago" ? "💰" : "💸"} 
+                ${fmtMoney(s.value)}
               </div>
             </div>
-            <div>
-              <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
-              <span class="pill">${fmtMoney(s.value)}</span>
-            </div>
           </div>
-          <div class="actions" style="margin-top:10px;">
-            <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
-            <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
-            <button class="small" onclick="editSessionValue('${s.id}')">✏️ Editar valor</button>
-            <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
+          <div class="actions">
+            <button class="small" onclick="toggleSessionDid('${s.id}')">🔄</button>
+            <button class="small" onclick="toggleSessionPaid('${s.id}')">💰</button>
+            <button class="small danger" onclick="deleteSession('${s.id}')">🗑️</button>
           </div>
         </div>
       `;
-      }).join("") || "<div class='muted'>Nenhuma sessão neste dia</div>";
+      }).join("") || "<div class='muted'>Nenhuma sessão</div>";
 
-      // Atualizar resumos
       $("sumDay").innerHTML = `Total: ${filtered.length}`;
-      $("sumMoney").innerHTML = `Total: ${fmtMoney(filtered.reduce((s, r) => s + (Number(r.value) || 0), 0))}`;
+      $("sumMoney").innerHTML = fmtMoney(filtered.reduce((s, r) => s + (Number(r.value) || 0), 0));
       $("sumAbsences").innerHTML = filtered.filter(s => s.did === "nao").length.toString();
     }
 
-    // ========== AÇÕES DE SESSÃO ==========
     window.toggleSessionDid = (id) => {
       const sessions = loadSessions();
       const idx = sessions.findIndex(s => s.id === id);
       if (idx >= 0) {
         sessions[idx].did = sessions[idx].did === "realizou" ? "nao" : "realizou";
-        if (sessions[idx].did === "nao" && !sessions[idx].just) {
-          sessions[idx].just = "nao_justificada";
-        }
         saveSessions(sessions);
         renderDaily();
-        renderDashboard();
-        showAlert("✅ Sessão atualizada!", "success");
+        showAlert("✅ Sessão atualizada", "success");
       }
     };
 
@@ -1719,23 +1504,7 @@
         sessions[idx].paid = sessions[idx].paid === "pago" ? "nao_pago" : "pago";
         saveSessions(sessions);
         renderDaily();
-        renderDashboard();
-        if (openedPatientId) openPatientFolder(openedPatientId);
-        showAlert("💰 Status de pagamento atualizado!", "success");
-      }
-    };
-
-    window.editSessionValue = (id) => {
-      const sessions = loadSessions();
-      const idx = sessions.findIndex(s => s.id === id);
-      if (idx >= 0) {
-        const newValue = prompt("Novo valor (R$):", sessions[idx].value);
-        if (newValue !== null) {
-          sessions[idx].value = parseMoney(newValue);
-          saveSessions(sessions);
-          renderDaily();
-          showAlert("✅ Valor atualizado!", "success");
-        }
+        showAlert("💰 Pagamento atualizado", "success");
       }
     };
 
@@ -1744,17 +1513,15 @@
         const sessions = loadSessions().filter(s => s.id !== id);
         saveSessions(sessions);
         renderDaily();
-        if (openedPatientId) openPatientFolder(openedPatientId);
-        showAlert("🗑️ Sessão excluída!", "success");
+        showAlert("🗑️ Sessão excluída", "success");
       }
     };
 
-    // ========== PASTAS DE PACIENTES ==========
+    // ========== PASTAS DE PACIENTES (CORRIGIDO) ==========
     function renderPatientFolders() {
       const search = $("pSearch").value.toLowerCase();
       let pats = loadPatients().filter(p => !search || p.name.toLowerCase().includes(search));
 
-      // Filtro de débito
       if (window.debtFilterActive) {
         const sessions = loadSessions();
         pats = pats.filter(p => {
@@ -1764,25 +1531,20 @@
       }
 
       const container = $("patientFolders");
-
       container.innerHTML = pats.map(p => {
         const sessions = loadSessions().filter(s => s.patientId === p.id);
         const debt = sessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-        const totalSessoes = sessions.length;
-        const realizadas = sessions.filter(s => s.did === "realizou").length;
 
         return `
-        <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
+        <div class="item clickable" onclick="openPatientFolder('${p.id}')">
           <div style="display:flex; justify-content:space-between;">
             <div>
               <b>📁 ${escapeHtml(p.name)}</b>
               <div class="muted">
-                ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
+                ${p.serviceType || "Particular"} • ${sessions.length} sessões
               </div>
             </div>
-            <div>
-              ${debt > 0 ? `<span class="pill bad">💰 ${fmtMoney(debt)}</span>` : ''}
-            </div>
+            ${debt > 0 ? `<span class="pill bad">💰 ${fmtMoney(debt)}</span>` : ''}
           </div>
         </div>
       `;
@@ -1792,41 +1554,76 @@
     function openPatientFolder(id) {
       openedPatientId = id;
       const p = getPatientById(id);
+      
       $("foldersPane").classList.add("hidden");
       $("folderOpenPane").classList.remove("hidden");
       $("openPatientTitle").textContent = `📁 ${p?.name || "Paciente"}`;
 
-      // Mostrar progresso do pacote
+      // Informações do paciente
+      const sessions = loadSessions().filter(s => s.patientId === id);
+      const totalSessoes = sessions.length;
+      const realizadas = sessions.filter(s => s.did === "realizou").length;
+      const faltas = sessions.filter(s => s.did === "nao").length;
+      const debt = sessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+      
+      $("patientInfo").innerHTML = `
+        <div class="info-item"><span class="info-label">Convênio</span><span class="info-value">${p?.serviceType || "Particular"}</span></div>
+        <div class="info-item"><span class="info-label">Telefone</span><span class="info-value">${p?.phone || "—"}</span></div>
+        <div class="info-item"><span class="info-label">E-mail</span><span class="info-value">${p?.email || "—"}</span></div>
+        <div class="info-item"><span class="info-label">Total sessões</span><span class="info-value">${totalSessoes}</span></div>
+        <div class="info-item"><span class="info-label">Realizadas</span><span class="info-value" style="color:#22c55e;">${realizadas}</span></div>
+        <div class="info-item"><span class="info-label">Faltas</span><span class="info-value" style="color:#ef4444;">${faltas}</span></div>
+        <div class="info-item"><span class="info-label">Débito</span><span class="info-value" style="color:#ef4444;">${fmtMoney(debt)}</span></div>
+      `;
+
+      // Progresso do pacote
       const schedule = loadSchedule();
-      let pacoteInfo = "Pacote não encontrado na agenda";
+      let pacoteInfo = "Sem pacote ativo";
       
       Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
         if (entry.patientId === id && entry.plannedTotal > 1) {
-          const sessions = loadSessions().filter(s =>
-            s.patientId === id &&
-            s.did === "realizou" &&
-            s.date >= entry.startDate
-          ).length;
-          const remaining = entry.plannedTotal - sessions;
-          const percent = (sessions / entry.plannedTotal) * 100;
+          const sessionsCount = sessions.filter(s => s.did === "realizou" && s.date >= entry.startDate).length;
+          const remaining = entry.plannedTotal - sessionsCount;
+          const percent = (sessionsCount / entry.plannedTotal) * 100;
           
           pacoteInfo = `
-            <b>📦 Pacote de ${entry.plannedTotal} sessões</b>
-            <div class="progress-bar" style="margin:10px 0;">
-              <div class="progress-fill" style="width:${percent}%; background:#22c55e;"></div>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span>✅ ${sessions} realizadas</span>
-              <span>⏳ ${remaining} restantes</span>
-            </div>
+            <b>📦 Pacote ${entry.plannedTotal} sessões</b>
+            <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+            <div>${sessionsCount} realizadas • ${remaining} restantes</div>
           `;
         }
       });
-      
       $("pacoteProgresso").innerHTML = pacoteInfo;
 
-      // Mostrar histórico
-      const sessions = loadSessions().filter(s => s.patientId === id).sort((a, b) => b.date.localeCompare(a.date));
+      // Histórico
+      renderPatientHistory();
+      
+      // Filtros de ano/mês
+      const years = [...new Set(sessions.map(s => s.date.slice(0,4)))].sort().reverse();
+      const yearSelect = $("historyYear");
+      yearSelect.innerHTML = '<option value="all">Todos os anos</option>' + 
+        years.map(y => `<option value="${y}">${y}</option>`).join('');
+      
+      const monthSelect = $("historyMonth");
+      monthSelect.innerHTML = '<option value="all">Todos os meses</option>' + 
+        ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"].map((m,i) => 
+          `<option value="${String(i+1).padStart(2,'0')}">${m}</option>`).join('');
+    }
+
+    function renderPatientHistory() {
+      if (!openedPatientId) return;
+      
+      let sessions = loadSessions().filter(s => s.patientId === openedPatientId);
+      
+      if (historyFilters.year !== "all") {
+        sessions = sessions.filter(s => s.date.startsWith(historyFilters.year));
+      }
+      if (historyFilters.month !== "all") {
+        sessions = sessions.filter(s => s.date.slice(5,7) === historyFilters.month);
+      }
+      
+      sessions.sort((a, b) => b.date.localeCompare(a.date));
+      
       $("patientHistory").innerHTML = sessions.map(s => `
         <div class="item">
           <div style="display:flex; justify-content:space-between;">
@@ -1838,83 +1635,13 @@
                 ${fmtMoney(s.value)}
               </div>
             </div>
-            <div>
-              <button class="small" onclick="event.stopPropagation(); toggleSessionPaid('${s.id}')">💰</button>
-            </div>
           </div>
         </div>
-      `).join("") || "<div class='muted'>Nenhum histórico</div>";
-
-      $("openPatientMeta").innerHTML = `
-        ${p.serviceType || "Particular"} • 
-        ${p.phone ? `📱 ${p.phone}` : ""} • 
-        ${p.email ? `📧 ${p.email}` : ""}
-      `;
-    }
-
-    // ========== SALVAR AGENDAMENTO ==========
-    function salvarAgendamento() {
-      const data = $("agendamentoData").value;
-      const hora = $("agendamentoHora").value;
-      const pacienteId = $("agendamentoPaciente").value;
-      const tipo = $("agendamentoTipo").value;
-      const pacote = parseInt($("agendamentoPacote").value);
-      
-      if (!data || !hora || !pacienteId) {
-        showAlert("❌ Preencha todos os campos", "error");
-        return;
-      }
-      
-      // Calcular dia da semana (0=Seg, 6=Dom)
-      const dataObj = new Date(data + "T12:00:00");
-      const diaSemana = (dataObj.getDay() + 6) % 7;
-      
-      const sch = loadSchedule();
-      sch.recurring = sch.recurring || {};
-      const key = recurKey(diaSemana, hora);
-      
-      // Verificar se já está ocupado
-      if (sch.recurring[key] && sch.recurring[key].patientId !== pacienteId) {
-        if (!confirm("Este horário já está ocupado. Deseja substituir?")) {
-          return;
-        }
-      }
-      
-      // Atualizar paciente com o tipo de atendimento
-      const patients = loadPatients();
-      const patientIdx = patients.findIndex(p => p.id === pacienteId);
-      if (patientIdx >= 0) {
-        patients[patientIdx].serviceType = tipo;
-        if (tipo === "cassems") patients[patientIdx].defaultValue = 26;
-        savePatients(patients);
-      }
-      
-      // Adicionar horário se não existir
-      if (!sch.times.includes(hora)) {
-        sch.times.push(hora);
-        sch.times.sort();
-      }
-      
-      // Salvar agendamento
-      sch.recurring[key] = {
-        patientId: pacienteId,
-        serviceType: tipo,
-        startDate: data,
-        plannedTotal: pacote
-      };
-      
-      saveSchedule(sch);
-      
-      $("agendamentoModal").classList.add("hidden");
-      renderSchedule();
-      renderDashboard();
-      
-      showAlert("✅ Agendamento realizado com sucesso!", "success");
+      `).join("") || "<div class='muted'>Nenhuma sessão</div>";
     }
 
     // ========== INICIALIZAÇÃO ==========
     function init() {
-      // Configurar data
       $("date").value = todayISO();
       $("schedRef").value = todayISO();
       $("today").innerHTML = new Date().toLocaleDateString("pt-BR", {
@@ -1923,32 +1650,25 @@
 
       // Backup
       $("backupNow").addEventListener("click", downloadBackup);
-      $("restoreBackup").addEventListener("click", () => {
-        $("backupModal").classList.remove("hidden");
-      });
-      $("cancelBackup").addEventListener("click", () => {
-        $("backupModal").classList.add("hidden");
-      });
+      $("restoreBackup").addEventListener("click", () => $("backupModal").classList.remove("hidden"));
+      $("cancelBackup").addEventListener("click", () => $("backupModal").classList.add("hidden"));
       $("confirmRestore").addEventListener("click", () => {
         const file = $("backupFile").files[0];
-        if (file) {
-          restoreFromFile(file);
-          $("backupModal").classList.add("hidden");
-        }
+        if (file) restoreFromFile(file);
+        $("backupModal").classList.add("hidden");
       });
 
       $("autoBackupToggle").addEventListener("click", () => {
         autoBackup = !autoBackup;
         localStorage.setItem("autoBackup", autoBackup);
         $("autoBackupToggle").innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
-        showAlert(autoBackup ? "✅ Backup automático ativado" : "⚪ Backup automático desativado");
       });
 
       // Tabs
       $("tabDashboard").addEventListener("click", () => setTab("dashboard"));
       $("tabDaily").addEventListener("click", () => setTab("daily"));
       $("tabPatients").addEventListener("click", () => setTab("patients"));
-      $("tabSchedule").addEventListener("click", () => { setTab("schedule"); renderSchedule(); renderCalendario(); });
+      $("tabSchedule").addEventListener("click", () => { setTab("schedule"); renderSchedule(); });
       $("tabReports").addEventListener("click", () => { setTab("reports"); generateReports(); });
 
       // Ações
@@ -1972,49 +1692,29 @@
       $("closeAnamnese").addEventListener("click", () => $("anamneseModal").classList.add("hidden"));
       $("saveAnamnese").addEventListener("click", saveAnamnese);
       $("openWhats").addEventListener("click", openWhatsApp);
-      $("renamePatient").addEventListener("click", renamePatient);
+      $("editPatient").addEventListener("click", editPatient);
       $("deletePatient").addEventListener("click", deletePatient);
       $("onlyDebtFolders").addEventListener("click", toggleDebtFilter);
       $("themeToggle").addEventListener("click", toggleTheme);
 
-      // Calendário
-      $("calendarioMesAnterior").addEventListener("click", () => {
-        calendarioData.setMonth(calendarioData.getMonth() - 1);
-        renderCalendario();
-      });
-      $("calendarioMesProximo").addEventListener("click", () => {
-        calendarioData.setMonth(calendarioData.getMonth() + 1);
-        renderCalendario();
-      });
-
-      // Modal de agendamento
-      $("cancelarAgendamento").addEventListener("click", () => {
-        $("agendamentoModal").classList.add("hidden");
-      });
-      $("salvarAgendamento").addEventListener("click", salvarAgendamento);
-
-      // Filtros da agenda
+      // Filtros
       $("filterHoje").addEventListener("click", filterHoje);
-      $("filterAmanha").addEventListener("click", () => {
-        const amanha = (new Date().getDay() + 1) % 7;
-        const rows = document.querySelectorAll("#schedTable tbody tr");
-        rows.forEach(row => {
-          const cells = row.querySelectorAll("td:not(.timeCell)");
-          cells.forEach((cell, idx) => {
-            if (idx === amanha) {
-              cell.style.background = "rgba(14,165,233,.2)";
-            }
-          });
-        });
+      $("filterAmanha").addEventListener("click", filterAmanha);
+      $("filterSemana").addEventListener("click", filterSemana);
+      
+      $("historyYear").addEventListener("change", (e) => {
+        historyFilters.year = e.target.value;
+        renderPatientHistory();
       });
-      $("filterSemana").addEventListener("click", () => {
-        const rows = document.querySelectorAll("#schedTable tbody tr");
-        rows.forEach(row => {
-          const cells = row.querySelectorAll("td:not(.timeCell)");
-          cells.forEach(cell => {
-            cell.style.background = "";
-          });
-        });
+      $("historyMonth").addEventListener("change", (e) => {
+        historyFilters.month = e.target.value;
+        renderPatientHistory();
+      });
+      $("clearHistoryFilter").addEventListener("click", () => {
+        historyFilters = { year: "all", month: "all" };
+        $("historyYear").value = "all";
+        $("historyMonth").value = "all";
+        renderPatientHistory();
       });
 
       // Atalhos
@@ -2022,45 +1722,16 @@
         $("shortcutsPanel").classList.toggle("hidden");
       });
 
-      // Atalhos de teclado
       document.addEventListener("keydown", (e) => {
         if (e.ctrlKey) {
-          switch (e.key) {
-            case "n":
-              e.preventDefault();
-              setTab("patients");
-              $("cName").focus();
-              break;
-            case "f":
-              e.preventDefault();
-              if ($("viewDaily").classList.contains("hidden")) {
-                setTab("daily");
-              }
-              $("search").focus();
-              break;
-            case "s":
-              e.preventDefault();
-              showAlert("✅ Dados salvos automaticamente", "success");
-              break;
-            case "1":
-              e.preventDefault();
-              setTab("dashboard");
-              break;
-            case "2":
-              e.preventDefault();
-              setTab("daily");
-              break;
-            case "3":
-              e.preventDefault();
-              setTab("patients");
-              break;
-            case "4":
-              e.preventDefault();
-              setTab("schedule");
-              renderSchedule();
-              renderCalendario();
-              break;
-          }
+          e.preventDefault();
+          if (e.key === "n") { setTab("patients"); $("cName").focus(); }
+          if (e.key === "f") { setTab("daily"); $("search").focus(); }
+          if (e.key === "1") setTab("dashboard");
+          if (e.key === "2") setTab("daily");
+          if (e.key === "3") setTab("patients");
+          if (e.key === "4") { setTab("schedule"); renderSchedule(); }
+          if (e.key === "5") { setTab("reports"); generateReports(); }
         }
       });
 
@@ -2069,24 +1740,8 @@
       renderDaily();
       renderPatientFolders();
       renderSchedule();
-      renderCalendario();
       renderDashboard();
       generateReports();
-
-      // Backup automático a cada 5 minutos
-      if (autoBackup) {
-        setInterval(() => {
-          createAutoBackup();
-        }, 5 * 60 * 1000);
-      }
-    }
-
-    function createAutoBackup() {
-      const backups = loadData(KEYS.BACKUP, []);
-      const newBackup = createBackup();
-      backups.unshift(newBackup);
-      if (backups.length > 10) backups.pop();
-      saveData(KEYS.BACKUP, backups);
     }
 
     function setTab(tab) {
@@ -2100,15 +1755,12 @@
         t.classList.remove("active")
       );
       $(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add("active");
-
-      if (tab === "dashboard") renderDashboard();
-      if (tab === "reports") generateReports();
     }
 
     // ========== AÇÕES DE PACIENTE ==========
     function addPatient() {
       const name = $("cName").value.trim();
-      if (!name) return showAlert("❌ Nome é obrigatório", "error");
+      if (!name) return showAlert("❌ Nome obrigatório", "error");
 
       const patient = {
         id: uid(),
@@ -2132,7 +1784,6 @@
       patients.push(patient);
       savePatients(patients);
 
-      // Se tiver horário fixo, agendar automaticamente
       if (patient.fixedDay && patient.fixedHour) {
         const sch = loadSchedule();
         sch.recurring = sch.recurring || {};
@@ -2143,16 +1794,13 @@
             patientId: patient.id,
             serviceType: patient.serviceType,
             startDate: todayISO(),
-            plannedTotal: patient.billingType === "pack4" ? 4 :
-              patient.billingType === "pack8" ? 8 : 1
+            plannedTotal: patient.billingType === "pack4" ? 4 : patient.billingType === "pack8" ? 8 : 1
           };
 
-          // Adicionar horário se não existir
           if (!sch.times.includes(patient.fixedHour)) {
             sch.times.push(patient.fixedHour);
             sch.times.sort();
           }
-
           saveSchedule(sch);
         }
       }
@@ -2172,7 +1820,7 @@
       renderPatientFolders();
       renderSchedule();
       renderDashboard();
-      showAlert("✅ Paciente cadastrado com sucesso!", "success");
+      showAlert("✅ Paciente cadastrado!", "success");
     }
 
     function openAnamnese() {
@@ -2205,16 +1853,17 @@
       if (p?.phone) {
         window.open(`https://wa.me/55${p.phone}`, "_blank");
       } else {
-        showAlert("❌ Paciente sem WhatsApp cadastrado", "error");
+        showAlert("❌ Sem WhatsApp", "error");
       }
     }
 
-    function renamePatient() {
-      const patients = loadPatients();
-      const idx = patients.findIndex(p => p.id === openedPatientId);
-      if (idx >= 0) {
-        const newName = prompt("Novo nome:", patients[idx].name);
+    function editPatient() {
+      const p = getPatientById(openedPatientId);
+      if (p) {
+        const newName = prompt("Novo nome:", p.name);
         if (newName) {
+          const patients = loadPatients();
+          const idx = patients.findIndex(p => p.id === openedPatientId);
           patients[idx].name = newName.trim();
           savePatients(patients);
           openPatientFolder(openedPatientId);
@@ -2230,7 +1879,6 @@
         const patients = loadPatients().filter(p => p.id !== openedPatientId);
         const sessions = loadSessions().filter(s => s.patientId !== openedPatientId);
 
-        // Remover da agenda
         const sch = loadSchedule();
         if (sch.recurring) {
           Object.keys(sch.recurring).forEach(key => {
@@ -2302,7 +1950,6 @@
       const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
       if (patient) {
         $("pPatient").value = patient.id;
-        showAlert(`🔍 Paciente ${patient.name} selecionado`, "success");
       }
       renderDaily();
     }
@@ -2313,16 +1960,13 @@
         const sessions = loadSessions().filter(s => s.date !== date);
         saveSessions(sessions);
         renderDaily();
-        renderDashboard();
         showAlert("🗑️ Dia limpo!", "success");
       }
     }
 
     function resetAll() {
-      if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
-        localStorage.removeItem(KEYS.PATIENTS);
-        localStorage.removeItem(KEYS.SESSIONS);
-        localStorage.removeItem(KEYS.SCHEDULE);
+      if (confirm("⚠️ Isso apagará TODOS os dados!")) {
+        localStorage.clear();
         location.reload();
       }
     }
@@ -2332,7 +1976,7 @@
       const time = $("newTime").value.trim();
       if (!time) return;
       if (!/^\d{1,2}:\d{2}$/.test(time)) {
-        return showAlert("❌ Formato inválido. Use HH:MM", "error");
+        return showAlert("❌ Use HH:MM", "error");
       }
 
       const sch = loadSchedule();
@@ -2358,14 +2002,26 @@
 
     function filterHoje() {
       const hoje = (new Date().getDay() + 6) % 7;
+      highlightDay(hoje);
+    }
+
+    function filterAmanha() {
+      const amanha = (new Date().getDay() + 7) % 7;
+      highlightDay(amanha);
+    }
+
+    function filterSemana() {
+      document.querySelectorAll("#schedTable td").forEach(td => td.style.background = "");
+    }
+
+    function highlightDay(dayIndex) {
+      document.querySelectorAll("#schedTable td").forEach(td => td.style.background = "");
       const rows = document.querySelectorAll("#schedTable tbody tr");
       rows.forEach(row => {
         const cells = row.querySelectorAll("td:not(.timeCell)");
-        cells.forEach((cell, idx) => {
-          if (idx === hoje) {
-            cell.style.background = "rgba(14,165,233,.2)";
-          }
-        });
+        if (cells[dayIndex]) {
+          cells[dayIndex].style.background = "rgba(14,165,233,.2)";
+        }
       });
     }
 
