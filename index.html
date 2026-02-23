@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ClínicaHub Ultra — Sistema Completo</title>
+  <title>ClínicaHub Ultra — Agenda com Calendário</title>
   <style>
     :root {
       --bg: #0a0f1c;
@@ -489,6 +489,66 @@
       overflow-y: auto;
     }
 
+    /* Calendário */
+    .calendario-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .calendario-dia {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: .2s;
+      font-size: .95rem;
+    }
+
+    .calendario-dia:hover {
+      background: var(--pri);
+      color: white;
+    }
+
+    .calendario-dia.selecionado {
+      background: var(--pri);
+      color: white;
+      border-color: var(--pri);
+    }
+
+    .calendario-dia.outro-mes {
+      opacity: 0.3;
+    }
+
+    .calendario-dia.tem-agenda {
+      position: relative;
+    }
+
+    .calendario-dia.tem-agenda::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 4px;
+      height: 4px;
+      background: var(--ok);
+      border-radius: 50%;
+    }
+
+    .calendario-semana {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--muted);
+    }
+
     /* Alertas */
     .alert {
       position: fixed;
@@ -554,6 +614,15 @@
       border-radius: 6px;
       font-family: monospace;
     }
+
+    /* Agendamento rápido */
+    .agendamento-rapido {
+      background: rgba(14, 165, 233, .1);
+      border: 1px solid rgba(14, 165, 233, .3);
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 15px;
+    }
   </style>
 </head>
 
@@ -588,7 +657,7 @@
     </header>
 
     <main>
-      <!-- DASHBOARD (NOVO) -->
+      <!-- DASHBOARD -->
       <section id="viewDashboard" class="card">
         <h2>📊 Dashboard</h2>
         <div class="dashboard-grid">
@@ -824,7 +893,7 @@
         </div>
       </section>
 
-      <!-- Agendamento -->
+      <!-- Agendamento com CALENDÁRIO -->
       <section id="viewSchedule" class="card hidden">
         <div class="row">
           <div>
@@ -848,7 +917,36 @@
           </div>
         </div>
 
-        <div class="schedWrap">
+        <!-- NOVO: Calendário Visual -->
+        <div class="agendamento-rapido">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <b>📅 Calendário de Agendamento</b>
+            <div>
+              <button id="calendarioMesAnterior" class="small">◀</button>
+              <span id="calendarioMesAno" style="margin:0 15px;">Março 2024</span>
+              <button id="calendarioMesProximo" class="small">▶</button>
+            </div>
+          </div>
+          
+          <div class="calendario-semana">
+            <div>Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div>Sáb</div>
+          </div>
+          
+          <div id="calendarioGrid" class="calendario-grid"></div>
+          
+          <div style="margin-top:15px; display:flex; gap:15px; justify-content:center;">
+            <div><span class="pill ok" style="margin:0;">●</span> Com agendamento</div>
+            <div><span class="pill pri" style="margin:0;">●</span> Data selecionada</div>
+          </div>
+        </div>
+
+        <div class="schedWrap" style="margin-top:15px;">
           <table class="sched" id="schedTable"></table>
         </div>
 
@@ -859,7 +957,7 @@
           <span class="pill bad">🔴 Vago</span>
           <span class="pill">⚠️ Falta 1</span>
           <span class="pill">🏁 Última</span>
-          <span class="pill pri">ℹ️ Clique para agendar</span>
+          <span class="pill pri">ℹ️ Clique na data ou horário</span>
         </div>
       </section>
 
@@ -947,6 +1045,57 @@
     </div>
   </div>
 
+  <!-- MODAL DE AGENDAMENTO RÁPIDO -->
+  <div id="agendamentoModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 id="agendamentoModalTitulo">📅 Agendar Horário</h3>
+      
+      <div style="margin:20px 0;">
+        <div class="grid2">
+          <div>
+            <label>Data</label>
+            <input type="date" id="agendamentoData" />
+          </div>
+          <div>
+            <label>Horário</label>
+            <input type="time" id="agendamentoHora" />
+          </div>
+        </div>
+        
+        <div style="margin-top:15px;">
+          <label>Paciente</label>
+          <select id="agendamentoPaciente">
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        
+        <div style="margin-top:15px;">
+          <label>Tipo de Atendimento</label>
+          <select id="agendamentoTipo">
+            <option value="particular">Particular</option>
+            <option value="cassems">Cassems</option>
+            <option value="unimed">Unimed</option>
+            <option value="outros">Outros</option>
+          </select>
+        </div>
+        
+        <div style="margin-top:15px;">
+          <label>Pacote</label>
+          <select id="agendamentoPacote">
+            <option value="1">Individual (1 sessão)</option>
+            <option value="4">Pacote 4 sessões</option>
+            <option value="8">Pacote 8 sessões</option>
+          </select>
+        </div>
+      </div>
+      
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button id="cancelarAgendamento" class="small">Cancelar</button>
+        <button id="salvarAgendamento" class="primary small">Agendar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ========== CONFIGURAÇÕES ==========
     const KEYS = {
@@ -968,6 +1117,10 @@
     let autoBackup = localStorage.getItem("autoBackup") !== "false";
     let openedPatientId = null;
     let alertTimeout = null;
+    
+    // Variáveis do calendário
+    let calendarioData = new Date();
+    let calendarioDataSelecionada = new Date();
 
     const $ = id => document.getElementById(id);
 
@@ -1119,6 +1272,103 @@
 
     function recurKey(day, time) { return `${day}|${time}`; }
 
+    // ========== CALENDÁRIO ==========
+    function renderCalendario() {
+      const ano = calendarioData.getFullYear();
+      const mes = calendarioData.getMonth();
+      
+      // Atualizar título
+      const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+      $("calendarioMesAno").textContent = `${meses[mes]} ${ano}`;
+      
+      // Primeiro dia do mês
+      const primeiroDia = new Date(ano, mes, 1);
+      const ultimoDia = new Date(ano, mes + 1, 0);
+      
+      // Ajustar para começar no domingo (0 = domingo)
+      let diaSemanaInicio = primeiroDia.getDay();
+      
+      const grid = $("calendarioGrid");
+      grid.innerHTML = "";
+      
+      // Dias do mês anterior
+      const diasMesAnterior = new Date(ano, mes, 0).getDate();
+      for (let i = diaSemanaInicio - 1; i >= 0; i--) {
+        const dia = diasMesAnterior - i;
+        const data = new Date(ano, mes - 1, dia);
+        grid.appendChild(criarDiaCalendario(data, true));
+      }
+      
+      // Dias do mês atual
+      for (let dia = 1; dia <= ultimoDia.getDate(); dia++) {
+        const data = new Date(ano, mes, dia);
+        grid.appendChild(criarDiaCalendario(data, false));
+      }
+      
+      // Dias do próximo mês (completar 42 dias para manter grid)
+      const diasRestantes = 42 - grid.children.length;
+      for (let dia = 1; dia <= diasRestantes; dia++) {
+        const data = new Date(ano, mes + 1, dia);
+        grid.appendChild(criarDiaCalendario(data, true));
+      }
+    }
+    
+    function criarDiaCalendario(data, outroMes) {
+      const div = document.createElement("div");
+      div.className = `calendario-dia ${outroMes ? 'outro-mes' : ''}`;
+      div.textContent = data.getDate();
+      
+      // Verificar se tem agendamento neste dia
+      const dataStr = data.toISOString().split('T')[0];
+      const schedule = loadSchedule();
+      let temAgenda = false;
+      
+      // Verificar na agenda recorrente
+      const diaSemana = (data.getDay() + 6) % 7; // Converter para Seg=0
+      Object.keys(schedule.recurring || {}).forEach(key => {
+        const [keyDay] = key.split('|');
+        if (parseInt(keyDay) === diaSemana) {
+          temAgenda = true;
+        }
+      });
+      
+      if (temAgenda) {
+        div.classList.add('tem-agenda');
+      }
+      
+      // Verificar se é a data selecionada
+      if (data.toDateString() === calendarioDataSelecionada.toDateString()) {
+        div.classList.add('selecionado');
+      }
+      
+      div.addEventListener('click', () => {
+        calendarioDataSelecionada = data;
+        renderCalendario();
+        
+        // Atualizar campo de data referência
+        $("schedRef").value = dataStr;
+        
+        // Mostrar modal de agendamento
+        abrirModalAgendamento(data);
+      });
+      
+      return div;
+    }
+    
+    function abrirModalAgendamento(data) {
+      // Preencher data no modal
+      $("agendamentoData").value = data.toISOString().split('T')[0];
+      $("agendamentoHora").value = "08:00";
+      
+      // Carregar pacientes no select
+      const patients = loadPatients();
+      const select = $("agendamentoPaciente");
+      select.innerHTML = '<option value="">Selecione...</option>' + 
+        patients.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+      
+      $("agendamentoModal").classList.remove("hidden");
+    }
+
     // ========== DASHBOARD ==========
     function renderDashboard() {
       const hoje = todayISO();
@@ -1138,11 +1388,9 @@
       const proximos = [];
       const schedule = loadSchedule();
       
-      // Verificar agendamentos de hoje
       Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
         const [day, time] = key.split("|");
-        if (parseInt(day) === new Date().getDay()) {
-          // Comparar horários
+        if (parseInt(day) === (new Date().getDay() + 6) % 7) {
           const [h1, m1] = time.split(":").map(Number);
           const [h2, m2] = agora.split(":").map(Number);
           const diffMinutes = (h1 * 60 + m1) - (h2 * 60 + m2);
@@ -1197,13 +1445,12 @@
       // Próximos atendimentos
       const proximosAtendimentos = [];
       const refDate = hoje;
-      const refDay = new Date().getDay();
+      const refDay = (new Date().getDay() + 6) % 7;
       
       Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
         const [day, time] = key.split("|");
         const dayNum = parseInt(day);
         
-        // Calcular próxima data
         let daysToAdd = dayNum - refDay;
         if (daysToAdd < 0) daysToAdd += 7;
         if (daysToAdd === 0 && time < agora) daysToAdd += 7;
@@ -1264,7 +1511,6 @@
               entry.serviceType === "unimed" ? "Unimed" :
                 entry.serviceType === "outros" ? "Outros" : "Particular";
 
-            // Calcular progresso do pacote
             let progressHtml = "";
             let warningIcon = "";
             if (entry.plannedTotal > 1) {
@@ -1275,7 +1521,6 @@
               ).length;
               const remaining = Math.max(0, entry.plannedTotal - sessions);
 
-              // Barra de progresso
               const percent = (sessions / entry.plannedTotal) * 100;
               progressHtml = `
                 <div style="margin-top:8px;">
@@ -1316,96 +1561,17 @@
         td.addEventListener("click", (e) => {
           const day = td.dataset.day;
           const time = td.dataset.time;
-          scheduleClickHandler(parseInt(day), time);
-        });
-      });
-    }
-
-    function scheduleClickHandler(day, time) {
-      const sch = loadSchedule();
-      const key = recurKey(day, time);
-      const current = sch.recurring?.[key];
-      const patients = loadPatients();
-
-      if (current) {
-        // Já tem paciente - perguntar se quer remover
-        const patient = getPatientById(current.patientId);
-        if (confirm(`Remover ${patient?.name} deste horário?`)) {
-          delete sch.recurring[key];
-          saveSchedule(sch);
-          renderSchedule();
-          showAlert("✅ Horário liberado!", "success");
-        }
-      } else {
-        // Vago - perguntar qual paciente agendar
-        const patientList = patients.map((p, i) => `${i + 1} - ${p.name}`).join("\n");
-        const choice = prompt(
-          `Agendar em ${DAYS[day]} às ${time}\n\n` +
-          `Digite o NÚMERO do paciente:\n${patientList}\n\n` +
-          `Ou 0 para cancelar`
-        );
-
-        if (choice && choice !== "0") {
-          const idx = parseInt(choice) - 1;
-          if (idx >= 0 && idx < patients.length) {
-            const patient = patients[idx];
-
-            // Perguntar tipo de atendimento
-            const serviceType = prompt(
-              `Tipo de atendimento para ${patient.name}:\n` +
-              `1 - Particular\n2 - Cassems\n3 - Unimed\n4 - Outros`,
-              patient.serviceType === "cassems" ? "2" : "1"
-            );
-
-            let finalService = "particular";
-            if (serviceType === "2") finalService = "cassems";
-            else if (serviceType === "3") finalService = "unimed";
-            else if (serviceType === "4") finalService = "outros";
-
-            // Perguntar pacote
-            const packageType = prompt(
-              `Tipo de pacote:\n` +
-              `1 - Individual\n2 - Pacote 4\n3 - Pacote 8`,
-              patient.billingType === "pack4" ? "2" :
-                patient.billingType === "pack8" ? "3" : "1"
-            );
-
-            let plannedTotal = 1;
-            if (packageType === "2") plannedTotal = 4;
-            else if (packageType === "3") plannedTotal = 8;
-
-            sch.recurring = sch.recurring || {};
-            sch.recurring[key] = {
-              patientId: patient.id,
-              serviceType: finalService,
-              startDate: todayISO(),
-              plannedTotal: plannedTotal
-            };
-
-            // Atualizar paciente
-            patient.serviceType = finalService;
-            if (finalService === "cassems") patient.defaultValue = 26;
-            savePatients(patients);
-
-            saveSchedule(sch);
-            renderSchedule();
-            renderDashboard();
-            showAlert(`✅ ${patient.name} agendado!`, "success");
-          }
-        }
-      }
-    }
-
-    // ========== FILTROS DA AGENDA ==========
-    function filterHoje() {
-      const hoje = new Date().getDay();
-      const rows = document.querySelectorAll("#schedTable tbody tr");
-      rows.forEach(row => {
-        const cells = row.querySelectorAll("td:not(.timeCell)");
-        cells.forEach((cell, idx) => {
-          if (idx === hoje) {
-            cell.style.background = "rgba(14,165,233,.2)";
-          }
+          
+          // Calcular a próxima data para este dia da semana
+          const hoje = new Date();
+          const diaSemanaHoje = (hoje.getDay() + 6) % 7;
+          let diasParaAdicionar = parseInt(day) - diaSemanaHoje;
+          if (diasParaAdicionar < 0) diasParaAdicionar += 7;
+          
+          const dataAgendamento = new Date();
+          dataAgendamento.setDate(hoje.getDate() + diasParaAdicionar);
+          
+          abrirModalAgendamento(dataAgendamento);
         });
       });
     }
@@ -1686,6 +1852,66 @@
       `;
     }
 
+    // ========== SALVAR AGENDAMENTO ==========
+    function salvarAgendamento() {
+      const data = $("agendamentoData").value;
+      const hora = $("agendamentoHora").value;
+      const pacienteId = $("agendamentoPaciente").value;
+      const tipo = $("agendamentoTipo").value;
+      const pacote = parseInt($("agendamentoPacote").value);
+      
+      if (!data || !hora || !pacienteId) {
+        showAlert("❌ Preencha todos os campos", "error");
+        return;
+      }
+      
+      // Calcular dia da semana (0=Seg, 6=Dom)
+      const dataObj = new Date(data + "T12:00:00");
+      const diaSemana = (dataObj.getDay() + 6) % 7;
+      
+      const sch = loadSchedule();
+      sch.recurring = sch.recurring || {};
+      const key = recurKey(diaSemana, hora);
+      
+      // Verificar se já está ocupado
+      if (sch.recurring[key] && sch.recurring[key].patientId !== pacienteId) {
+        if (!confirm("Este horário já está ocupado. Deseja substituir?")) {
+          return;
+        }
+      }
+      
+      // Atualizar paciente com o tipo de atendimento
+      const patients = loadPatients();
+      const patientIdx = patients.findIndex(p => p.id === pacienteId);
+      if (patientIdx >= 0) {
+        patients[patientIdx].serviceType = tipo;
+        if (tipo === "cassems") patients[patientIdx].defaultValue = 26;
+        savePatients(patients);
+      }
+      
+      // Adicionar horário se não existir
+      if (!sch.times.includes(hora)) {
+        sch.times.push(hora);
+        sch.times.sort();
+      }
+      
+      // Salvar agendamento
+      sch.recurring[key] = {
+        patientId: pacienteId,
+        serviceType: tipo,
+        startDate: data,
+        plannedTotal: pacote
+      };
+      
+      saveSchedule(sch);
+      
+      $("agendamentoModal").classList.add("hidden");
+      renderSchedule();
+      renderDashboard();
+      
+      showAlert("✅ Agendamento realizado com sucesso!", "success");
+    }
+
     // ========== INICIALIZAÇÃO ==========
     function init() {
       // Configurar data
@@ -1722,7 +1948,7 @@
       $("tabDashboard").addEventListener("click", () => setTab("dashboard"));
       $("tabDaily").addEventListener("click", () => setTab("daily"));
       $("tabPatients").addEventListener("click", () => setTab("patients"));
-      $("tabSchedule").addEventListener("click", () => { setTab("schedule"); renderSchedule(); });
+      $("tabSchedule").addEventListener("click", () => { setTab("schedule"); renderSchedule(); renderCalendario(); });
       $("tabReports").addEventListener("click", () => { setTab("reports"); generateReports(); });
 
       // Ações
@@ -1750,6 +1976,22 @@
       $("deletePatient").addEventListener("click", deletePatient);
       $("onlyDebtFolders").addEventListener("click", toggleDebtFilter);
       $("themeToggle").addEventListener("click", toggleTheme);
+
+      // Calendário
+      $("calendarioMesAnterior").addEventListener("click", () => {
+        calendarioData.setMonth(calendarioData.getMonth() - 1);
+        renderCalendario();
+      });
+      $("calendarioMesProximo").addEventListener("click", () => {
+        calendarioData.setMonth(calendarioData.getMonth() + 1);
+        renderCalendario();
+      });
+
+      // Modal de agendamento
+      $("cancelarAgendamento").addEventListener("click", () => {
+        $("agendamentoModal").classList.add("hidden");
+      });
+      $("salvarAgendamento").addEventListener("click", salvarAgendamento);
 
       // Filtros da agenda
       $("filterHoje").addEventListener("click", filterHoje);
@@ -1816,6 +2058,7 @@
               e.preventDefault();
               setTab("schedule");
               renderSchedule();
+              renderCalendario();
               break;
           }
         }
@@ -1826,6 +2069,7 @@
       renderDaily();
       renderPatientFolders();
       renderSchedule();
+      renderCalendario();
       renderDashboard();
       generateReports();
 
@@ -2110,6 +2354,19 @@
         renderSchedule();
         showAlert("✅ Horários restaurados!", "success");
       }
+    }
+
+    function filterHoje() {
+      const hoje = (new Date().getDay() + 6) % 7;
+      const rows = document.querySelectorAll("#schedTable tbody tr");
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("td:not(.timeCell)");
+        cells.forEach((cell, idx) => {
+          if (idx === hoje) {
+            cell.style.background = "rgba(14,165,233,.2)";
+          }
+        });
+      });
     }
 
     // Iniciar
