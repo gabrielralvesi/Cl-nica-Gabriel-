@@ -541,11 +541,12 @@
       display: flex;
       gap: 8px;
       margin-left: auto;
+      flex-wrap: wrap;
     }
 
     .info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 10px;
       margin: 15px 0;
     }
@@ -564,6 +565,40 @@
 
     .info-value {
       font-weight: 600;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--pri);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, .03);
+      border-radius: 8px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -26px;
+      top: 15px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--pri);
     }
 
     .shortcuts-hint {
@@ -603,6 +638,25 @@
       padding: 4px 8px;
       border-radius: 6px;
       font-family: monospace;
+    }
+
+    .meta-card {
+      border-left: 4px solid;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .meta-concluida {
+      border-left-color: #22c55e;
+    }
+
+    .meta-andamento {
+      border-left-color: #f59e0b;
+    }
+
+    .meta-cancelada {
+      border-left-color: #ef4444;
     }
   </style>
 </head>
@@ -756,7 +810,7 @@
         <div class="list" id="dayList"></div>
       </section>
 
-      <!-- PACIENTES (CORRIGIDO) -->
+      <!-- PACIENTES -->
       <section id="viewPatients" class="card hidden">
         <div class="split">
           <!-- Cadastro -->
@@ -849,7 +903,7 @@
               <div id="patientFolders" class="list" style="max-height:600px;"></div>
             </div>
 
-            <!-- PASTA DO PACIENTE (CORRIGIDO) -->
+            <!-- PASTA DO PACIENTE -->
             <div id="folderOpenPane" class="hidden">
               <div class="folder-header">
                 <button id="backToFolders" class="small">← Voltar</button>
@@ -871,37 +925,30 @@
               <div id="pacoteProgresso" style="margin:15px 0; padding:15px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
 
               <!-- Abas -->
-              <div style="display:flex; gap:10px; margin:15px 0; border-bottom:1px solid var(--line); padding-bottom:10px;">
+              <div style="display:flex; gap:10px; margin:15px 0; border-bottom:1px solid var(--line); padding-bottom:10px; flex-wrap:wrap;">
                 <button class="tab active" id="tabHistory">📋 Histórico</button>
                 <button class="tab" id="tabEvolution">📈 Evolução</button>
                 <button class="tab" id="tabGoals">🎯 Metas</button>
-                <button class="tab" id="tabDocuments">📎 Documentos</button>
               </div>
 
               <!-- Conteúdo das Abas -->
               <div id="tabHistoryContent">
-                <div style="margin-bottom:15px;">
-                  <b>Filtros:</b>
-                  <select id="historyYear" style="width:auto; display:inline-block; margin-left:10px;"></select>
-                  <select id="historyMonth" style="width:auto; display:inline-block; margin-left:10px;"></select>
-                  <button id="clearHistoryFilter" class="small" style="margin-left:10px;">Limpar</button>
+                <div style="margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;">
+                  <select id="historyYear" style="width:auto;"></select>
+                  <select id="historyMonth" style="width:auto;"></select>
+                  <button id="clearHistoryFilter" class="small">Limpar</button>
                 </div>
                 <div id="patientHistory" class="list"></div>
               </div>
 
               <div id="tabEvolutionContent" class="hidden">
                 <button id="addEvolucao" class="primary small" style="margin-bottom:15px;">➕ Nova Evolução</button>
-                <div id="evolutionList" class="list"></div>
+                <div id="evolutionList" class="timeline"></div>
               </div>
 
               <div id="tabGoalsContent" class="hidden">
                 <button id="addMeta" class="primary small" style="margin-bottom:15px;">➕ Nova Meta</button>
                 <div id="goalsList" class="list"></div>
-              </div>
-
-              <div id="tabDocumentsContent" class="hidden">
-                <button id="addDocumento" class="primary small" style="margin-bottom:15px;">📎 Adicionar Documento</button>
-                <div id="documentsList" class="list"></div>
               </div>
             </div>
           </div>
@@ -1074,7 +1121,6 @@
       SCHEDULE: "clinica_pro_schedule",
       EVOLUTIONS: "clinica_pro_evolutions",
       GOALS: "clinica_pro_goals",
-      DOCUMENTS: "clinica_pro_documents",
       BACKUP: "clinica_pro_backup",
       THEME: "clinica_pro_theme"
     };
@@ -1180,8 +1226,7 @@
           sessions: loadData(KEYS.SESSIONS, []),
           schedule: loadData(KEYS.SCHEDULE, { times: defaultTimes(), recurring: {} }),
           evolutions: loadData(KEYS.EVOLUTIONS, {}),
-          goals: loadData(KEYS.GOALS, {}),
-          documents: loadData(KEYS.DOCUMENTS, {})
+          goals: loadData(KEYS.GOALS, {})
         }
       };
     }
@@ -1209,7 +1254,6 @@
             saveData(KEYS.SCHEDULE, backup.data.schedule || { times: defaultTimes(), recurring: {} });
             saveData(KEYS.EVOLUTIONS, backup.data.evolutions || {});
             saveData(KEYS.GOALS, backup.data.goals || {});
-            saveData(KEYS.DOCUMENTS, backup.data.documents || {});
 
             showAlert("✅ Backup restaurado!", "success");
             setTimeout(() => location.reload(), 1500);
@@ -1265,18 +1309,6 @@
       const all = loadData(KEYS.GOALS, {});
       all[patientId] = goals;
       saveData(KEYS.GOALS, all);
-    }
-
-    // ========== DOCUMENTOS ==========
-    function loadDocuments(patientId) {
-      const all = loadData(KEYS.DOCUMENTS, {});
-      return all[patientId] || [];
-    }
-
-    function saveDocuments(patientId, docs) {
-      const all = loadData(KEYS.DOCUMENTS, {});
-      all[patientId] = docs;
-      saveData(KEYS.DOCUMENTS, all);
     }
 
     // ========== AGENDA ==========
@@ -1406,6 +1438,66 @@
       }
 
       $("schedTable").innerHTML = html;
+
+      // Adicionar eventos de clique
+      document.querySelectorAll("td[data-day]").forEach(td => {
+        td.addEventListener("click", () => {
+          const day = parseInt(td.dataset.day);
+          const time = td.dataset.time;
+          agendarHorario(day, time);
+        });
+      });
+    }
+
+    function agendarHorario(day, time) {
+      const patients = loadPatients();
+      if (patients.length === 0) {
+        showAlert("❌ Cadastre um paciente primeiro", "error");
+        return;
+      }
+
+      const patientList = patients.map((p, i) => `${i+1} - ${p.name}`).join("\n");
+      const choice = prompt(
+        `Agendar para ${DAYS[day]} às ${time}\n\n` +
+        `Digite o número do paciente:\n${patientList}\n\n` +
+        `0 - Cancelar`
+      );
+
+      if (!choice || choice === "0") return;
+
+      const idx = parseInt(choice) - 1;
+      if (idx >= 0 && idx < patients.length) {
+        const patient = patients[idx];
+        
+        const serviceType = prompt(
+          `Tipo de atendimento para ${patient.name}:\n` +
+          `1 - Particular\n2 - Cassems\n3 - Unimed\n4 - Outros`,
+          "1"
+        );
+
+        let finalService = "particular";
+        if (serviceType === "2") finalService = "cassems";
+        else if (serviceType === "3") finalService = "unimed";
+        else if (serviceType === "4") finalService = "outros";
+
+        const sch = loadSchedule();
+        sch.recurring = sch.recurring || {};
+        sch.recurring[recurKey(day, time)] = {
+          patientId: patient.id,
+          serviceType: finalService,
+          startDate: todayISO(),
+          plannedTotal: 1
+        };
+
+        if (!sch.times.includes(time)) {
+          sch.times.push(time);
+          sch.times.sort();
+        }
+
+        saveSchedule(sch);
+        renderSchedule();
+        showAlert(`✅ ${patient.name} agendado!`, "success");
+      }
     }
 
     // ========== RELATÓRIOS ==========
@@ -1517,7 +1609,7 @@
       }
     };
 
-    // ========== PASTAS DE PACIENTES (CORRIGIDO) ==========
+    // ========== PASTAS DE PACIENTES ==========
     function renderPatientFolders() {
       const search = $("pSearch").value.toLowerCase();
       let pats = loadPatients().filter(p => !search || p.name.toLowerCase().includes(search));
@@ -1589,15 +1681,15 @@
           pacoteInfo = `
             <b>📦 Pacote ${entry.plannedTotal} sessões</b>
             <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
-            <div>${sessionsCount} realizadas • ${remaining} restantes</div>
+            <div style="display:flex; justify-content:space-between;">
+              <span>✅ ${sessionsCount} realizadas</span>
+              <span>⏳ ${remaining} restantes</span>
+            </div>
           `;
         }
       });
       $("pacoteProgresso").innerHTML = pacoteInfo;
 
-      // Histórico
-      renderPatientHistory();
-      
       // Filtros de ano/mês
       const years = [...new Set(sessions.map(s => s.date.slice(0,4)))].sort().reverse();
       const yearSelect = $("historyYear");
@@ -1608,6 +1700,11 @@
       monthSelect.innerHTML = '<option value="all">Todos os meses</option>' + 
         ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"].map((m,i) => 
           `<option value="${String(i+1).padStart(2,'0')}">${m}</option>`).join('');
+
+      // Renderizar todas as abas
+      renderPatientHistory();
+      renderEvolucoes();
+      renderMetas();
     }
 
     function renderPatientHistory() {
@@ -1639,6 +1736,87 @@
         </div>
       `).join("") || "<div class='muted'>Nenhuma sessão</div>";
     }
+
+    // ========== EVOLUÇÕES ==========
+    function renderEvolucoes() {
+      if (!openedPatientId) return;
+      
+      const evolutions = loadEvolutions(openedPatientId);
+      evolutions.sort((a, b) => b.date.localeCompare(a.date));
+      
+      $("evolutionList").innerHTML = evolutions.map(e => `
+        <div class="timeline-item">
+          <div style="font-weight:600;">${e.date}</div>
+          <div class="muted" style="margin-top:5px;">${escapeHtml(e.text)}</div>
+          <div style="margin-top:10px;">
+            <button class="small danger" onclick="deleteEvolucao('${e.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join("") || "<div class='muted'>Nenhuma evolução registrada</div>";
+    }
+
+    window.deleteEvolucao = (id) => {
+      if (!openedPatientId) return;
+      const evolutions = loadEvolutions(openedPatientId).filter(e => e.id !== id);
+      saveEvolution(openedPatientId, evolutions);
+      renderEvolucoes();
+      showAlert("✅ Evolução removida", "success");
+    };
+
+    // ========== METAS ==========
+    function renderMetas() {
+      if (!openedPatientId) return;
+      
+      const goals = loadGoals(openedPatientId);
+      
+      $("goalsList").innerHTML = goals.map(g => {
+        let statusClass = "meta-andamento";
+        let statusText = "⏳ Em andamento";
+        
+        if (g.status === "concluida") {
+          statusClass = "meta-concluida";
+          statusText = "✅ Concluída";
+        } else if (g.status === "cancelada") {
+          statusClass = "meta-cancelada";
+          statusText = "❌ Cancelada";
+        }
+        
+        return `
+        <div class="item ${statusClass}" style="border-left:4px solid;">
+          <div style="display:flex; justify-content:space-between;">
+            <div>
+              <b>${escapeHtml(g.description)}</b>
+              <div class="muted">Prazo: ${g.deadline || "—"} • ${statusText}</div>
+            </div>
+            <div>
+              <button class="small" onclick="toggleMetaStatus('${g.id}')">↻</button>
+              <button class="small danger" onclick="deleteMeta('${g.id}')">🗑️</button>
+            </div>
+          </div>
+        </div>
+      `}).join("") || "<div class='muted'>Nenhuma meta cadastrada</div>";
+    }
+
+    window.toggleMetaStatus = (id) => {
+      if (!openedPatientId) return;
+      const goals = loadGoals(openedPatientId);
+      const idx = goals.findIndex(g => g.id === id);
+      if (idx >= 0) {
+        const statusOrder = { "em_andamento": "concluida", "concluida": "cancelada", "cancelada": "em_andamento" };
+        goals[idx].status = statusOrder[goals[idx].status];
+        saveGoals(openedPatientId, goals);
+        renderMetas();
+        showAlert("✅ Status atualizado", "success");
+      }
+    };
+
+    window.deleteMeta = (id) => {
+      if (!openedPatientId) return;
+      const goals = loadGoals(openedPatientId).filter(g => g.id !== id);
+      saveGoals(openedPatientId, goals);
+      renderMetas();
+      showAlert("✅ Meta removida", "success");
+    };
 
     // ========== INICIALIZAÇÃO ==========
     function init() {
@@ -1688,14 +1866,29 @@
       $("schedRef").addEventListener("change", renderSchedule);
       $("addTime").addEventListener("click", addTime);
       $("resetTimes").addEventListener("click", resetTimes);
+      
+      // Botões da pasta
       $("btnAnamnese").addEventListener("click", openAnamnese);
-      $("closeAnamnese").addEventListener("click", () => $("anamneseModal").classList.add("hidden"));
-      $("saveAnamnese").addEventListener("click", saveAnamnese);
+      $("btnEvolucao").addEventListener("click", () => {
+        $("evoData").value = todayISO();
+        $("evolucaoModal").classList.remove("hidden");
+      });
+      $("btnMetas").addEventListener("click", () => {
+        $("metaModal").classList.remove("hidden");
+      });
       $("openWhats").addEventListener("click", openWhatsApp);
       $("editPatient").addEventListener("click", editPatient);
       $("deletePatient").addEventListener("click", deletePatient);
       $("onlyDebtFolders").addEventListener("click", toggleDebtFilter);
       $("themeToggle").addEventListener("click", toggleTheme);
+
+      // Modais
+      $("closeAnamnese").addEventListener("click", () => $("anamneseModal").classList.add("hidden"));
+      $("saveAnamnese").addEventListener("click", saveAnamnese);
+      $("cancelEvo").addEventListener("click", () => $("evolucaoModal").classList.add("hidden"));
+      $("saveEvo").addEventListener("click", saveEvolucao);
+      $("cancelMeta").addEventListener("click", () => $("metaModal").classList.add("hidden"));
+      $("saveMeta").addEventListener("click", saveMeta);
 
       // Filtros
       $("filterHoje").addEventListener("click", filterHoje);
@@ -1715,6 +1908,36 @@
         $("historyYear").value = "all";
         $("historyMonth").value = "all";
         renderPatientHistory();
+      });
+
+      // Abas
+      $("tabHistory").addEventListener("click", () => {
+        $("tabHistory").classList.add("active");
+        $("tabEvolution").classList.remove("active");
+        $("tabGoals").classList.remove("active");
+        $("tabHistoryContent").classList.remove("hidden");
+        $("tabEvolutionContent").classList.add("hidden");
+        $("tabGoalsContent").classList.add("hidden");
+      });
+
+      $("tabEvolution").addEventListener("click", () => {
+        $("tabHistory").classList.remove("active");
+        $("tabEvolution").classList.add("active");
+        $("tabGoals").classList.remove("active");
+        $("tabHistoryContent").classList.add("hidden");
+        $("tabEvolutionContent").classList.remove("hidden");
+        $("tabGoalsContent").classList.add("hidden");
+        renderEvolucoes();
+      });
+
+      $("tabGoals").addEventListener("click", () => {
+        $("tabHistory").classList.remove("active");
+        $("tabEvolution").classList.remove("active");
+        $("tabGoals").classList.add("active");
+        $("tabHistoryContent").classList.add("hidden");
+        $("tabEvolutionContent").classList.add("hidden");
+        $("tabGoalsContent").classList.remove("hidden");
+        renderMetas();
       });
 
       // Atalhos
@@ -1846,6 +2069,60 @@
         $("anamneseModal").classList.add("hidden");
         showAlert("✅ Anamnese salva!", "success");
       }
+    }
+
+    function saveEvolucao() {
+      if (!openedPatientId) return;
+      
+      const data = $("evoData").value;
+      const texto = $("evoTexto").value.trim();
+      
+      if (!data || !texto) {
+        showAlert("❌ Preencha todos os campos", "error");
+        return;
+      }
+      
+      const evolutions = loadEvolutions(openedPatientId);
+      evolutions.push({
+        id: uid(),
+        date: data,
+        text: texto,
+        createdAt: new Date().toISOString()
+      });
+      
+      saveEvolution(openedPatientId, evolutions);
+      $("evolucaoModal").classList.add("hidden");
+      $("evoTexto").value = "";
+      renderEvolucoes();
+      showAlert("✅ Evolução registrada!", "success");
+    }
+
+    function saveMeta() {
+      if (!openedPatientId) return;
+      
+      const desc = $("metaDesc").value.trim();
+      const prazo = $("metaPrazo").value;
+      
+      if (!desc) {
+        showAlert("❌ Descrição obrigatória", "error");
+        return;
+      }
+      
+      const goals = loadGoals(openedPatientId);
+      goals.push({
+        id: uid(),
+        description: desc,
+        deadline: prazo,
+        status: "em_andamento",
+        createdAt: new Date().toISOString()
+      });
+      
+      saveGoals(openedPatientId, goals);
+      $("metaModal").classList.add("hidden");
+      $("metaDesc").value = "";
+      $("metaPrazo").value = "";
+      renderMetas();
+      showAlert("✅ Meta cadastrada!", "success");
     }
 
     function openWhatsApp() {
