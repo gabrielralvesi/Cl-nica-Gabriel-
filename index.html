@@ -926,102 +926,390 @@
     `).join("") || "<div class='muted'>Nenhum paciente</div>";
   }
 
-  function renderSchedule() {
-    // Implementação simplificada
+ // ========== FUNÇÕES DO AGENDAMENTO COMPLETAS ==========
+
+// Função auxiliar para calcular a data da próxima ocorrência
+function nextDateFrom(refISO, targetDayIndex) {
+    const d = new Date(refISO + "T00:00:00");
+    const currentDay = d.getDay(); // 0 Dom, 1 Seg, ... 6 Sáb
+    // Converter para nosso formato (0=Seg, 6=Dom)
+    let currentIdx = currentDay === 0 ? 6 : currentDay - 1;
+    
+    let diff = targetDayIndex - currentIdx;
+    if (diff < 0) diff += 7;
+    
+    d.setDate(d.getDate() + diff);
+    return d.toISOString().split('T')[0];
+}
+
+// Contar sessões realizadas desde uma data
+function realizedCountSince(patientId, startISO) {
+    return loadSessions().filter(s => 
+        s.patientId === patientId && 
+        s.did === "realizou" && 
+        s.date >= startISO
+    ).length;
+}
+
+// Calcular sessões restantes
+function remainingFor(entry) {
+    if (!entry) return 0;
+    const realized = realizedCountSince(entry.patientId, entry.startDate);
+    const total = Number(entry.plannedTotal || 0);
+    return Math.max(0, total - realized);
+}
+
+// Gerar chave do agendamento
+function recurKey(dayIndex, time) {
+    return `${dayIndex}|${time}`;
+}
+
+// Obter cor baseada no convênio
+function getServiceColor(serviceType) {
+    const colors = {
+        'cassems': 'slotGreen',
+        'particular': 'slotAmber',
+        'unimed': 'slotBlue',
+        'outros': 'slotBlue'
+    };
+    return colors[serviceType] || 'slotAmber';
+}
+
+// Obter label do convênio
+function getServiceLabel(serviceType) {
+    const labels = {
+        'cassems': 'Cassems',
+        'particular': 'Particular',
+        'unimed': 'Unimed',
+        'outros': 'Outros'
+    };
+    return labels[serviceType] || serviceType;
+}
+
+// Função principal para renderizar a agenda
+function renderSchedule() {
     const sch = loadSchedule();
-    const times = sch.times || [];
+    const pats = loadPatients();
+    const ref = $("schedRef").value || todayISO();
+    const view = $("schedView")?.value || "week";
+
+    // Garantir que times existe
+    if (!sch.times) sch.times = defaultTimes();
+    if (!sch.recurring) sch.recurring = {};
+
+    const times = [...sch.times].sort((a, b) => a.localeCompare(b));
     const table = $("schedTable");
-    
-    let html = "<thead><tr><th>Horário</th>";
-    DAYS.forEach(d => html += `<th>${d}</th>`);
+
+    let html = "<thead><tr><th class='timeCell'>Horário</th>";
+
+    // Cabeçalho com os dias da semana
+    for (let d = 0; d < 7; d++) {
+        // Calcular a data real para cada dia baseado na referência
+        const dateStr = nextDateFrom(ref, d);
+        const [year, month, day] = dateStr.split('-');
+        html += `<th>${DAYS[d]}<br><small class="muted">${day}/${month}</small></th>`;
+    }
     html += "</tr></thead><tbody>";
-    
-    times.forEach(t => {
-      html += `<tr><td>${t}</td>`;
-      for (let d = 0; d < 7; d++) {
-        html += `<td>—</td>`;
-      }
-      html += "</tr>";
-    });
+
+    // Para cada horário
+    for (const time of times) {
+        html += `<tr><td class="timeCell">${escapeHtml(time)}</td>`;
+
+        // Para cada dia da semana
+        for (let day = 0; day < 7; day++) {
+            const key = recurKey(day, time);
+            const entry = sch.recurring?.[key] || null;
+            
+            // Calcular a data real para este dia/horário
+            const sessionDate = nextDateFrom(ref, day);
+
+            if (!entry) {
+                // Horário vago
+                html += `<td data-day="${day}" data-time="${escapeHtml(time)}" data-date="${sessionDate}">
+                    <div class="slotBox slotRed" style="min-height: 80px;">
+                        <div class="slotEmpty">🟢 VAGO</div>
+                        <div class="slotMeta muted" style="margin-top: 8px;">Clique para agendar</div>
+                    </div>
+                </td>`;
+            } else {
+                // Horário ocupado
+                const patient = getPatientById(entry.patientId);
+                if (!patient) {
+                    // Paciente não existe mais, limpar o slot
+                    delete sch.recurring[key];
+                    saveSchedule(sch);
+                    html += `<td data-day="${day}" data-time="${escapeHtml(time)}" data-date="${sessionDate}">
+                        <div class="slotBox slotRed">🔄 Remover</div>
+                    </td>`;
+                    continue;
+                }
+
+                const serviceType = entry.serviceType || patient.serviceType || 'particular';
+                const colorClass = getServiceColor(serviceType);
+                const serviceLabel = getServiceLabel(serviceType);
+                
+                // Calcular progresso do pacote
+                const realized = realizedCountSince(entry.patientId, entry.startDate);
+                const total = Number(entry.plannedTotal || 0);
+                const remaining = Math.max(0, total - realized);
+                
+                // Verificar se esta sessão específica já foi realizada
+                const sessionDone = loadSessions().some(s => 
+                    s.patientId === entry.patientId && 
+                    s.date === sessionDate && 
+                    s.time === time &&
+                    s.did === "realizou"
+                );
+
+                // Ícones de status
+                let statusIcon = '';
+                if (sessionDone) {
+                    statusIcon = '✅ ';
+                } else if (remaining === 1) {
+                    statusIcon = '⚠️ ';
+                } else if (remaining === 0) {
+                    statusIcon = '🏁 ';
+                }
+
+                // Calcular próximas sessões (para pacotes)
+                let nextSessions = '';
+                if (total > 1 && remaining > 0) {
+                    const nextDates = [];
+                    let nextDate = sessionDate;
+                    for (let i = 0; i < Math.min(3, remaining); i++) {
+                        if (i > 0) {
+                            nextDate = nextDateFrom(addDays(nextDate, 1), day);
+                        }
+                        const [y, m, d] = nextDate.split('-');
+                        nextDates.push(`${d}/${m}`);
+                    }
+                    if (nextDates.length) {
+                        nextSessions = `<div class="slotNext">Próx: ${nextDates.join(' • ')}</div>`;
+                    }
+                }
+
+                html += `<td data-day="${day}" data-time="${escapeHtml(time)}" data-date="${sessionDate}" data-patient="${patient.id}">
+                    <div class="slotBox ${colorClass}" style="min-height: 80px; cursor: pointer;">
+                        <div class="slotName">
+                            ${statusIcon}${escapeHtml(patient.name)}
+                        </div>
+                        <div class="slotMeta">
+                            ${serviceLabel}
+                            ${total > 1 ? ` • ${realized}/${total}` : ''}
+                        </div>
+                        ${nextSessions}
+                        <div class="slotMeta muted" style="margin-top: 5px; font-size: 0.8rem;">
+                            📅 ${sessionDate.split('-').reverse().join('/')}
+                        </div>
+                    </div>
+                </td>`;
+            }
+        }
+        html += "</tr>";
+    }
+    html += "</tbody>";
     
     table.innerHTML = html;
-  }
 
-  function openPatientFolder(id) {
-    openedPatientId = id;
-    const p = getPatientById(id);
-    $("foldersPane").classList.add("hidden");
-    $("folderOpenPane").classList.remove("hidden");
-    $("openPatientTitle").textContent = `📁 ${p?.name || "Paciente"}`;
-    $("openPatientMeta").textContent = p?.serviceType || "";
-  }
+    // Adicionar eventos de clique nas células
+    table.querySelectorAll("td[data-day]").forEach(td => {
+        td.addEventListener("click", async (e) => {
+            // Não abrir se clicou em algum botão dentro da célula
+            if (e.target.tagName === 'BUTTON') return;
+            
+            const day = Number(td.dataset.day);
+            const time = td.dataset.time;
+            const date = td.dataset.date;
+            const currentPatientId = td.dataset.patient;
 
-  // ========== EVENT LISTENERS ADICIONAIS ==========
-  $("addPatient").addEventListener("click", () => {
-    const name = $("cName").value.trim();
-    if (!name) return alert("Nome obrigatório");
-    
-    const patient = {
-      id: uid(),
-      name,
-      birth: $("cBirth").value,
-      cpf: $("cCpf").value,
-      resp: $("cResp").value,
-      phone: $("cPhone").value,
-      email: $("cEmail").value,
-      serviceType: $("cServiceType").value,
-      defaultValue: parseMoney($("cDefaultValue").value),
-      billingType: $("cBillingType").value,
-      fixedDay: $("cFixDay").value,
-      fixedHour: $("cFixHour").value,
-      notes: $("cNotes").value,
-      createdAt: new Date().toISOString()
-    };
-    
-    const patients = loadPatients();
-    patients.push(patient);
-    savePatients(patients);
-    
-    // Limpar formulário
-    $("cName").value = "";
-    $("cBirth").value = "";
-    $("cCpf").value = "";
-    $("cResp").value = "";
-    $("cPhone").value = "";
-    $("cEmail").value = "";
-    $("cDefaultValue").value = "";
-    $("cFixHour").value = "";
-    $("cNotes").value = "";
-    
-    renderPatientSelect();
-    renderPatientFolders();
-    alert("✅ Paciente cadastrado!");
-  });
-
-  $("date").addEventListener("change", renderDaily);
-  $("search").addEventListener("input", renderDaily);
-
-  // Botão de voltar
-  $("backToFolders").addEventListener("click", () => {
-    openedPatientId = null;
-    $("folderOpenPane").classList.add("hidden");
-    $("foldersPane").classList.remove("hidden");
-  });
-
-  // Abas da pasta
-  const tabs = ["History", "Evolution", "Goals", "Files"];
-  tabs.forEach(tab => {
-    $(`tab${tab}`).addEventListener("click", () => {
-      tabs.forEach(t => $(`tab${t}`).classList.remove("active"));
-      $(`tab${tab}`).classList.add("active");
-      
-      tabs.forEach(t => $(`tab${t}Content`).classList.add("hidden"));
-      $(`tab${tab}Content`).classList.remove("hidden");
+            await handleScheduleClick(day, time, date, currentPatientId);
+        });
     });
-  });
+}
 
-  // Iniciar
-  init();
-</script>
-</body>
-</html>
+// Manipular clique na agenda
+async function handleScheduleClick(day, time, date, currentPatientId) {
+    const sch = loadSchedule();
+    const key = recurKey(day, time);
+    const currentEntry = sch.recurring?.[key];
+    const patients = loadPatients();
+
+    if (currentPatientId) {
+        // Já tem paciente - perguntar o que fazer
+        const action = prompt(
+            `Horário ocupado por: ${getPatientById(currentPatientId)?.name}\n\n` +
+            `Opções:\n` +
+            `1 - Remover paciente\n` +
+            `2 - Substituir paciente\n` +
+            `3 - Cancelar\n\n` +
+            `Digite 1, 2 ou 3:`,
+            "3"
+        );
+
+        if (action === "1") {
+            // Remover
+            if (confirm("Remover este paciente do horário?")) {
+                delete sch.recurring[key];
+                saveSchedule(sch);
+                renderSchedule();
+            }
+        } else if (action === "2") {
+            // Substituir - vai para o fluxo de novo agendamento
+            await scheduleNewPatient(day, time, date, sch, key, patients);
+        }
+    } else {
+        // Vago - agendar novo paciente
+        await scheduleNewPatient(day, time, date, sch, key, patients);
+    }
+}
+
+// Agendar novo paciente
+async function scheduleNewPatient(day, time, date, sch, key, patients) {
+    // Mostrar lista de pacientes para escolher
+    const patientList = patients.map((p, i) => `${i + 1} - ${p.name}`).join('\n');
+    const choice = prompt(
+        `Agendar para ${DAYS[day]} ${time}\nData: ${date}\n\n` +
+        `Digite o NÚMERO do paciente:\n\n${patientList}\n\n` +
+        `Ou 0 para cancelar:`,
+        "0"
+    );
+
+    if (!choice || choice === "0") return;
+
+    const index = Number(choice) - 1;
+    if (index >= 0 && index < patients.length) {
+        const patient = patients[index];
+        
+        // Perguntar tipo de atendimento
+        const serviceType = prompt(
+            `Tipo de atendimento para ${patient.name}:\n` +
+            `1 - Particular\n` +
+            `2 - Cassems\n` +
+            `3 - Unimed\n` +
+            `4 - Outros\n\n` +
+            `Digite 1, 2, 3 ou 4:`,
+            patient.serviceType === 'cassems' ? '2' : '1'
+        );
+
+        let selectedService = 'particular';
+        if (serviceType === '2') selectedService = 'cassems';
+        else if (serviceType === '3') selectedService = 'unimed';
+        else if (serviceType === '4') selectedService = 'outros';
+
+        // Perguntar tipo de pacote
+        const packageType = prompt(
+            `Tipo de cobrança:\n` +
+            `1 - Individual (avulso)\n` +
+            `2 - Pacote 4 sessões\n` +
+            `3 - Pacote 8 sessões\n\n` +
+            `Digite 1, 2 ou 3:`,
+            patient.billingType === 'pack4' ? '2' : 
+            patient.billingType === 'pack8' ? '3' : '1'
+        );
+
+        let plannedTotal = 1;
+        let billingType = 'individual';
+        if (packageType === '2') {
+            plannedTotal = 4;
+            billingType = 'pack4';
+        } else if (packageType === '3') {
+            plannedTotal = 8;
+            billingType = 'pack8';
+        }
+
+        // Atualizar o paciente com as novas configurações
+        const patientsList = loadPatients();
+        const patientIndex = patientsList.findIndex(p => p.id === patient.id);
+        if (patientIndex >= 0) {
+            patientsList[patientIndex].serviceType = selectedService;
+            patientsList[patientIndex].billingType = billingType;
+            if (selectedService === 'cassems') {
+                patientsList[patientIndex].defaultValue = 26;
+            }
+            savePatients(patientsList);
+        }
+
+        // Criar entrada na agenda
+        sch.recurring = sch.recurring || {};
+        sch.recurring[key] = {
+            patientId: patient.id,
+            serviceType: selectedService,
+            startDate: date,
+            plannedTotal: plannedTotal
+        };
+
+        // Adicionar o horário à lista se não existir
+        if (!sch.times.includes(time)) {
+            sch.times.push(time);
+            sch.times.sort();
+        }
+
+        saveSchedule(sch);
+        
+        // Perguntar se quer criar a primeira sessão
+        if (confirm(`Criar primeira sessão para ${patient.name} no dia ${date}?`)) {
+            const sessions = loadSessions();
+            sessions.push({
+                id: uid(),
+                date: date,
+                patientId: patient.id,
+                time: time,
+                did: "realizou",
+                just: "na",
+                paid: "nao_pago",
+                value: selectedService === 'cassems' ? 26 : (patient.defaultValue || 0)
+            });
+            saveSessions(sessions);
+        }
+
+        renderSchedule();
+        alert(`✅ ${patient.name} agendado para ${DAYS[day]} ${time}`);
+    }
+}
+
+// Função auxiliar para adicionar dias a uma data
+function addDays(dateStr, days) {
+    const d = new Date(dateStr + "T00:00:00");
+    d.setDate(d.getDate() + days);
+    return d.toISOString().split('T')[0];
+}
+
+// Atualizar o event listener do botão de adicionar horário
+$("addTime").addEventListener("click", () => {
+    const t = $("newTime").value.trim();
+    if (!t) return;
+    
+    if (!/^\d{1,2}:\d{2}$/.test(t)) {
+        alert("Use formato HH:MM (ex: 07:00)");
+        return;
+    }
+    
+    const sch = loadSchedule();
+    if (!sch.times) sch.times = [];
+    if (!sch.times.includes(t)) {
+        sch.times.push(t);
+        sch.times.sort();
+        saveSchedule(sch);
+        renderSchedule();
+    }
+    $("newTime").value = "";
+});
+
+// Resetar horários
+$("resetTimes").addEventListener("click", () => {
+    if (confirm("Zerar todos os horários? Isso não afeta os pacientes cadastrados.")) {
+        const sch = loadSchedule();
+        sch.times = defaultTimes();
+        sch.recurring = {};
+        saveSchedule(sch);
+        renderSchedule();
+    }
+});
+
+// Atualizar quando mudar a data de referência
+$("schedRef").addEventListener("change", renderSchedule);
+
+// Atualizar quando mudar a visualização
+if ($("schedView")) {
+    $("schedView").addEventListener("change", renderSchedule);
+}
