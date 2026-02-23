@@ -3,37 +3,48 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>Fgo. Gabriel Alves — Sistema de Gestão Clínica</title>
+  <title>Gabriel Alves — Fonoaudiologia Infantil</title>
   
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Fgo.%20Gabriel%20Alves%22%2C%22short_name%22%3A%22Cl%C3%ADnica%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0f1c%22%2C%22theme_color%22%3A%22%230ea5e9%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABcklEQVRYhe2WvUoDQRDHf7mLTYggImghCNZaiA9gYadY+AiCD2Bj7Qto4StY+QAWFoKNoFgJgiC20tjbzEKMm9zebna9S3LAkA8y2Zv57czOf3YhCIIgCIIgCIIg/KOo1WqjWq02iuN4FACkaQoApmlCmqYAYBgGpGkKAJqmQZqm4HkeAEClUgFBEKCiKABFUSCKIgCApmkQRRGLoggAoGkaRFH0TFEUAEVRIAiCKIoAiKIIBEEQRVH0BEEQRVH0hKIo4nmeKIqCJEkEQRCSJAnHcQAAYRgCQRCEIAgAAMdxAABhGAIACIIA4DgOACAMQwAAQRAAnucBABiGAQAIggDwPA8AgOM4AADDMAAAhGEIAMBxHAAAYRgCAMAwDAAAYRgCAMC9FgCAYRgAAH3fBwBgGAYAQNd1AQA8zwMAYJomAADLsQAAHMcBAHieBwDA8zwAAMuyAACe5wEAcBwHAKAoCgDgui4AgO/7AADHcQAApmkCADAMAwAwTRMAgK7rAgDwPA8AgOd5AACO4wAAHMf9OhQEQRCEvyRfFGwwI+O1q1YAAAAASUVORK5CYII=%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image/png%22%7D%5D%7D" />
+  <!-- PWA Manifest com ícone personalizado -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Gabriel%20Alves%20-%20Fonoaudiologia%22%2C%22short_name%22%3A%22Fono%20Gabriel%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23162B32%22%2C%22theme_color%22%3A%22%232C7A5A%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABkUlEQVRYhe2VPUvDUBiFn5u0Ik5FcHARnNzETfDjB3RzcBBcHATByc2/4C84uDoILuJgHQRxKIKDo4M4CGojxCT3OMSSm5t8tF7TCwdyAz1wz3nPec97rwzDMAzDMAzDMAzDMAzDMAzDMAzDMAzDMAzDMAzDMIw6sFqtSqfTKVJKCSBJEgCklAAkSRKAlBJAkiQAKSUASZIAEEIASAgBQAiBEAIAIQRCCIQQCCEQQiCEQAiBEAKEEL2EEAghEEIghEAIgRACIQRCCOQ8ByEEQgiEEAghEEIghEAIgRACOc9BCIEQAiEEQgiEEAghEEIg5zkIIRBCIIRACIEQAiEEQgg0TQOlFEopKKVQSoEQgZQSSikQIlBKgRACpRSUUoUQAYQQKKVACIFSqhAiQCkFQggQQhRCSgkhhBCllJBSQkqJUkpIKZVSSiillFJClFJKKUIIIYQQIYQQQkQppZQSQgghhJQSUgohhJQQIYQQQkQppZQSQgghhJQSUkohhBAiSin/FUIIhBAIIRBCIIRACIEQAiEEQgiEEAghEEIghEAIgRACIQRCjL8C3+O2Xrgv9K0kAAAAAElFTkSuQmCC%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image/png%22%7D%5D%7D" />
   
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   
   <style>
+    /* ===== PALETA DE CORES PERSONALIZADA ===== */
     :root {
-      --bg: #0a0f1c;
-      --card: #141b2b;
-      --line: rgba(255, 255, 255, 0.12);
-      --text: #e2eaff;
-      --muted: #9aa9c7;
-      --pri: #0ea5e9;
-      --bad: #ef4444;
-      --ok: #22c55e;
-      --warn: #f59e0b;
-      --info: #8b5cf6;
-      --token: #a855f7;
+      --primary: #2C7A5A;      /* Verde principal da logo */
+      --primary-dark: #1E5F43;  /* Verde escuro */
+      --primary-light: #4CAF7A; /* Verde claro */
+      --secondary: #162B32;     /* Azul esverdeado escuro */
+      --accent: #E8C66A;        /* Dourado suave */
+      --bg: #0F1A1F;           /* Fundo escuro */
+      --card: #1E2E36;          /* Cards */
+      --line: rgba(255, 255, 255, 0.1);
+      --text: #FFFFFF;
+      --muted: #B0C4CE;
+      --bad: #EF4444;
+      --ok: #2C7A5A;
+      --warn: #E8C66A;
+      --info: #4A90E2;
+      --token: #E8C66A;
       --r: 14px;
     }
 
+    /* Modo claro (opcional) */
     .light-mode {
-      --bg: #f0f4fa;
-      --card: #ffffff;
-      --line: rgba(0, 0, 0, 0.12);
-      --text: #1e293b;
-      --muted: #64748b;
+      --primary: #2C7A5A;
+      --primary-dark: #1E5F43;
+      --primary-light: #4CAF7A;
+      --secondary: #162B32;
+      --accent: #D4AF37;
+      --bg: #F5F9FC;
+      --card: #FFFFFF;
+      --line: rgba(0, 0, 0, 0.1);
+      --text: #162B32;
+      --muted: #5A7A8A;
     }
 
     * {
@@ -61,6 +72,7 @@
       font-size: 0.92rem;
     }
 
+    /* ===== BADGES ===== */
     .pill {
       display: inline-block;
       padding: 4px 12px;
@@ -73,35 +85,36 @@
     }
 
     .pill.ok {
-      border-color: rgba(34, 197, 94, 0.35);
-      background: rgba(34, 197, 94, 0.12);
+      border-color: var(--primary);
+      background: rgba(44, 122, 90, 0.15);
     }
 
     .pill.bad {
-      border-color: rgba(239, 68, 68, 0.35);
-      background: rgba(239, 68, 68, 0.12);
+      border-color: var(--bad);
+      background: rgba(239, 68, 68, 0.15);
     }
 
     .pill.info {
-      border-color: rgba(139, 92, 246, 0.35);
-      background: rgba(139, 92, 246, 0.12);
+      border-color: var(--info);
+      background: rgba(74, 144, 226, 0.15);
     }
 
     .pill.warn {
-      border-color: rgba(245, 158, 11, 0.35);
-      background: rgba(245, 158, 11, 0.12);
+      border-color: var(--warn);
+      background: rgba(232, 198, 106, 0.15);
     }
 
     .pill.pri {
-      border-color: rgba(14, 165, 233, 0.35);
-      background: rgba(14, 165, 233, 0.12);
+      border-color: var(--primary);
+      background: rgba(44, 122, 90, 0.15);
     }
 
     .pill.token {
-      border-color: rgba(168, 85, 247, 0.35);
-      background: rgba(168, 85, 247, 0.12);
+      border-color: var(--accent);
+      background: rgba(232, 198, 106, 0.15);
     }
 
+    /* ===== BOTÕES ===== */
     button {
       padding: 12px 16px;
       border-radius: 12px;
@@ -124,12 +137,16 @@
     }
 
     button.primary {
-      border-color: rgba(14, 165, 233, 0.5);
-      background: rgba(14, 165, 233, 0.25);
+      border-color: var(--primary);
+      background: rgba(44, 122, 90, 0.25);
+    }
+
+    button.primary:hover {
+      background: rgba(44, 122, 90, 0.35);
     }
 
     button.danger {
-      border-color: rgba(239, 68, 68, 0.5);
+      border-color: var(--bad);
       background: rgba(239, 68, 68, 0.18);
     }
 
@@ -139,15 +156,49 @@
       min-height: 36px;
     }
 
-    button.icon-btn {
-      width: 44px;
-      padding: 0;
-      display: inline-flex;
+    /* ===== LOGO ===== */
+    .logo-container {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
+      gap: 12px;
     }
 
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 10px rgba(44, 122, 90, 0.3);
+    }
+
+    .logo-text {
+      line-height: 1.3;
+    }
+
+    .logo-text h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: var(--primary-light);
+    }
+
+    .logo-text p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .logo-text small {
+      color: var(--accent);
+      font-size: 0.8rem;
+    }
+
+    /* ===== FORMULÁRIOS ===== */
     input, select, textarea {
       width: 100%;
       padding: 12px;
@@ -162,8 +213,8 @@
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: rgba(14, 165, 233, 0.5);
-      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(44, 122, 90, 0.2);
     }
 
     select {
@@ -196,6 +247,7 @@
       margin: 16px 0;
     }
 
+    /* ===== HEADER ===== */
     header {
       display: flex;
       justify-content: space-between;
@@ -204,29 +256,14 @@
       padding: 16px 20px;
       border-bottom: 1px solid var(--line);
       flex-wrap: wrap;
-      background: rgba(0, 0, 0, 0.2);
+      background: var(--card);
       position: sticky;
       top: 0;
       z-index: 100;
       backdrop-filter: blur(10px);
     }
 
-    h1 {
-      margin: 0;
-      font-size: 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    main {
-      padding: 16px;
-      display: grid;
-      gap: 16px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
+    /* ===== CARDS ===== */
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -234,6 +271,72 @@
       padding: 18px;
     }
 
+    .cardMini {
+      flex: 1 1 250px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 10px 0;
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    /* ===== AGENDAMENTO ===== */
+    .slotGreen {
+      background: rgba(44, 122, 90, 0.15);
+      border-left: 4px solid var(--primary);
+    }
+
+    .slotAmber {
+      background: rgba(232, 198, 106, 0.15);
+      border-left: 4px solid var(--accent);
+    }
+
+    .slotRed {
+      background: rgba(239, 68, 68, 0.15);
+      border-left: 4px solid var(--bad);
+    }
+
+    .slotBlue {
+      background: rgba(74, 144, 226, 0.15);
+      border-left: 4px solid var(--info);
+    }
+
+    .slotPurple {
+      background: rgba(139, 92, 246, 0.15);
+      border-left: 4px solid #8b5cf6;
+    }
+
+    /* ===== LAYOUT ===== */
     .row {
       display: flex;
       gap: 12px;
@@ -271,79 +374,6 @@
       }
     }
 
-    .photo-upload {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin: 15px 0;
-    }
-
-    .photo-preview {
-      width: 120px;
-      height: 120px;
-      border-radius: 60px;
-      border: 3px solid var(--pri);
-      object-fit: cover;
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .photo-preview.small {
-      width: 40px;
-      height: 40px;
-      border-width: 2px;
-    }
-
-    .photo-placeholder {
-      width: 120px;
-      height: 120px;
-      border-radius: 60px;
-      background: rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      border: 3px solid var(--line);
-    }
-
-    .time-list {
-      margin-top: 10px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px;
-    }
-
-    .time-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .time-item:last-child {
-      border-bottom: none;
-    }
-
-    .time-item input, .time-item select {
-      min-height: 36px;
-    }
-
-    .sum {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    .sum .cardMini {
-      flex: 1 1 250px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px;
-      background: rgba(255, 255, 255, 0.03);
-    }
-
     .tabs {
       display: flex;
       gap: 8px;
@@ -357,8 +387,8 @@
     }
 
     .tab.active {
-      border-color: rgba(14, 165, 233, 0.45);
-      background: rgba(14, 165, 233, 0.18);
+      border-color: var(--primary);
+      background: rgba(44, 122, 90, 0.18);
     }
 
     .list {
@@ -403,47 +433,10 @@
       gap: 8px;
       flex-wrap: wrap;
       align-items: center;
-      background: rgba(14, 165, 233, 0.1);
-      border: 1px solid rgba(14, 165, 233, 0.3);
+      background: rgba(44, 122, 90, 0.1);
+      border: 1px solid rgba(44, 122, 90, 0.3);
       border-radius: 40px;
       padding: 6px 12px;
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 18px;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: var(--pri);
-      margin: 10px 0;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 10px 0;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--pri);
-      transition: width 0.3s ease;
     }
 
     .schedWrap {
@@ -493,47 +486,59 @@
       font-weight: 800;
     }
 
-    .slotBox {
-      border-radius: 10px;
-      padding: 10px;
-      height: 100%;
-    }
-
-    .slotGreen {
-      background: rgba(34, 197, 94, 0.15);
-      border-left: 4px solid #22c55e;
-    }
-
-    .slotAmber {
-      background: rgba(245, 158, 11, 0.15);
-      border-left: 4px solid #f59e0b;
-    }
-
-    .slotRed {
-      background: rgba(239, 68, 68, 0.15);
-      border-left: 4px solid #ef4444;
-    }
-
-    .slotBlue {
-      background: rgba(14, 165, 233, 0.15);
-      border-left: 4px solid #0ea5e9;
-    }
-
-    .slotPurple {
-      background: rgba(139, 92, 246, 0.15);
-      border-left: 4px solid #8b5cf6;
-    }
-
-    .iconAlert {
-      font-size: 1.1rem;
-      margin-right: 5px;
-    }
-
-    .weekday-selector {
+    .photo-upload {
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .photo-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+      border: 3px solid var(--primary);
+      object-fit: cover;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .photo-preview.small {
+      width: 40px;
+      height: 40px;
+      border-width: 2px;
+    }
+
+    .photo-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+      background: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: white;
+      border: 3px solid var(--primary);
+    }
+
+    .time-list {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .time-item {
+      display: flex;
+      align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
-      margin: 10px 0;
+      padding: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .time-item:last-child {
+      border-bottom: none;
     }
 
     .weekday-btn {
@@ -550,8 +555,9 @@
     }
 
     .weekday-btn.selected {
-      background: rgba(14, 165, 233, 0.3);
-      border-color: var(--pri);
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
     }
 
     .modal-overlay {
@@ -588,7 +594,7 @@
       padding: 16px 20px;
       border-radius: 12px;
       background: var(--card);
-      border: 1px solid var(--pri);
+      border: 1px solid var(--primary);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       z-index: 2000;
       animation: slideIn 0.3s ease;
@@ -604,19 +610,6 @@
         transform: translateX(0);
         opacity: 1;
       }
-    }
-
-    .notification-permission {
-      position: fixed;
-      bottom: 80px;
-      right: 20px;
-      background: var(--card);
-      border: 1px solid var(--pri);
-      border-radius: 14px;
-      padding: 16px;
-      max-width: 300px;
-      z-index: 1000;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     .shortcuts-hint {
@@ -683,20 +676,22 @@
 
   <script>
     // ========== CONFIGURAÇÕES GLOBAIS ==========
-    const APP_VERSION = '3.0.1';
-    const CLINIC_NAME = "Fgo. Gabriel Alves";
+    const APP_VERSION = '4.0.0';
+    const CLINIC_NAME = "Gabriel Alves";
+    const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
+    const CLINIC_CRFA = "CRFa 5-13766";
     
     const KEYS = {
-      PATIENTS: "fgogabriel_patients_v3",
-      SESSIONS: "fgogabriel_sessions_v3",
-      SCHEDULE: "fgogabriel_schedule_v3",
-      TOKENS: "fgogabriel_tokens_v3",
-      PACKS: "fgogabriel_packs_v3",
-      BACKUP: "fgogabriel_backup_v3",
-      THEME: "fgogabriel_theme_v3",
-      VERSION: "fgogabriel_version",
-      NOTIFICATIONS: "fgogabriel_notifications",
-      PHOTOS: "fgogabriel_photos"
+      PATIENTS: "gabriel_fono_patients_v4",
+      SESSIONS: "gabriel_fono_sessions_v4",
+      SCHEDULE: "gabriel_fono_schedule_v4",
+      TOKENS: "gabriel_fono_tokens_v4",
+      PACKS: "gabriel_fono_packs_v4",
+      BACKUP: "gabriel_fono_backup_v4",
+      THEME: "gabriel_fono_theme_v4",
+      VERSION: "gabriel_fono_version",
+      NOTIFICATIONS: "gabriel_fono_notifications",
+      PHOTOS: "gabriel_fono_photos"
     };
 
     const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -704,8 +699,8 @@
     const SERVICE_COLORS = {
       "cassems": "slotGreen",
       "particular": "slotAmber",
-      "unimed": "slotPurple",
-      "outros": "slotBlue"
+      "unimed": "slotBlue",
+      "outros": "slotPurple"
     };
 
     // ========== VARIÁVEIS GLOBAIS ==========
@@ -779,12 +774,12 @@
       const alert = document.createElement("div");
       alert.className = `alert alert-${type}`;
       alert.innerHTML = message;
-      alert.style.background = type === "success" ? "rgba(34,197,94,.2)" : 
-                              type === "warning" ? "rgba(245,158,11,.2)" : 
-                              "rgba(14,165,233,.2)";
-      alert.style.borderColor = type === "success" ? "#22c55e" : 
-                                type === "warning" ? "#f59e0b" : 
-                                "#0ea5e9";
+      alert.style.background = type === "success" ? "rgba(44,122,90,.2)" : 
+                              type === "warning" ? "rgba(232,198,106,.2)" : 
+                              "rgba(44,122,90,.2)";
+      alert.style.borderColor = type === "success" ? "#2C7A5A" : 
+                                type === "warning" ? "#E8C66A" : 
+                                "#2C7A5A";
       document.body.appendChild(alert);
       
       alertTimeout = setTimeout(() => {
@@ -999,26 +994,30 @@
       const today = new Date().toLocaleDateString("pt-BR");
       
       doc.setFontSize(18);
-      doc.text(`${CLINIC_NAME} - Relatório Geral`, 14, 20);
+      doc.text(CLINIC_NAME, 14, 20);
+      doc.setFontSize(12);
+      doc.text(CLINIC_SUBTITLE, 14, 28);
+      doc.setFontSize(10);
+      doc.text(CLINIC_CRFA, 14, 35);
       
       doc.setFontSize(11);
-      doc.text(`Gerado em: ${today}`, 14, 30);
+      doc.text(`Relatório gerado em: ${today}`, 14, 45);
       
       doc.setFontSize(14);
-      doc.text("📊 Estatísticas Gerais", 14, 45);
+      doc.text("📊 Estatísticas Gerais", 14, 60);
       
       doc.setFontSize(10);
-      doc.text(`Total de pacientes: ${patients.length}`, 14, 55);
-      doc.text(`Total de sessões: ${sessions.length}`, 14, 62);
+      doc.text(`Total de pacientes: ${patients.length}`, 14, 70);
+      doc.text(`Total de sessões: ${sessions.length}`, 14, 77);
       
       const realizadas = sessions.filter(s => s.did === "realizou").length;
       const faltas = sessions.filter(s => s.did === "nao").length;
       
-      doc.text(`Sessões realizadas: ${realizadas}`, 14, 69);
-      doc.text(`Faltas: ${faltas}`, 14, 76);
+      doc.text(`Sessões realizadas: ${realizadas}`, 14, 84);
+      doc.text(`Faltas: ${faltas}`, 14, 91);
       
       doc.setFontSize(14);
-      doc.text("📋 Lista de Pacientes", 14, 93);
+      doc.text("📋 Lista de Pacientes", 14, 108);
       
       const tableData = patients.map(p => [
         p.name,
@@ -1028,7 +1027,7 @@
       ]);
       
       doc.autoTable({
-        startY: 100,
+        startY: 115,
         head: [["Nome", "Convênio", "WhatsApp", "Sessões"]],
         body: tableData,
         theme: "grid",
@@ -1046,7 +1045,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `fgogabriel_backup_${todayISO()}.json`;
+      a.download = `gabriel_fono_backup_${todayISO()}.json`;
       a.click();
       URL.revokeObjectURL(url);
       showAlert("✅ Backup baixado com sucesso!", "success");
@@ -1096,6 +1095,7 @@
       return {
         version: "1.0",
         clinic: CLINIC_NAME,
+        crfa: CLINIC_CRFA,
         date: new Date().toISOString(),
         data: {
           patients: loadPatients(),
@@ -1249,11 +1249,11 @@
         let tokenIndicator = '';
         if (p?.serviceType === 'cassems') {
           if (token?.status === 'enviado') {
-            tokenIndicator = `<span class="pill token" style="background:rgba(34,197,94,.15);">✅ Token: ${token.code || 'Enviado'}</span>`;
+            tokenIndicator = `<span class="pill token" style="background:rgba(44,122,90,.15);">✅ Token: ${token.code || 'Enviado'}</span>`;
           } else if (token?.status === 'problema') {
             tokenIndicator = `<span class="pill token" style="background:rgba(239,68,68,.15);">❌ Problema no token</span>`;
           } else {
-            tokenIndicator = `<span class="pill token" style="background:rgba(245,158,11,.15);">⏳ Token pendente</span>`;
+            tokenIndicator = `<span class="pill token" style="background:rgba(232,198,106,.15);">⏳ Token pendente</span>`;
           }
         }
 
@@ -1487,7 +1487,7 @@
               progressHtml = `
                 <div style="margin-top:8px;">
                   <div class="progress-bar" style="height:4px;">
-                    <div class="progress-fill" style="width:${percent}%; background:#22c55e;"></div>
+                    <div class="progress-fill" style="width:${percent}%; background:#2C7A5A;"></div>
                   </div>
                   <div style="font-size:0.8rem; display:flex; justify-content:space-between; margin-top:4px;">
                     <span>${sessions}/${entry.plannedTotal}</span>
@@ -1585,7 +1585,7 @@
         const cells = row.querySelectorAll("td:not(.timeCell)");
         cells.forEach((cell, idx) => {
           if (idx === hoje) {
-            cell.style.background = "rgba(14,165,233,.2)";
+            cell.style.background = "rgba(44,122,90,.2)";
           }
         });
       });
@@ -1849,7 +1849,7 @@
               <button class="small token-btn" onclick="openPackModal('${id}')">⚙️ Configurar</button>
             </div>
             <div class="progress-bar" style="margin:10px 0;">
-              <div class="progress-fill" style="width:${progress.percent}%; background:#22c55e;"></div>
+              <div class="progress-fill" style="width:${progress.percent}%; background:#2C7A5A;"></div>
             </div>
             <div style="display:flex; justify-content:space-between;">
               <span>✅ ${progress.completed} realizadas</span>
@@ -1887,7 +1887,7 @@
           const token = tokens[s.id];
           const tokenInfo = token ? 
             `<div class="muted" style="font-size:0.85rem;">🎫 Token: ${token.code || '—'} (${token.status})</div>` : 
-            (p?.serviceType === 'cassems' ? '<div class="muted" style="font-size:0.85rem; color:#f59e0b;">⏳ Token pendente</div>' : '');
+            (p?.serviceType === 'cassems' ? '<div class="muted" style="font-size:0.85rem; color:#E8C66A;">⏳ Token pendente</div>' : '');
           
           return `
           <div class="item">
@@ -2041,7 +2041,7 @@
             <div class="cardMini">
               <b>${escapeHtml(p.patient)}</b>
               <div class="progress-bar" style="margin:10px 0;">
-                <div class="progress-fill" style="width:${p.percent}%;"></div>
+                <div class="progress-fill" style="width:${p.percent}%; background:#2C7A5A;"></div>
               </div>
               <div class="muted">${p.completed}/${p.total} concluídas • ${p.remaining} restantes</div>
             </div>
@@ -2427,8 +2427,16 @@
       app.innerHTML = `
         <section id="appWrap">
           <header>
-            <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-              <h1>🏥 ${CLINIC_NAME}</h1>
+            <div class="logo-container">
+              <div class="logo-icon">GA</div>
+              <div class="logo-text">
+                <h2>${CLINIC_NAME}</h2>
+                <p>${CLINIC_SUBTITLE}</p>
+                <small>${CLINIC_CRFA}</small>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:10px;">
               <div id="today" class="muted"></div>
               <button id="themeToggle" class="small" style="border-radius:30px;" onclick="toggleTheme()">🌓 Tema</button>
               <button id="installPWA" class="small primary" style="display:none;" onclick="installPWA()">📱 Instalar App</button>
@@ -2554,11 +2562,11 @@
                 </div>
                 <div class="cardMini">
                   <b>✅ Tokens Enviados</b>
-                  <div id="tokensEnviadosHoje" class="stat-value" style="font-size:1.5rem; color:#22c55e;">0</div>
+                  <div id="tokensEnviadosHoje" class="stat-value" style="font-size:1.5rem; color:#2C7A5A;">0</div>
                 </div>
                 <div class="cardMini">
                   <b>⏳ Pendentes</b>
-                  <div id="tokensPendentesHoje" class="stat-value" style="font-size:1.5rem; color:#f59e0b;">0</div>
+                  <div id="tokensPendentesHoje" class="stat-value" style="font-size:1.5rem; color:#E8C66A;">0</div>
                 </div>
               </div>
 
@@ -2777,7 +2785,7 @@
               <div class="muted" style="margin-top:15px; padding:10px; background:rgba(255,255,255,.03); border-radius:12px;">
                 <span class="pill ok">🟢 Cassems</span>
                 <span class="pill warn">🟡 Particular</span>
-                <span class="pill info">🟣 Unimed/Outros</span>
+                <span class="pill info">🔵 Unimed/Outros</span>
                 <span class="pill bad">🔴 Vago</span>
                 <span class="pill">⚠️ Falta 1</span>
                 <span class="pill">🏁 Última</span>
@@ -2817,11 +2825,11 @@
                   </div>
                   <div class="cardMini">
                     <b>Tokens Enviados</b>
-                    <div id="totalTokensEnviados" class="stat-value" style="font-size:1.5rem; color:#22c55e;">0</div>
+                    <div id="totalTokensEnviados" class="stat-value" style="font-size:1.5rem; color:#2C7A5A;">0</div>
                   </div>
                   <div class="cardMini">
                     <b>Tokens Pendentes</b>
-                    <div id="totalTokensPendentes" class="stat-value" style="font-size:1.5rem; color:#f59e0b;">0</div>
+                    <div id="totalTokensPendentes" class="stat-value" style="font-size:1.5rem; color:#E8C66A;">0</div>
                   </div>
                 </div>
               </div>
@@ -3089,7 +3097,7 @@
         const cells = row.querySelectorAll("td:not(.timeCell)");
         cells.forEach((cell, idx) => {
           if (idx === amanha) {
-            cell.style.background = "rgba(14,165,233,.2)";
+            cell.style.background = "rgba(44,122,90,.2)";
           }
         });
       });
