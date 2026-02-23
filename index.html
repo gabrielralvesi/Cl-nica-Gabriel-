@@ -2,9 +2,16 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ClínicaHub Ultra — Sistema Completo com Tokens Cassems</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>ClínicaHub Ultra — PC & iPad</title>
+  
+  <!-- FORÇAR ATUALIZAÇÃO EM QUALQUER DISPOSITIVO -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
   <style>
+    /* ===== VARIÁVEIS GLOBAIS ===== */
     :root {
       --bg: #0a0f1c;
       --card: #141b2b;
@@ -29,19 +36,23 @@
       --muted: #64748b;
     }
 
+    /* ===== RESET E ESTILOS BASE ===== */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      transition: .3s;
+      transition: background-color 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .hidden {
@@ -50,100 +61,101 @@
 
     .muted {
       color: var(--muted);
-      font-size: .92rem;
+      font-size: 0.92rem;
     }
 
-    /* Cards e badges */
+    /* ===== BADGES E PILLS ===== */
     .pill {
       display: inline-block;
-      padding: 4px 10px;
+      padding: 4px 12px;
       border-radius: 999px;
       border: 1px solid var(--line);
-      font-size: .85rem;
+      font-size: 0.85rem;
       margin-right: 6px;
       margin-top: 6px;
+      background: rgba(255, 255, 255, 0.03);
     }
 
     .pill.ok {
-      border-color: rgba(34, 197, 94, .35);
-      background: rgba(34, 197, 94, .12);
+      border-color: rgba(34, 197, 94, 0.35);
+      background: rgba(34, 197, 94, 0.12);
     }
 
     .pill.bad {
-      border-color: rgba(239, 68, 68, .35);
-      background: rgba(239, 68, 68, .12);
+      border-color: rgba(239, 68, 68, 0.35);
+      background: rgba(239, 68, 68, 0.12);
     }
 
     .pill.info {
-      border-color: rgba(139, 92, 246, .35);
-      background: rgba(139, 92, 246, .12);
+      border-color: rgba(139, 92, 246, 0.35);
+      background: rgba(139, 92, 246, 0.12);
     }
 
     .pill.warn {
-      border-color: rgba(245, 158, 11, .35);
-      background: rgba(245, 158, 11, .12);
+      border-color: rgba(245, 158, 11, 0.35);
+      background: rgba(245, 158, 11, 0.12);
     }
 
     .pill.pri {
-      border-color: rgba(14, 165, 233, .35);
-      background: rgba(14, 165, 233, .12);
+      border-color: rgba(14, 165, 233, 0.35);
+      background: rgba(14, 165, 233, 0.12);
     }
 
     .pill.token {
-      border-color: rgba(168, 85, 247, .35);
-      background: rgba(168, 85, 247, .12);
+      border-color: rgba(168, 85, 247, 0.35);
+      background: rgba(168, 85, 247, 0.12);
     }
 
-    /* Botões */
+    /* ===== BOTÕES ===== */
     button {
       padding: 12px 16px;
       border-radius: 12px;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, .06);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text);
       font-weight: 600;
       cursor: pointer;
-      transition: .2s;
-      font-size: .95rem;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+      min-height: 44px;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     button:hover {
-      background: rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    button:active {
+      transform: scale(0.98);
+      background: rgba(255, 255, 255, 0.15);
     }
 
     button.primary {
-      border-color: rgba(14, 165, 233, .5);
-      background: rgba(14, 165, 233, .25);
+      border-color: rgba(14, 165, 233, 0.5);
+      background: rgba(14, 165, 233, 0.25);
     }
 
     button.primary:hover {
-      background: rgba(14, 165, 233, .35);
+      background: rgba(14, 165, 233, 0.35);
     }
 
     button.danger {
-      border-color: rgba(239, 68, 68, .5);
-      background: rgba(239, 68, 68, .18);
+      border-color: rgba(239, 68, 68, 0.5);
+      background: rgba(239, 68, 68, 0.18);
     }
 
     button.danger:hover {
-      background: rgba(239, 68, 68, .28);
-    }
-
-    button.token-btn {
-      border-color: rgba(168, 85, 247, .5);
-      background: rgba(168, 85, 247, .18);
-    }
-
-    button.token-btn:hover {
-      background: rgba(168, 85, 247, .28);
+      background: rgba(239, 68, 68, 0.28);
     }
 
     button.small {
       padding: 8px 12px;
-      font-size: .9rem;
+      font-size: 0.9rem;
+      min-height: 36px;
     }
 
-    /* Formulários */
+    /* ===== FORMULÁRIOS ===== */
     input,
     select,
     textarea {
@@ -151,18 +163,32 @@
       padding: 12px;
       border-radius: 12px;
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, .06);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text);
       outline: none;
       font-family: inherit;
-      font-size: .95rem;
+      font-size: 0.95rem;
+      min-height: 44px;
+      -webkit-appearance: none;
+      appearance: none;
     }
 
     input:focus,
     select:focus,
     textarea:focus {
-      border-color: rgba(14, 165, 233, .5);
-      box-shadow: 0 0 0 2px rgba(14, 165, 233, .2);
+      border-color: rgba(14, 165, 233, 0.5);
+      box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    .light-mode select {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
     }
 
     textarea {
@@ -174,39 +200,44 @@
       display: block;
       margin: 0 0 6px;
       color: var(--muted);
-      font-size: .9rem;
+      font-size: 0.9rem;
+      font-weight: 500;
     }
 
     hr {
       border: none;
       border-top: 1px solid var(--line);
-      margin: 14px 0;
+      margin: 16px 0;
     }
 
-    /* Layout principal */
+    /* ===== LAYOUT PRINCIPAL ===== */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      padding: 16px 24px;
+      padding: 16px 20px;
       border-bottom: 1px solid var(--line);
       flex-wrap: wrap;
-      background: rgba(0, 0, 0, .2);
+      background: rgba(0, 0, 0, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
     }
 
     h1 {
       margin: 0;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     main {
-      padding: 20px;
+      padding: 16px;
       display: grid;
-      gap: 20px;
+      gap: 16px;
       max-width: 1400px;
       margin: 0 auto;
     }
@@ -222,10 +253,10 @@
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
-      align-items: end;
+      align-items: flex-end;
     }
 
-    .row>* {
+    .row > * {
       flex: 1 1 200px;
     }
 
@@ -236,7 +267,7 @@
       margin-top: 12px;
     }
 
-    @media(max-width:900px) {
+    @media (max-width: 900px) {
       .grid2 {
         grid-template-columns: 1fr;
       }
@@ -249,7 +280,7 @@
       margin-top: 12px;
     }
 
-    @media(max-width:900px) {
+    @media (max-width: 900px) {
       .grid3 {
         grid-template-columns: 1fr;
       }
@@ -267,7 +298,7 @@
       border: 1px solid var(--line);
       border-radius: 14px;
       padding: 14px;
-      background: rgba(255, 255, 255, .03);
+      background: rgba(255, 255, 255, 0.03);
     }
 
     .tabs {
@@ -278,13 +309,13 @@
 
     .tab {
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, .04);
+      background: rgba(255, 255, 255, 0.04);
       padding: 10px 16px;
     }
 
     .tab.active {
-      border-color: rgba(14, 165, 233, .45);
-      background: rgba(14, 165, 233, .18);
+      border-color: rgba(14, 165, 233, 0.45);
+      background: rgba(14, 165, 233, 0.18);
     }
 
     .list {
@@ -296,13 +327,13 @@
 
     .item {
       border: 1px solid var(--line);
-      background: rgba(255, 255, 255, .03);
+      background: rgba(255, 255, 255, 0.03);
       border-radius: 14px;
       padding: 15px;
     }
 
     .item:hover {
-      background: rgba(255, 255, 255, .05);
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .itemTop {
@@ -325,48 +356,47 @@
       gap: 15px;
     }
 
-    @media(max-width:1000px) {
+    @media (max-width: 1000px) {
       .split {
         grid-template-columns: 1fr;
       }
     }
 
-    /* Backup bar */
+    /* ===== BARRA DE BACKUP ===== */
     .backup-bar {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       align-items: center;
-      background: rgba(14, 165, 233, .1);
-      border: 1px solid rgba(14, 165, 233, .3);
+      background: rgba(14, 165, 233, 0.1);
+      border: 1px solid rgba(14, 165, 233, 0.3);
       border-radius: 40px;
-      padding: 8px 15px;
-      margin-right: 10px;
+      padding: 6px 12px;
     }
 
     .backup-bar button {
-      padding: 6px 12px;
-      background: rgba(255, 255, 255, .08);
+      padding: 6px 10px;
+      min-height: 32px;
     }
 
-    /* Dashboard */
+    /* ===== DASHBOARD ===== */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
       margin-bottom: 20px;
     }
 
     .stat-card {
-      background: rgba(255, 255, 255, .03);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--line);
       border-radius: 14px;
-      padding: 20px;
+      padding: 18px;
       text-align: center;
     }
 
     .stat-value {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: bold;
       color: var(--pri);
       margin: 10px 0;
@@ -375,7 +405,7 @@
     .progress-bar {
       width: 100%;
       height: 8px;
-      background: rgba(255, 255, 255, .1);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
       overflow: hidden;
       margin: 10px 0;
@@ -384,16 +414,18 @@
     .progress-fill {
       height: 100%;
       background: var(--pri);
-      transition: width .3s;
+      transition: width 0.3s ease;
     }
 
-    /* Scheduler */
+    /* ===== AGENDAMENTO ===== */
     .schedWrap {
-      overflow: auto;
+      overflow-x: auto;
+      overflow-y: auto;
       border: 1px solid var(--line);
       border-radius: 14px;
-      background: rgba(255, 255, 255, .02);
+      background: rgba(255, 255, 255, 0.02);
       max-height: 600px;
+      -webkit-overflow-scrolling: touch;
     }
 
     table.sched {
@@ -404,64 +436,64 @@
 
     .sched th,
     .sched td {
-      border: 1px solid rgba(255, 255, 255, .10);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       padding: 12px;
       vertical-align: top;
     }
 
     .sched th {
-      background: rgba(255, 255, 255, .04);
+      background: rgba(255, 255, 255, 0.04);
       position: sticky;
       top: 0;
       z-index: 2;
     }
 
     .sched td {
-      min-width: 160px;
+      min-width: 150px;
       cursor: pointer;
-      transition: .2s;
+      transition: background 0.2s;
     }
 
     .sched td:hover {
-      background: rgba(255, 255, 255, .08);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .timeCell {
       position: sticky;
       left: 0;
       z-index: 1;
-      background: rgba(255, 255, 255, .04);
+      background: rgba(255, 255, 255, 0.04);
       font-weight: 800;
     }
 
     .slotBox {
       border-radius: 10px;
-      padding: 12px;
+      padding: 10px;
       height: 100%;
     }
 
     .slotGreen {
-      background: rgba(34, 197, 94, .15);
+      background: rgba(34, 197, 94, 0.15);
       border-left: 4px solid #22c55e;
     }
 
     .slotAmber {
-      background: rgba(245, 158, 11, .15);
+      background: rgba(245, 158, 11, 0.15);
       border-left: 4px solid #f59e0b;
     }
 
     .slotRed {
-      background: rgba(239, 68, 68, .15);
+      background: rgba(239, 68, 68, 0.15);
       border-left: 4px solid #ef4444;
     }
 
     .slotBlue {
-      background: rgba(14, 165, 233, .15);
+      background: rgba(14, 165, 233, 0.15);
       border-left: 4px solid #0ea5e9;
     }
 
     .slotPurple {
-      background: rgba(139, 92, 246, .15);
+      background: rgba(139, 92, 246, 0.15);
       border-left: 4px solid #8b5cf6;
     }
 
@@ -470,90 +502,78 @@
       margin-right: 5px;
     }
 
-    /* Timeline */
-    .timeline {
-      border-left: 2px solid var(--pri);
-      margin-left: 10px;
-      padding-left: 20px;
+    /* ===== SELETOR DE DIAS ===== */
+    .weekday-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 10px 0;
     }
 
-    .timeline-item {
-      border-left: 2px solid var(--line);
-      padding: 15px;
-      margin-bottom: 15px;
-      background: rgba(255, 255, 255, .02);
-      border-radius: 0 12px 12px 0;
-    }
-
-    .timeline-date {
-      color: var(--pri);
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-
-    /* Token indicator */
-    .token-indicator {
-      display: inline-flex;
+    .weekday-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
       align-items: center;
-      gap: 5px;
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-size: .85rem;
+      justify-content: center;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
     }
 
-    .token-sent {
-      background: rgba(34, 197, 94, .15);
-      color: #4ade80;
+    .weekday-btn.selected {
+      background: rgba(14, 165, 233, 0.3);
+      border-color: var(--pri);
     }
 
-    .token-pending {
-      background: rgba(245, 158, 11, .15);
-      color: #fbbf24;
+    .weekday-btn:active {
+      transform: scale(0.95);
     }
 
-    .token-missing {
-      background: rgba(239, 68, 68, .15);
-      color: #f87171;
-    }
-
-    /* Modal */
+    /* ===== MODAIS ===== */
     .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, .7);
-      backdrop-filter: blur(3px);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      padding: 16px;
     }
 
     .modal-content {
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 20px;
-      padding: 25px;
-      max-width: 600px;
-      width: 90%;
+      padding: 24px;
+      max-width: 500px;
+      width: 100%;
       max-height: 80vh;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* Alertas */
+    /* ===== ALERTAS ===== */
     .alert {
       position: fixed;
       top: 20px;
       right: 20px;
-      padding: 15px 20px;
+      padding: 16px 20px;
       border-radius: 12px;
       background: var(--card);
       border: 1px solid var(--pri);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       z-index: 2000;
-      animation: slideIn 0.3s;
+      animation: slideIn 0.3s ease;
+      max-width: 90%;
     }
 
     @keyframes slideIn {
@@ -561,14 +581,13 @@
         transform: translateX(100%);
         opacity: 0;
       }
-
       to {
         transform: translateX(0);
         opacity: 1;
       }
     }
 
-    /* Atalhos */
+    /* ===== ATALHOS ===== */
     .shortcuts-hint {
       position: fixed;
       bottom: 20px;
@@ -576,10 +595,11 @@
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 40px;
-      padding: 10px 20px;
-      font-size: .9rem;
+      padding: 10px 18px;
+      font-size: 0.9rem;
       cursor: pointer;
       z-index: 100;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
     .shortcuts-panel {
@@ -589,9 +609,10 @@
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: 14px;
-      padding: 20px;
-      width: 300px;
+      padding: 18px;
+      width: 280px;
       z-index: 100;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     .shortcut-item {
@@ -602,508 +623,60 @@
     }
 
     .shortcut-key {
-      background: rgba(255, 255, 255, .1);
+      background: rgba(255, 255, 255, 0.1);
       padding: 4px 8px;
       border-radius: 6px;
       font-family: monospace;
+    }
+
+    /* ===== UTILITÁRIOS ===== */
+    .text-center {
+      text-align: center;
+    }
+
+    .mt-2 {
+      margin-top: 8px;
+    }
+
+    .mt-4 {
+      margin-top: 16px;
+    }
+
+    .mb-2 {
+      margin-bottom: 8px;
+    }
+
+    .mb-4 {
+      margin-bottom: 16px;
     }
   </style>
 </head>
 
 <body>
-
-  <!-- Painel Principal -->
-  <section id="appWrap">
-    <header>
-      <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-        <h1>🏥 ClínicaHub Ultra</h1>
-        <div id="today" class="muted"></div>
-        <button id="themeToggle" class="small" style="border-radius:30px;">🌓 Tema</button>
-      </div>
-
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <!-- Barra de Backup -->
-        <div class="backup-bar">
-          <span class="muted">💾 Backup:</span>
-          <button id="backupNow" class="small" title="Baixar backup agora">⬇️ Baixar</button>
-          <button id="restoreBackup" class="small" title="Restaurar de um arquivo">📂 Restaurar</button>
-          <button id="autoBackupToggle" class="small pri">🔵 Auto: ON</button>
-        </div>
-
-        <div class="tabs">
-          <button class="tab active" id="tabDashboard">📊 Dashboard</button>
-          <button class="tab" id="tabDaily">📅 Diário</button>
-          <button class="tab" id="tabPatients">👥 Pacientes</button>
-          <button class="tab" id="tabSchedule">📆 Agendamento</button>
-          <button class="tab" id="tabReports">📈 Relatórios</button>
-        </div>
-      </div>
-    </header>
-
-    <main>
-      <!-- DASHBOARD -->
-      <section id="viewDashboard" class="card">
-        <h2>📊 Dashboard</h2>
-        <div class="dashboard-grid">
-          <div class="stat-card">
-            <div>Pacientes Hoje</div>
-            <div class="stat-value" id="dashHoje">0</div>
-            <div class="muted" id="dashHojeDetalhe"></div>
-          </div>
-          <div class="stat-card">
-            <div>Próximos 15min</div>
-            <div class="stat-value" id="dashProximos">0</div>
-            <div class="muted" id="dashProximosNomes"></div>
-          </div>
-          <div class="stat-card">
-            <div>Faturamento Hoje</div>
-            <div class="stat-value" id="dashFaturamento">R$ 0</div>
-            <div class="muted" id="dashFaturamentoDetalhe"></div>
-          </div>
-          <div class="stat-card">
-            <div>Taxa de Faltas</div>
-            <div class="stat-value" id="dashTaxaFaltas">0%</div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="dashProgresso" style="width:0%"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cards de Token Cassems -->
-        <div class="grid3" style="margin-top:20px;">
-          <div class="cardMini">
-            <b>🎫 Tokens Cassems Hoje</b>
-            <div class="stat-value" id="tokensHoje">0</div>
-            <div class="muted" id="tokensHojeDetalhe"></div>
-          </div>
-          <div class="cardMini">
-            <b>✅ Enviados</b>
-            <div class="stat-value" id="tokensEnviados">0</div>
-            <div class="muted" id="tokensEnviadosDetalhe"></div>
-          </div>
-          <div class="cardMini">
-            <b>⏳ Pendentes</b>
-            <div class="stat-value" id="tokensPendentes">0</div>
-            <div class="muted" id="tokensPendentesDetalhe"></div>
-          </div>
-        </div>
-
-        <div style="margin-top:20px;">
-          <h3>🎂 Aniversariantes do Mês</h3>
-          <div id="aniversariantes" class="list"></div>
-        </div>
-
-        <div style="margin-top:20px;">
-          <h3>⏰ Próximos Atendimentos</h3>
-          <div id="proximosAtendimentos" class="list"></div>
-        </div>
-      </section>
-
-      <!-- Diário com Controle de Tokens -->
-      <section id="viewDaily" class="card hidden">
-        <div class="row">
-          <div>
-            <label>Data do atendimento</label>
-            <input id="date" type="date" />
-          </div>
-          <div>
-            <label>Buscar paciente</label>
-            <input id="search" placeholder="Nome..." />
-          </div>
-          <div style="display:flex; gap:8px;">
-            <button id="findInDay" class="small primary">🔍 Procurar</button>
-            <button id="clearDay" class="small danger">🗑️ Limpar dia</button>
-          </div>
-        </div>
-
-        <div class="sum">
-          <div class="cardMini">
-            <b>Resumo do dia</b>
-            <div class="muted" id="sumDay">—</div>
-          </div>
-          <div class="cardMini">
-            <b>Financeiro</b>
-            <div class="muted" id="sumMoney">—</div>
-          </div>
-          <div class="cardMini">
-            <b>Faltas hoje</b>
-            <div class="muted" id="sumAbsences">—</div>
-          </div>
-        </div>
-
-        <!-- Resumo de Tokens do Dia -->
-        <div class="grid3" style="margin:15px 0;">
-          <div class="cardMini">
-            <b>🎫 Pacientes Cassems</b>
-            <div id="cassemsHoje" class="stat-value" style="font-size:1.5rem;">0</div>
-          </div>
-          <div class="cardMini">
-            <b>✅ Tokens Enviados</b>
-            <div id="tokensEnviadosHoje" class="stat-value" style="font-size:1.5rem; color:#22c55e;">0</div>
-          </div>
-          <div class="cardMini">
-            <b>⏳ Pendentes</b>
-            <div id="tokensPendentesHoje" class="stat-value" style="font-size:1.5rem; color:#f59e0b;">0</div>
-          </div>
-        </div>
-
-        <hr>
-
-        <b>➕ Adicionar sessão</b>
-        <div class="grid2">
-          <div>
-            <label>Paciente</label>
-            <select id="pPatient"></select>
-          </div>
-          <div>
-            <label>Horário</label>
-            <input id="pTime" placeholder="14:30" />
-          </div>
-          <div>
-            <label>Sessão</label>
-            <select id="pDid">
-              <option value="realizou">✅ Realizou</option>
-              <option value="nao">❌ Não realizou</option>
-            </select>
-          </div>
-          <div>
-            <label>Justificativa</label>
-            <select id="pJust">
-              <option value="na">—</option>
-              <option value="justificada">📝 Justificada</option>
-              <option value="nao_justificada">⚠️ Não justificada</option>
-            </select>
-          </div>
-          <div>
-            <label>Pagamento</label>
-            <select id="pPaid">
-              <option value="nao_pago">💸 Não pago</option>
-              <option value="pago">💰 Pago</option>
-            </select>
-          </div>
-          <div>
-            <label>Valor (R$)</label>
-            <input id="pValue" placeholder="80,00" />
-            <small id="hintDefault" class="muted"></small>
-          </div>
-        </div>
-
-        <div class="row">
-          <button id="addSession" class="primary">➕ Adicionar</button>
-          <button id="resetAll" class="danger">⚠️ Zerar tudo</button>
-        </div>
-
-        <div class="list" id="dayList"></div>
-      </section>
-
-      <!-- Pacientes -->
-      <section id="viewPatients" class="card hidden">
-        <div class="split">
-          <!-- Cadastro -->
-          <div class="card">
-            <b>👤 Cadastro de Paciente</b>
-            <div class="grid2" style="margin-top:15px;">
-              <div>
-                <label>Nome completo *</label>
-                <input id="cName" placeholder="João Silva" />
-              </div>
-              <div>
-                <label>Data nascimento</label>
-                <input id="cBirth" type="date" />
-              </div>
-              <div>
-                <label>CPF</label>
-                <input id="cCpf" placeholder="000.000.000-00" />
-              </div>
-              <div>
-                <label>Responsável</label>
-                <input id="cResp" placeholder="Nome do responsável" />
-              </div>
-              <div>
-                <label>WhatsApp</label>
-                <input id="cPhone" placeholder="67999999999" />
-              </div>
-              <div>
-                <label>E-mail</label>
-                <input id="cEmail" type="email" placeholder="paciente@email.com" />
-              </div>
-              <div>
-                <label>Convênio</label>
-                <select id="cServiceType">
-                  <option value="particular">Particular</option>
-                  <option value="cassems">Cassems</option>
-                  <option value="unimed">Unimed</option>
-                  <option value="outros">Outros</option>
-                </select>
-              </div>
-              <div>
-                <label>Valor padrão (R$)</label>
-                <input id="cDefaultValue" placeholder="80,00" />
-              </div>
-              <div>
-                <label>Tipo de cobrança</label>
-                <select id="cBillingType">
-                  <option value="pack4">📦 Pacote 4 sessões</option>
-                  <option value="pack8">📦 Pacote 8 sessões</option>
-                  <option value="individual">💳 Individual</option>
-                </select>
-              </div>
-              <div>
-                <label>Horário fixo</label>
-                <div style="display:flex; gap:8px;">
-                  <select id="cFixDay" style="flex:1;">
-                    <option value="">Dia</option>
-                    <option value="0">Seg</option>
-                    <option value="1">Ter</option>
-                    <option value="2">Qua</option>
-                    <option value="3">Qui</option>
-                    <option value="4">Sex</option>
-                    <option value="5">Sáb</option>
-                    <option value="6">Dom</option>
-                  </select>
-                  <input id="cFixHour" placeholder="07:40" style="flex:1;" />
-                </div>
-                <small class="muted">Agenda automática</small>
-              </div>
-            </div>
-
-            <label style="margin-top:15px;">Observações iniciais</label>
-            <textarea id="cNotes" rows="2" placeholder="Observações relevantes..."></textarea>
-
-            <div class="row" style="margin-top:15px;">
-              <button id="addPatient" class="primary">💾 Salvar paciente</button>
-            </div>
-          </div>
-
-          <!-- Pastas -->
-          <div class="card">
-            <div id="foldersPane">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <b>📁 Pastas</b>
-                <div style="display:flex; gap:8px;">
-                  <input id="pSearch" placeholder="Buscar paciente..." style="width:200px;" />
-                  <button id="onlyDebtFolders" class="small">💸 Com débito</button>
-                </div>
-              </div>
-              <div id="patientFolders" class="list"></div>
-            </div>
-
-            <div id="folderOpenPane" class="hidden">
-              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
-                <button id="backToFolders" class="small">← Voltar</button>
-                <div style="flex:1;">
-                  <b id="openPatientTitle">Paciente</b>
-                  <div class="muted" id="openPatientMeta"></div>
-                </div>
-                <div style="display:flex; gap:8px;">
-                  <button id="btnAnamnese" class="small info">📋 Anamnese</button>
-                  <button id="openWhats" class="small">📱 WhatsApp</button>
-                  <button id="renamePatient" class="small">✏️ Renomear</button>
-                  <button id="deletePatient" class="small danger">🗑️ Excluir</button>
-                </div>
-              </div>
-
-              <!-- Barra de progresso do pacote -->
-              <div id="pacoteProgresso" style="margin:10px 0; padding:10px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
-
-              <div id="patientHistory" class="list"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Agendamento -->
-      <section id="viewSchedule" class="card hidden">
-        <div class="row">
-          <div>
-            <label>Data referência</label>
-            <input id="schedRef" type="date" />
-          </div>
-          <div>
-            <label>Adicionar horário</label>
-            <div style="display:flex; gap:8px;">
-              <input id="newTime" placeholder="07:00" />
-              <button id="addTime" class="small primary">➕</button>
-            </div>
-          </div>
-          <div>
-            <label>Filtro</label>
-            <div style="display:flex; gap:5px;">
-              <button id="filterHoje" class="small">Hoje</button>
-              <button id="filterAmanha" class="small">Amanhã</button>
-              <button id="filterSemana" class="small">Semana</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="schedWrap">
-          <table class="sched" id="schedTable"></table>
-        </div>
-
-        <div class="muted" style="margin-top:15px; padding:10px; background:rgba(255,255,255,.03); border-radius:12px;">
-          <span class="pill ok">🟢 Cassems</span>
-          <span class="pill warn">🟡 Particular</span>
-          <span class="pill info">🟣 Unimed/Outros</span>
-          <span class="pill bad">🔴 Vago</span>
-          <span class="pill">⚠️ Falta 1</span>
-          <span class="pill">🏁 Última</span>
-          <span class="pill pri">ℹ️ Clique para agendar</span>
-          <span class="pill token">🎫 Token Cassems</span>
-        </div>
-      </section>
-
-      <!-- Relatórios -->
-      <section id="viewReports" class="card hidden">
-        <h2 style="margin-bottom:20px;">📈 Relatórios</h2>
-
-        <div class="grid2">
-          <div class="cardMini">
-            <b>Resumo do Mês</b>
-            <div id="monthSummary" class="muted" style="margin-top:10px;">Carregando...</div>
-          </div>
-          <div class="cardMini">
-            <b>Taxa de Faltas</b>
-            <div id="absenceRate" class="muted" style="margin-top:10px;">Carregando...</div>
-          </div>
-          <div class="cardMini">
-            <b>Faturamento</b>
-            <div id="revenueStats" class="muted" style="margin-top:10px;">Carregando...</div>
-          </div>
-          <div class="cardMini">
-            <b>Pacientes Ativos</b>
-            <div id="activePatients" class="muted" style="margin-top:10px;">Carregando...</div>
-          </div>
-        </div>
-
-        <!-- Relatório de Tokens -->
-        <div style="margin-top:20px;">
-          <b>🎫 Controle de Tokens Cassems</b>
-          <div class="grid3" style="margin-top:10px;">
-            <div class="cardMini">
-              <b>Total de sessões Cassems</b>
-              <div id="totalSessoesCassems" class="stat-value" style="font-size:1.5rem;">0</div>
-            </div>
-            <div class="cardMini">
-              <b>Tokens Enviados</b>
-              <div id="totalTokensEnviados" class="stat-value" style="font-size:1.5rem; color:#22c55e;">0</div>
-            </div>
-            <div class="cardMini">
-              <b>Tokens Pendentes</b>
-              <div id="totalTokensPendentes" class="stat-value" style="font-size:1.5rem; color:#f59e0b;">0</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:20px;">
-          <b>Pacientes com maior débito</b>
-          <div id="topDebtors" class="list" style="margin-top:10px;"></div>
-        </div>
-
-        <div style="margin-top:20px;">
-          <b>📊 Por Convênio</b>
-          <div id="porConvenio" class="grid2" style="margin-top:10px;"></div>
-        </div>
-      </section>
-    </main>
-
-    <!-- Atalhos -->
-    <div class="shortcuts-hint" id="shortcutsHint">⌨️ Atalhos</div>
-    <div class="shortcuts-panel hidden" id="shortcutsPanel">
-      <h4 style="margin-bottom:10px;">Atalhos de Teclado</h4>
-      <div class="shortcut-item"><span>Novo paciente</span> <span class="shortcut-key">Ctrl+N</span></div>
-      <div class="shortcut-item"><span>Buscar</span> <span class="shortcut-key">Ctrl+F</span></div>
-      <div class="shortcut-item"><span>Dashboard</span> <span class="shortcut-key">Ctrl+1</span></div>
-      <div class="shortcut-item"><span>Diário</span> <span class="shortcut-key">Ctrl+2</span></div>
-      <div class="shortcut-item"><span>Pacientes</span> <span class="shortcut-key">Ctrl+3</span></div>
-      <div class="shortcut-item"><span>Agenda</span> <span class="shortcut-key">Ctrl+4</span></div>
-    </div>
-  </section>
-
-  <!-- Modais -->
-  <div id="backupModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <h3 style="margin-bottom:15px;">💾 Restaurar Backup</h3>
-      <p class="muted">Selecione um arquivo de backup (.json) para restaurar. Isso substituirá todos os dados atuais.</p>
-      <input type="file" id="backupFile" accept=".json" style="margin:15px 0;" />
-      <div style="display:flex; gap:10px; justify-content:flex-end;">
-        <button id="cancelBackup" class="small">Cancelar</button>
-        <button id="confirmRestore" class="danger small">Restaurar</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="anamneseModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <h3>📋 Anamnese</h3>
-      <div style="margin:15px 0;">
-        <label>Queixa principal</label>
-        <textarea id="aQueixa" rows="2"></textarea>
-      </div>
-      <div style="margin:15px 0;">
-        <label>Histórico</label>
-        <textarea id="aHistorico" rows="2"></textarea>
-      </div>
-      <div style="margin:15px 0;">
-        <label>Observações</label>
-        <textarea id="aObs" rows="3"></textarea>
-      </div>
-      <div style="display:flex; gap:10px; justify-content:flex-end;">
-        <button id="closeAnamnese" class="small">Fechar</button>
-        <button id="saveAnamnese" class="primary small">Salvar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal de Token -->
-  <div id="tokenModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <h3>🎫 Registrar Token Cassems</h3>
-      <p class="muted">Registre o token de autorização enviado pelo paciente</p>
-      
-      <div style="margin:15px 0;">
-        <label>Data da sessão</label>
-        <input type="date" id="tokenDate" readonly />
-      </div>
-      
-      <div style="margin:15px 0;">
-        <label>Paciente</label>
-        <input type="text" id="tokenPatient" readonly />
-      </div>
-      
-      <div style="margin:15px 0;">
-        <label>Token de autorização</label>
-        <input type="text" id="tokenCode" placeholder="Ex: CASS-123456" />
-        <small class="muted">Código fornecido pelo paciente</small>
-      </div>
-      
-      <div style="margin:15px 0;">
-        <label>Status do token</label>
-        <select id="tokenStatus">
-          <option value="enviado">✅ Enviado</option>
-          <option value="pendente">⏳ Pendente</option>
-          <option value="problema">❌ Problema no token</option>
-        </select>
-      </div>
-      
-      <div style="display:flex; gap:10px; justify-content:flex-end;">
-        <button id="cancelToken" class="small">Cancelar</button>
-        <button id="saveToken" class="primary small">Salvar Token</button>
-      </div>
-    </div>
-  </div>
+  <!-- CONTEÚDO SERÁ INSERIDO VIA JAVASCRIPT -->
+  <div id="app"></div>
 
   <script>
+    // ========== VERSÃO FORÇADA PARA EVITAR CACHE ==========
+    const APP_VERSION = '2.0.0';
+    const BUILD_TIME = new Date().getTime();
+    
+    console.log('ClínicaHub Ultra v' + APP_VERSION + ' - Carregado em:', new Date().toLocaleString());
+
     // ========== CONFIGURAÇÕES ==========
     const KEYS = {
-      PATIENTS: "clinica_ultra_patients",
-      SESSIONS: "clinica_ultra_sessions",
-      SCHEDULE: "clinica_ultra_schedule",
-      TOKENS: "clinica_ultra_tokens", // NOVO: Armazenar tokens
-      BACKUP: "clinica_ultra_backup",
-      THEME: "clinica_ultra_theme"
+      PATIENTS: "clinica_ultra_patients_v2",
+      SESSIONS: "clinica_ultra_sessions_v2",
+      SCHEDULE: "clinica_ultra_schedule_v2",
+      TOKENS: "clinica_ultra_tokens_v2",
+      PACKS: "clinica_ultra_packs_v2",
+      BACKUP: "clinica_ultra_backup_v2",
+      THEME: "clinica_ultra_theme_v2",
+      VERSION: "clinica_ultra_version"
     };
 
     const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+    const DAYS_FULL = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
     const SERVICE_COLORS = {
       "cassems": "slotGreen",
       "particular": "slotAmber",
@@ -1111,16 +684,29 @@
       "outros": "slotBlue"
     };
 
-    let autoBackup = localStorage.getItem("autoBackup") !== "false";
+    let autoBackup = true;
     let openedPatientId = null;
     let alertTimeout = null;
     let currentTokenSessionId = null;
+    let currentPackPatientId = null;
 
-    const $ = id => document.getElementById(id);
+    // ========== VERIFICAR VERSÃO E LIMPAR CACHE SE NECESSÁRIO ==========
+    function checkVersion() {
+      const lastVersion = localStorage.getItem(KEYS.VERSION);
+      if (lastVersion !== APP_VERSION) {
+        console.log('Nova versão detectada. Limpando cache de dados...');
+        // Não limpa os dados do usuário, apenas marca a nova versão
+        localStorage.setItem(KEYS.VERSION, APP_VERSION);
+      }
+    }
 
     // ========== UTILITÁRIOS ==========
+    function $(id) {
+      return document.getElementById(id);
+    }
+
     function uid() {
-      return Date.now().toString(36) + Math.random().toString(36).substr(2);
+      return Date.now().toString(36) + Math.random().toString(36).substr(2) + BUILD_TIME;
     }
 
     function todayISO() {
@@ -1149,9 +735,13 @@
     }
 
     function saveData(key, data) {
-      localStorage.setItem(key, JSON.stringify(data));
-      if (autoBackup && key !== KEYS.BACKUP) {
-        setTimeout(() => createAutoBackup(), 100);
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+        return true;
+      } catch (e) {
+        console.error('Erro ao salvar dados:', e);
+        showAlert('❌ Erro ao salvar dados. Verifique o espaço disponível.', 'error');
+        return false;
       }
     }
 
@@ -1159,9 +749,85 @@
       try {
         const data = localStorage.getItem(key);
         return data ? JSON.parse(data) : defaultValue;
-      } catch {
+      } catch (e) {
+        console.error('Erro ao carregar dados:', e);
         return defaultValue;
       }
+    }
+
+    // ========== SISTEMA DE PACOTES ==========
+    function loadPacks() {
+      return loadData(KEYS.PACKS, {});
+    }
+
+    function savePacks(packs) {
+      saveData(KEYS.PACKS, packs);
+    }
+
+    function getPatientPack(patientId) {
+      const packs = loadPacks();
+      return packs[patientId] || null;
+    }
+
+    function savePatientPack(patientId, packData) {
+      const packs = loadPacks();
+      packs[patientId] = {
+        ...packData,
+        updatedAt: new Date().toISOString()
+      };
+      savePacks(packs);
+      return packs[patientId];
+    }
+
+    function calculateSessionsProgress(patientId, startDate, totalSessions) {
+      const sessions = loadSessions().filter(s => 
+        s.patientId === patientId && 
+        s.did === "realizou" &&
+        s.date >= startDate
+      );
+      return {
+        completed: sessions.length,
+        remaining: Math.max(0, totalSessions - sessions.length),
+        percent: totalSessions > 0 ? (sessions.length / totalSessions) * 100 : 0
+      };
+    }
+
+    function generatePackSchedule(patientId, packConfig) {
+      const schedule = loadSchedule();
+      const startDate = new Date(packConfig.startDate);
+      
+      for (let i = 0; i < packConfig.totalSessions; i++) {
+        let sessionDate = new Date(startDate);
+        
+        if (packConfig.frequency === 2 && packConfig.weekdays.length === 2) {
+          // Duas vezes por semana - alternar entre os dois dias selecionados
+          const weekOffset = Math.floor(i / 2);
+          const dayIndex = i % 2;
+          const targetDay = packConfig.weekdays[dayIndex];
+          
+          let daysToAdd = (targetDay - startDate.getDay() + 7) % 7;
+          daysToAdd += weekOffset * 7;
+          sessionDate.setDate(startDate.getDate() + daysToAdd);
+        } else {
+          // Uma vez por semana
+          sessionDate.setDate(startDate.getDate() + (i * 7));
+        }
+        
+        const dateStr = sessionDate.toISOString().split('T')[0];
+        const key = recurKey(sessionDate.getDay(), packConfig.time);
+        
+        // Verificar se o horário está disponível
+        if (!schedule.recurring[key]) {
+          schedule.recurring[key] = {
+            patientId: patientId,
+            serviceType: packConfig.serviceType,
+            startDate: dateStr,
+            plannedTotal: packConfig.totalSessions
+          };
+        }
+      }
+      
+      saveSchedule(schedule);
     }
 
     // ========== SISTEMA DE TOKENS CASSEMS ==========
@@ -1188,105 +854,6 @@
       return tokens[sessionId];
     }
 
-    function updateTokenStatus(sessionId, status, code) {
-      const tokens = loadTokens();
-      if (tokens[sessionId]) {
-        tokens[sessionId].status = status;
-        if (code) tokens[sessionId].code = code;
-        saveTokens(tokens);
-      }
-    }
-
-    // ========== ALERTAS ==========
-    function showAlert(message, type = "info") {
-      if (alertTimeout) clearTimeout(alertTimeout);
-      
-      const alert = document.createElement("div");
-      alert.className = `alert alert-${type}`;
-      alert.innerHTML = message;
-      alert.style.background = type === "success" ? "rgba(34,197,94,.2)" : 
-                              type === "warning" ? "rgba(245,158,11,.2)" : 
-                              "rgba(14,165,233,.2)";
-      alert.style.borderColor = type === "success" ? "#22c55e" : 
-                                type === "warning" ? "#f59e0b" : 
-                                "#0ea5e9";
-      document.body.appendChild(alert);
-      
-      alertTimeout = setTimeout(() => {
-        alert.remove();
-      }, 3000);
-    }
-
-    // ========== TEMA ==========
-    function toggleTheme() {
-      document.body.classList.toggle("light-mode");
-      const isLight = document.body.classList.contains("light-mode");
-      localStorage.setItem(KEYS.THEME, isLight ? "light" : "dark");
-      $("themeToggle").innerHTML = isLight ? "🌙 Tema" : "☀️ Tema";
-    }
-
-    if (localStorage.getItem(KEYS.THEME) === "light") {
-      document.body.classList.add("light-mode");
-      $("themeToggle").innerHTML = "🌙 Tema";
-    }
-
-    // ========== BACKUP ==========
-    function createBackup() {
-      return {
-        version: "1.0",
-        date: new Date().toISOString(),
-        data: {
-          patients: loadData(KEYS.PATIENTS, []),
-          sessions: loadData(KEYS.SESSIONS, []),
-          schedule: loadData(KEYS.SCHEDULE, { times: defaultTimes(), recurring: {} }),
-          tokens: loadData(KEYS.TOKENS, {})
-        }
-      };
-    }
-
-    function downloadBackup() {
-      const backup = createBackup();
-      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `clinica_backup_${todayISO()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-      showAlert("✅ Backup baixado com sucesso!", "success");
-    }
-
-    function restoreFromFile(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const backup = JSON.parse(e.target.result);
-          if (backup.version && backup.data) {
-            saveData(KEYS.PATIENTS, backup.data.patients || []);
-            saveData(KEYS.SESSIONS, backup.data.sessions || []);
-            saveData(KEYS.SCHEDULE, backup.data.schedule || { times: defaultTimes(), recurring: {} });
-            saveData(KEYS.TOKENS, backup.data.tokens || {});
-
-            showAlert("✅ Backup restaurado com sucesso!", "success");
-            setTimeout(() => location.reload(), 1500);
-          } else {
-            showAlert("❌ Arquivo de backup inválido", "error");
-          }
-        } catch (err) {
-          showAlert("❌ Erro ao ler o arquivo", "error");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function createAutoBackup() {
-      const backups = loadData(KEYS.BACKUP, []);
-      const newBackup = createBackup();
-      backups.unshift(newBackup);
-      if (backups.length > 10) backups.pop();
-      saveData(KEYS.BACKUP, backups);
-    }
-
     // ========== PACIENTES ==========
     function loadPatients() { return loadData(KEYS.PATIENTS, []); }
     function savePatients(p) { saveData(KEYS.PATIENTS, p); }
@@ -1311,7 +878,592 @@
 
     function recurKey(day, time) { return `${day}|${time}`; }
 
-    // ========== DASHBOARD COM TOKENS ==========
+    // ========== ALERTAS ==========
+    function showAlert(message, type = "info") {
+      if (alertTimeout) clearTimeout(alertTimeout);
+      
+      const alert = document.createElement("div");
+      alert.className = `alert alert-${type}`;
+      alert.innerHTML = message;
+      alert.style.background = type === "success" ? "rgba(34,197,94,.2)" : 
+                              type === "warning" ? "rgba(245,158,11,.2)" : 
+                              "rgba(14,165,233,.2)";
+      alert.style.borderColor = type === "success" ? "#22c55e" : 
+                                type === "warning" ? "#f59e0b" : 
+                                "#0ea5e9";
+      document.body.appendChild(alert);
+      
+      alertTimeout = setTimeout(() => {
+        if (alert.parentNode) {
+          alert.remove();
+        }
+      }, 3000);
+    }
+
+    // ========== TEMA ==========
+    function toggleTheme() {
+      document.body.classList.toggle("light-mode");
+      const isLight = document.body.classList.contains("light-mode");
+      localStorage.setItem(KEYS.THEME, isLight ? "light" : "dark");
+      const themeBtn = document.getElementById("themeToggle");
+      if (themeBtn) {
+        themeBtn.innerHTML = isLight ? "🌙 Tema" : "☀️ Tema";
+      }
+    }
+
+    // ========== RENDERIZAÇÃO DO HTML ==========
+    function renderApp() {
+      const app = document.getElementById('app');
+      
+      app.innerHTML = `
+        <!-- Painel Principal -->
+        <section id="appWrap">
+          <header>
+            <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+              <h1>🏥 ClínicaHub Ultra</h1>
+              <div id="today" class="muted"></div>
+              <button id="themeToggle" class="small" style="border-radius:30px;">🌓 Tema</button>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+              <!-- Barra de Backup -->
+              <div class="backup-bar">
+                <span class="muted">💾 Backup:</span>
+                <button id="backupNow" class="small" title="Baixar backup agora">⬇️ Baixar</button>
+                <button id="restoreBackup" class="small" title="Restaurar de um arquivo">📂 Restaurar</button>
+                <button id="autoBackupToggle" class="small pri">🔵 Auto: ON</button>
+              </div>
+
+              <div class="tabs">
+                <button class="tab active" id="tabDashboard">📊 Dashboard</button>
+                <button class="tab" id="tabDaily">📅 Diário</button>
+                <button class="tab" id="tabPatients">👥 Pacientes</button>
+                <button class="tab" id="tabSchedule">📆 Agendamento</button>
+                <button class="tab" id="tabReports">📈 Relatórios</button>
+              </div>
+            </div>
+          </header>
+
+          <main>
+            <!-- DASHBOARD -->
+            <section id="viewDashboard" class="card">
+              <h2>📊 Dashboard</h2>
+              <div class="dashboard-grid">
+                <div class="stat-card">
+                  <div>Pacientes Hoje</div>
+                  <div class="stat-value" id="dashHoje">0</div>
+                  <div class="muted" id="dashHojeDetalhe"></div>
+                </div>
+                <div class="stat-card">
+                  <div>Próximos 15min</div>
+                  <div class="stat-value" id="dashProximos">0</div>
+                  <div class="muted" id="dashProximosNomes"></div>
+                </div>
+                <div class="stat-card">
+                  <div>Faturamento Hoje</div>
+                  <div class="stat-value" id="dashFaturamento">R$ 0</div>
+                  <div class="muted" id="dashFaturamentoDetalhe"></div>
+                </div>
+                <div class="stat-card">
+                  <div>Taxa de Faltas</div>
+                  <div class="stat-value" id="dashTaxaFaltas">0%</div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" id="dashProgresso" style="width:0%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cards de Token Cassems -->
+              <div class="grid3" style="margin-top:20px;">
+                <div class="cardMini">
+                  <b>🎫 Tokens Cassems Hoje</b>
+                  <div class="stat-value" id="tokensHoje">0</div>
+                  <div class="muted" id="tokensHojeDetalhe"></div>
+                </div>
+                <div class="cardMini">
+                  <b>✅ Enviados</b>
+                  <div class="stat-value" id="tokensEnviados">0</div>
+                  <div class="muted" id="tokensEnviadosDetalhe"></div>
+                </div>
+                <div class="cardMini">
+                  <b>⏳ Pendentes</b>
+                  <div class="stat-value" id="tokensPendentes">0</div>
+                  <div class="muted" id="tokensPendentesDetalhe"></div>
+                </div>
+              </div>
+
+              <div style="margin-top:20px;">
+                <h3>🎂 Aniversariantes do Mês</h3>
+                <div id="aniversariantes" class="list"></div>
+              </div>
+
+              <div style="margin-top:20px;">
+                <h3>⏰ Próximos Atendimentos</h3>
+                <div id="proximosAtendimentos" class="list"></div>
+              </div>
+            </section>
+
+            <!-- Diário -->
+            <section id="viewDaily" class="card hidden">
+              <div class="row">
+                <div>
+                  <label>Data do atendimento</label>
+                  <input id="date" type="date" />
+                </div>
+                <div>
+                  <label>Buscar paciente</label>
+                  <input id="search" placeholder="Nome..." />
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button id="findInDay" class="small primary">🔍 Procurar</button>
+                  <button id="clearDay" class="small danger">🗑️ Limpar dia</button>
+                </div>
+              </div>
+
+              <div class="sum">
+                <div class="cardMini">
+                  <b>Resumo do dia</b>
+                  <div class="muted" id="sumDay">—</div>
+                </div>
+                <div class="cardMini">
+                  <b>Financeiro</b>
+                  <div class="muted" id="sumMoney">—</div>
+                </div>
+                <div class="cardMini">
+                  <b>Faltas hoje</b>
+                  <div class="muted" id="sumAbsences">—</div>
+                </div>
+              </div>
+
+              <!-- Resumo de Tokens do Dia -->
+              <div class="grid3" style="margin:15px 0;">
+                <div class="cardMini">
+                  <b>🎫 Pacientes Cassems</b>
+                  <div id="cassemsHoje" class="stat-value" style="font-size:1.5rem;">0</div>
+                </div>
+                <div class="cardMini">
+                  <b>✅ Tokens Enviados</b>
+                  <div id="tokensEnviadosHoje" class="stat-value" style="font-size:1.5rem; color:#22c55e;">0</div>
+                </div>
+                <div class="cardMini">
+                  <b>⏳ Pendentes</b>
+                  <div id="tokensPendentesHoje" class="stat-value" style="font-size:1.5rem; color:#f59e0b;">0</div>
+                </div>
+              </div>
+
+              <hr>
+
+              <b>➕ Adicionar sessão</b>
+              <div class="grid2">
+                <div>
+                  <label>Paciente</label>
+                  <select id="pPatient"></select>
+                </div>
+                <div>
+                  <label>Horário</label>
+                  <input id="pTime" placeholder="14:30" />
+                </div>
+                <div>
+                  <label>Sessão</label>
+                  <select id="pDid">
+                    <option value="realizou">✅ Realizou</option>
+                    <option value="nao">❌ Não realizou</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Justificativa</label>
+                  <select id="pJust">
+                    <option value="na">—</option>
+                    <option value="justificada">📝 Justificada</option>
+                    <option value="nao_justificada">⚠️ Não justificada</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Pagamento</label>
+                  <select id="pPaid">
+                    <option value="nao_pago">💸 Não pago</option>
+                    <option value="pago">💰 Pago</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Valor (R$)</label>
+                  <input id="pValue" placeholder="80,00" />
+                  <small id="hintDefault" class="muted"></small>
+                </div>
+              </div>
+
+              <div class="row">
+                <button id="addSession" class="primary">➕ Adicionar</button>
+                <button id="resetAll" class="danger">⚠️ Zerar tudo</button>
+              </div>
+
+              <div class="list" id="dayList"></div>
+            </section>
+
+            <!-- Pacientes -->
+            <section id="viewPatients" class="card hidden">
+              <div class="split">
+                <!-- Cadastro -->
+                <div class="card">
+                  <b>👤 Cadastro de Paciente</b>
+                  <div class="grid2" style="margin-top:15px;">
+                    <div>
+                      <label>Nome completo *</label>
+                      <input id="cName" placeholder="João Silva" />
+                    </div>
+                    <div>
+                      <label>Data nascimento</label>
+                      <input id="cBirth" type="date" />
+                    </div>
+                    <div>
+                      <label>CPF</label>
+                      <input id="cCpf" placeholder="000.000.000-00" />
+                    </div>
+                    <div>
+                      <label>Responsável</label>
+                      <input id="cResp" placeholder="Nome do responsável" />
+                    </div>
+                    <div>
+                      <label>WhatsApp</label>
+                      <input id="cPhone" placeholder="67999999999" />
+                    </div>
+                    <div>
+                      <label>E-mail</label>
+                      <input id="cEmail" type="email" placeholder="paciente@email.com" />
+                    </div>
+                    <div>
+                      <label>Convênio</label>
+                      <select id="cServiceType">
+                        <option value="particular">Particular</option>
+                        <option value="cassems">Cassems</option>
+                        <option value="unimed">Unimed</option>
+                        <option value="outros">Outros</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>Valor padrão (R$)</label>
+                      <input id="cDefaultValue" placeholder="80,00" />
+                    </div>
+                    <div>
+                      <label>Tipo de cobrança</label>
+                      <select id="cBillingType">
+                        <option value="pack4">📦 Pacote 4 sessões</option>
+                        <option value="pack8">📦 Pacote 8 sessões</option>
+                        <option value="individual">💳 Individual</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label>Frequência semanal</label>
+                      <select id="cFrequency">
+                        <option value="1">1x por semana</option>
+                        <option value="2">2x por semana</option>
+                      </select>
+                      <small class="muted">Para pacotes de 8 sessões</small>
+                    </div>
+                    <div>
+                      <label>Horário fixo</label>
+                      <div style="display:flex; gap:8px;">
+                        <select id="cFixDay" style="flex:1;">
+                          <option value="">Dia</option>
+                          <option value="0">Seg</option>
+                          <option value="1">Ter</option>
+                          <option value="2">Qua</option>
+                          <option value="3">Qui</option>
+                          <option value="4">Sex</option>
+                          <option value="5">Sáb</option>
+                          <option value="6">Dom</option>
+                        </select>
+                        <input id="cFixHour" placeholder="07:40" style="flex:1;" />
+                      </div>
+                      <small class="muted">Agenda automática</small>
+                    </div>
+                  </div>
+
+                  <label style="margin-top:15px;">Observações iniciais</label>
+                  <textarea id="cNotes" rows="2" placeholder="Observações relevantes..."></textarea>
+
+                  <div class="row" style="margin-top:15px;">
+                    <button id="addPatient" class="primary">💾 Salvar paciente</button>
+                  </div>
+                </div>
+
+                <!-- Pastas -->
+                <div class="card">
+                  <div id="foldersPane">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                      <b>📁 Pastas</b>
+                      <div style="display:flex; gap:8px;">
+                        <input id="pSearch" placeholder="Buscar paciente..." style="width:200px;" />
+                        <button id="onlyDebtFolders" class="small">💸 Com débito</button>
+                      </div>
+                    </div>
+                    <div id="patientFolders" class="list"></div>
+                  </div>
+
+                  <div id="folderOpenPane" class="hidden">
+                    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
+                      <button id="backToFolders" class="small">← Voltar</button>
+                      <div style="flex:1;">
+                        <b id="openPatientTitle">Paciente</b>
+                        <div class="muted" id="openPatientMeta"></div>
+                      </div>
+                      <div style="display:flex; gap:8px;">
+                        <button id="btnAnamnese" class="small info">📋 Anamnese</button>
+                        <button id="openWhats" class="small">📱 WhatsApp</button>
+                        <button id="renamePatient" class="small">✏️ Renomear</button>
+                        <button id="deletePatient" class="small danger">🗑️ Excluir</button>
+                      </div>
+                    </div>
+
+                    <!-- Barra de progresso do pacote -->
+                    <div id="pacoteProgresso" style="margin:10px 0; padding:10px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
+
+                    <!-- Controle de Sessões do Pacote -->
+                    <div id="packControl" class="pack-control"></div>
+
+                    <div id="patientHistory" class="list"></div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Agendamento -->
+            <section id="viewSchedule" class="card hidden">
+              <div class="row">
+                <div>
+                  <label>Data referência</label>
+                  <input id="schedRef" type="date" />
+                </div>
+                <div>
+                  <label>Adicionar horário</label>
+                  <div style="display:flex; gap:8px;">
+                    <input id="newTime" placeholder="07:00" />
+                    <button id="addTime" class="small primary">➕</button>
+                  </div>
+                </div>
+                <div>
+                  <label>Filtro</label>
+                  <div style="display:flex; gap:5px;">
+                    <button id="filterHoje" class="small">Hoje</button>
+                    <button id="filterAmanha" class="small">Amanhã</button>
+                    <button id="filterSemana" class="small">Semana</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="schedWrap">
+                <table class="sched" id="schedTable"></table>
+              </div>
+
+              <div class="muted" style="margin-top:15px; padding:10px; background:rgba(255,255,255,.03); border-radius:12px;">
+                <span class="pill ok">🟢 Cassems</span>
+                <span class="pill warn">🟡 Particular</span>
+                <span class="pill info">🟣 Unimed/Outros</span>
+                <span class="pill bad">🔴 Vago</span>
+                <span class="pill">⚠️ Falta 1</span>
+                <span class="pill">🏁 Última</span>
+                <span class="pill token">🎫 Token</span>
+              </div>
+            </section>
+
+            <!-- Relatórios -->
+            <section id="viewReports" class="card hidden">
+              <h2 style="margin-bottom:20px;">📈 Relatórios</h2>
+
+              <div class="grid2">
+                <div class="cardMini">
+                  <b>Resumo do Mês</b>
+                  <div id="monthSummary" class="muted" style="margin-top:10px;">Carregando...</div>
+                </div>
+                <div class="cardMini">
+                  <b>Taxa de Faltas</b>
+                  <div id="absenceRate" class="muted" style="margin-top:10px;">Carregando...</div>
+                </div>
+                <div class="cardMini">
+                  <b>Faturamento</b>
+                  <div id="revenueStats" class="muted" style="margin-top:10px;">Carregando...</div>
+                </div>
+                <div class="cardMini">
+                  <b>Pacientes Ativos</b>
+                  <div id="activePatients" class="muted" style="margin-top:10px;">Carregando...</div>
+                </div>
+              </div>
+
+              <!-- Relatório de Tokens -->
+              <div style="margin-top:20px;">
+                <b>🎫 Controle de Tokens Cassems</b>
+                <div class="grid3" style="margin-top:10px;">
+                  <div class="cardMini">
+                    <b>Total de sessões Cassems</b>
+                    <div id="totalSessoesCassems" class="stat-value" style="font-size:1.5rem;">0</div>
+                  </div>
+                  <div class="cardMini">
+                    <b>Tokens Enviados</b>
+                    <div id="totalTokensEnviados" class="stat-value" style="font-size:1.5rem; color:#22c55e;">0</div>
+                  </div>
+                  <div class="cardMini">
+                    <b>Tokens Pendentes</b>
+                    <div id="totalTokensPendentes" class="stat-value" style="font-size:1.5rem; color:#f59e0b;">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top:20px;">
+                <b>📊 Status dos Pacotes</b>
+                <div id="packStatus" class="grid2" style="margin-top:10px;"></div>
+              </div>
+
+              <div style="margin-top:20px;">
+                <b>Pacientes com maior débito</b>
+                <div id="topDebtors" class="list" style="margin-top:10px;"></div>
+              </div>
+            </section>
+          </main>
+
+          <!-- Atalhos -->
+          <div class="shortcuts-hint" id="shortcutsHint">⌨️ Atalhos</div>
+          <div class="shortcuts-panel hidden" id="shortcutsPanel">
+            <h4 style="margin-bottom:10px;">Atalhos de Teclado</h4>
+            <div class="shortcut-item"><span>Novo paciente</span> <span class="shortcut-key">Ctrl+N</span></div>
+            <div class="shortcut-item"><span>Buscar</span> <span class="shortcut-key">Ctrl+F</span></div>
+            <div class="shortcut-item"><span>Dashboard</span> <span class="shortcut-key">Ctrl+1</span></div>
+            <div class="shortcut-item"><span>Diário</span> <span class="shortcut-key">Ctrl+2</span></div>
+            <div class="shortcut-item"><span>Pacientes</span> <span class="shortcut-key">Ctrl+3</span></div>
+            <div class="shortcut-item"><span>Agenda</span> <span class="shortcut-key">Ctrl+4</span></div>
+          </div>
+        </section>
+
+        <!-- Modais -->
+        <div id="backupModal" class="modal-overlay hidden">
+          <div class="modal-content">
+            <h3 style="margin-bottom:15px;">💾 Restaurar Backup</h3>
+            <p class="muted">Selecione um arquivo de backup (.json) para restaurar. Isso substituirá todos os dados atuais.</p>
+            <input type="file" id="backupFile" accept=".json" style="margin:15px 0;" />
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+              <button id="cancelBackup" class="small">Cancelar</button>
+              <button id="confirmRestore" class="danger small">Restaurar</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="anamneseModal" class="modal-overlay hidden">
+          <div class="modal-content">
+            <h3>📋 Anamnese</h3>
+            <div style="margin:15px 0;">
+              <label>Queixa principal</label>
+              <textarea id="aQueixa" rows="2"></textarea>
+            </div>
+            <div style="margin:15px 0;">
+              <label>Histórico</label>
+              <textarea id="aHistorico" rows="2"></textarea>
+            </div>
+            <div style="margin:15px 0;">
+              <label>Observações</label>
+              <textarea id="aObs" rows="3"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+              <button id="closeAnamnese" class="small">Fechar</button>
+              <button id="saveAnamnese" class="primary small">Salvar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Token -->
+        <div id="tokenModal" class="modal-overlay hidden">
+          <div class="modal-content">
+            <h3>🎫 Registrar Token Cassems</h3>
+            <p class="muted">Registre o token de autorização enviado pelo paciente</p>
+            
+            <div style="margin:15px 0;">
+              <label>Data da sessão</label>
+              <input type="date" id="tokenDate" readonly />
+            </div>
+            
+            <div style="margin:15px 0;">
+              <label>Paciente</label>
+              <input type="text" id="tokenPatient" readonly />
+            </div>
+            
+            <div style="margin:15px 0;">
+              <label>Token de autorização</label>
+              <input type="text" id="tokenCode" placeholder="Ex: CASS-123456" />
+              <small class="muted">Código fornecido pelo paciente</small>
+            </div>
+            
+            <div style="margin:15px 0;">
+              <label>Status do token</label>
+              <select id="tokenStatus">
+                <option value="enviado">✅ Enviado</option>
+                <option value="pendente">⏳ Pendente</option>
+                <option value="problema">❌ Problema no token</option>
+              </select>
+            </div>
+            
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+              <button id="cancelToken" class="small">Cancelar</button>
+              <button id="saveToken" class="primary small">Salvar Token</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Configuração de Pacote -->
+        <div id="packModal" class="modal-overlay hidden">
+          <div class="modal-content">
+            <h3>📦 Configurar Pacote de Sessões</h3>
+            <p class="muted" id="packPatientName"></p>
+            
+            <div class="pack-info" id="packCurrentInfo"></div>
+            
+            <div style="margin:20px 0;">
+              <label>Data de início do pacote</label>
+              <input type="date" id="packStartDate" />
+            </div>
+            
+            <div style="margin:20px 0;">
+              <label>Total de sessões</label>
+              <select id="packTotal">
+                <option value="4">4 sessões</option>
+                <option value="8">8 sessões</option>
+              </select>
+            </div>
+            
+            <div style="margin:20px 0;">
+              <label>Frequência semanal</label>
+              <select id="packFrequency">
+                <option value="1">1x por semana</option>
+                <option value="2">2x por semana</option>
+              </select>
+            </div>
+            
+            <div style="margin:20px 0;" id="weekdaysContainer">
+              <label>Dias da semana (para 2x)</label>
+              <div class="weekday-selector" id="weekdaySelector">
+                <div class="weekday-btn" data-day="0">S</div>
+                <div class="weekday-btn" data-day="1">T</div>
+                <div class="weekday-btn" data-day="2">Q</div>
+                <div class="weekday-btn" data-day="3">Q</div>
+                <div class="weekday-btn" data-day="4">S</div>
+                <div class="weekday-btn" data-day="5">S</div>
+                <div class="weekday-btn" data-day="6">D</div>
+              </div>
+              <small class="muted">Selecione 2 dias para sessões 2x por semana</small>
+            </div>
+            
+            <div style="margin:20px 0;">
+              <label>Horário das sessões</label>
+              <input type="time" id="packTime" step="600" />
+            </div>
+            
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+              <button id="cancelPack" class="small">Cancelar</button>
+              <button id="savePack" class="primary small">Salvar Configuração</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ========== FUNÇÕES PRINCIPAIS ==========
     function renderDashboard() {
       const hoje = todayISO();
       const agora = nowTime();
@@ -1322,11 +1474,13 @@
       
       // Pacientes hoje
       const hojeSessions = sessions.filter(s => s.date === hoje);
-      $("dashHoje").textContent = hojeSessions.length;
+      const dashHoje = document.getElementById("dashHoje");
+      if (dashHoje) dashHoje.textContent = hojeSessions.length;
       
       const realizadasHoje = hojeSessions.filter(s => s.did === "realizou").length;
       const faltasHoje = hojeSessions.filter(s => s.did === "nao").length;
-      $("dashHojeDetalhe").innerHTML = `✅ ${realizadasHoje} realizadas • ❌ ${faltasHoje} faltas`;
+      const dashHojeDetalhe = document.getElementById("dashHojeDetalhe");
+      if (dashHojeDetalhe) dashHojeDetalhe.innerHTML = `✅ ${realizadasHoje} realizadas • ❌ ${faltasHoje} faltas`;
       
       // Próximos 15 minutos
       const hojeDay = new Date().getDay();
@@ -1346,8 +1500,13 @@
         }
       });
       
-      $("dashProximos").textContent = proximos.length;
-      $("dashProximosNomes").innerHTML = proximos.map(p => `${p.time} - ${p.name}`).join("<br>") || "Nenhum";
+      const dashProximos = document.getElementById("dashProximos");
+      if (dashProximos) dashProximos.textContent = proximos.length;
+      
+      const dashProximosNomes = document.getElementById("dashProximosNomes");
+      if (dashProximosNomes) {
+        dashProximosNomes.innerHTML = proximos.map(p => `${p.time} - ${p.name}`).join("<br>") || "Nenhum";
+      }
       
       // Faturamento hoje
       const faturamentoHoje = hojeSessions
@@ -1357,16 +1516,25 @@
         .filter(s => s.did === "realizou" && s.paid !== "pago")
         .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
       
-      $("dashFaturamento").textContent = fmtMoney(faturamentoHoje);
-      $("dashFaturamentoDetalhe").innerHTML = `💰 Recebido: ${fmtMoney(faturamentoHoje)}<br>💸 A receber: ${fmtMoney(aReceberHoje)}`;
+      const dashFaturamento = document.getElementById("dashFaturamento");
+      if (dashFaturamento) dashFaturamento.textContent = fmtMoney(faturamentoHoje);
+      
+      const dashFaturamentoDetalhe = document.getElementById("dashFaturamentoDetalhe");
+      if (dashFaturamentoDetalhe) {
+        dashFaturamentoDetalhe.innerHTML = `💰 Recebido: ${fmtMoney(faturamentoHoje)}<br>💸 A receber: ${fmtMoney(aReceberHoje)}`;
+      }
       
       // Taxa de faltas do mês
       const currentMonth = hoje.slice(0, 7);
       const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
       const monthFaltas = monthSessions.filter(s => s.did === "nao").length;
       const taxa = monthSessions.length ? (monthFaltas / monthSessions.length * 100).toFixed(1) : 0;
-      $("dashTaxaFaltas").textContent = `${taxa}%`;
-      $("dashProgresso").style.width = `${taxa}%`;
+      
+      const dashTaxaFaltas = document.getElementById("dashTaxaFaltas");
+      if (dashTaxaFaltas) dashTaxaFaltas.textContent = `${taxa}%`;
+      
+      const dashProgresso = document.getElementById("dashProgresso");
+      if (dashProgresso) dashProgresso.style.width = `${taxa}%`;
 
       // Estatísticas de Tokens
       const cassemsHoje = hojeSessions.filter(s => {
@@ -1380,14 +1548,25 @@
       }));
 
       const tokensEnviados = tokensHoje.filter(t => t.token?.status === "enviado").length;
-      const tokensPendentes = tokensHoje.filter(t => !t.token || t.token?.status === "pendente").length;
+      const tokensPendentes = cassemsHoje.length - tokensEnviados;
 
-      $("tokensHoje").textContent = cassemsHoje.length;
-      $("tokensHojeDetalhe").innerHTML = `${cassemsHoje.length} pacientes Cassems hoje`;
-      $("tokensEnviados").textContent = tokensEnviados;
-      $("tokensEnviadosDetalhe").innerHTML = `${tokensEnviados} tokens registrados`;
-      $("tokensPendentes").textContent = tokensPendentes;
-      $("tokensPendentesDetalhe").innerHTML = `${tokensPendentes} aguardando token`;
+      const tokensHojeEl = document.getElementById("tokensHoje");
+      if (tokensHojeEl) tokensHojeEl.textContent = cassemsHoje.length;
+      
+      const tokensHojeDetalhe = document.getElementById("tokensHojeDetalhe");
+      if (tokensHojeDetalhe) tokensHojeDetalhe.innerHTML = `${cassemsHoje.length} pacientes Cassems hoje`;
+      
+      const tokensEnviadosEl = document.getElementById("tokensEnviados");
+      if (tokensEnviadosEl) tokensEnviadosEl.textContent = tokensEnviados;
+      
+      const tokensEnviadosDetalhe = document.getElementById("tokensEnviadosDetalhe");
+      if (tokensEnviadosDetalhe) tokensEnviadosDetalhe.innerHTML = `${tokensEnviados} tokens registrados`;
+      
+      const tokensPendentesEl = document.getElementById("tokensPendentes");
+      if (tokensPendentesEl) tokensPendentesEl.textContent = tokensPendentes;
+      
+      const tokensPendentesDetalhe = document.getElementById("tokensPendentesDetalhe");
+      if (tokensPendentesDetalhe) tokensPendentesDetalhe.innerHTML = `${tokensPendentes} aguardando token`;
       
       // Aniversariantes
       const currentMonthNum = new Date().getMonth() + 1;
@@ -1397,15 +1576,18 @@
         return month === currentMonthNum;
       });
       
-      $("aniversariantes").innerHTML = aniversariantes.length ? 
-        aniversariantes.map(p => `
-          <div class="item">
-            <b>🎂 ${escapeHtml(p.name)}</b>
-            <div class="muted">${new Date(p.birth).toLocaleDateString("pt-BR")}</div>
-            <button class="small" onclick="sendBirthdayMessage('${p.id}')">📱 Enviar mensagem</button>
-          </div>
-        `).join("") : 
-        "<div class='muted'>Nenhum aniversariante este mês</div>";
+      const aniversariantesEl = document.getElementById("aniversariantes");
+      if (aniversariantesEl) {
+        aniversariantesEl.innerHTML = aniversariantes.length ? 
+          aniversariantes.map(p => `
+            <div class="item">
+              <b>🎂 ${escapeHtml(p.name)}</b>
+              <div class="muted">${new Date(p.birth).toLocaleDateString("pt-BR")}</div>
+              <button class="small" onclick="window.sendBirthdayMessage('${p.id}')">📱 Enviar mensagem</button>
+            </div>
+          `).join("") : 
+          "<div class='muted'>Nenhum aniversariante este mês</div>";
+      }
       
       // Próximos atendimentos
       const proximosAtendimentos = [];
@@ -1433,15 +1615,17 @@
       
       proximosAtendimentos.sort((a, b) => a.days - b.days);
       
-      $("proximosAtendimentos").innerHTML = proximosAtendimentos.slice(0, 5).map(p => `
-        <div class="item">
-          <b>${escapeHtml(p.patient)}</b>
-          <div class="muted">${p.time} - ${p.days === 0 ? "Hoje" : p.days === 1 ? "Amanhã" : `Em ${p.days} dias`}</div>
-        </div>
-      `).join("") || "<div class='muted'>Nenhum agendamento</div>";
+      const proximosAtendimentosEl = document.getElementById("proximosAtendimentos");
+      if (proximosAtendimentosEl) {
+        proximosAtendimentosEl.innerHTML = proximosAtendimentos.slice(0, 5).map(p => `
+          <div class="item">
+            <b>${escapeHtml(p.patient)}</b>
+            <div class="muted">${p.time} - ${p.days === 0 ? "Hoje" : p.days === 1 ? "Amanhã" : `Em ${p.days} dias`}</div>
+          </div>
+        `).join("") || "<div class='muted'>Nenhum agendamento</div>";
+      }
     }
 
-    // ========== ENVIAR WHATSAPP ==========
     window.sendBirthdayMessage = (patientId) => {
       const p = getPatientById(patientId);
       if (p?.phone) {
@@ -1450,12 +1634,14 @@
       }
     };
 
-    // ========== AGENDAMENTO ==========
     function renderSchedule() {
       const sch = loadSchedule();
       const patients = loadPatients();
       const times = (sch.times || []).sort();
-      const refDate = $("schedRef").value || todayISO();
+      const refDate = document.getElementById("schedRef")?.value || todayISO();
+      const table = document.getElementById("schedTable");
+      
+      if (!table) return;
 
       let html = "<thead><tr><th class='timeCell'>Horário</th>";
       DAYS.forEach(day => html += `<th>${day}</th>`);
@@ -1475,7 +1661,6 @@
               entry.serviceType === "unimed" ? "Unimed" :
                 entry.serviceType === "outros" ? "Outros" : "Particular";
 
-            // Ícone de token para Cassems
             const tokenIcon = entry.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
 
             // Calcular progresso do pacote
@@ -1522,7 +1707,7 @@
       }
 
       html += "</tbody>";
-      $("schedTable").innerHTML = html;
+      table.innerHTML = html;
 
       document.querySelectorAll("td[data-day]").forEach(td => {
         td.addEventListener("click", (e) => {
@@ -1583,471 +1768,107 @@
       }
     }
 
-    // ========== FILTROS DA AGENDA ==========
-    function filterHoje() {
-      const hoje = new Date().getDay();
-      const rows = document.querySelectorAll("#schedTable tbody tr");
-      rows.forEach(row => {
-        const cells = row.querySelectorAll("td:not(.timeCell)");
-        cells.forEach((cell, idx) => {
-          if (idx === hoje) {
-            cell.style.background = "rgba(14,165,233,.2)";
-          }
-        });
-      });
-    }
-
-    // ========== RELATÓRIOS COM TOKENS ==========
-    function generateReports() {
-      const sessions = loadSessions();
-      const patients = loadPatients();
-      const tokens = loadTokens();
-      const currentMonth = todayISO().slice(0, 7);
-
-      const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
-      const realizacoes = monthSessions.filter(s => s.did === "realizou");
-      const faltas = monthSessions.filter(s => s.did === "nao");
-      const faturamento = realizacoes.reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-      const aReceber = monthSessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-
-      $("monthSummary").innerHTML = `
-        Sessões: ${monthSessions.length}<br>
-        Realizadas: ${realizacoes.length}<br>
-        Faltas: ${faltas.length}
-      `;
-
-      $("absenceRate").innerHTML = monthSessions.length ?
-        `${((faltas.length / monthSessions.length) * 100).toFixed(1)}%` : "0%";
-
-      $("revenueStats").innerHTML = `
-        Faturado: ${fmtMoney(faturamento)}<br>
-        A receber: ${fmtMoney(aReceber)}
-      `;
-
-      $("activePatients").innerHTML = patients.length.toString();
-
-      // Estatísticas de Tokens
-      const sessoesCassems = sessions.filter(s => {
-        const p = getPatientById(s.patientId);
-        return p?.serviceType === "cassems";
-      });
-
-      const tokensEnviados = Object.values(tokens).filter(t => t.status === "enviado").length;
-      const tokensPendentes = sessoesCassems.length - tokensEnviados;
-
-      $("totalSessoesCassems").textContent = sessoesCassems.length;
-      $("totalTokensEnviados").textContent = tokensEnviados;
-      $("totalTokensPendentes").textContent = Math.max(0, tokensPendentes);
-
-      // Top devedores
-      const debtors = patients.map(p => {
-        const patientSessions = sessions.filter(s => s.patientId === p.id && s.paid !== "pago");
-        const debt = patientSessions.reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-        return { name: p.name, debt };
-      }).filter(d => d.debt > 0).sort((a, b) => b.debt - a.debt).slice(0, 5);
-
-      $("topDebtors").innerHTML = debtors.length ? debtors.map(d => `
-        <div class="item">
-          <b>${escapeHtml(d.name)}</b>
-          <div class="muted">Débito: ${fmtMoney(d.debt)}</div>
-        </div>
-      `).join("") : "<div class='muted'>Nenhum devedor</div>";
-
-      // Por convênio
-      const convenios = {};
-      sessions.forEach(s => {
-        const p = getPatientById(s.patientId);
-        const convenio = p?.serviceType || "particular";
-        if (!convenios[convenio]) {
-          convenios[convenio] = { total: 0, realizadas: 0, valor: 0 };
-        }
-        convenios[convenio].total++;
-        if (s.did === "realizou") {
-          convenios[convenio].realizadas++;
-          convenios[convenio].valor += Number(s.value) || 0;
-        }
-      });
-
-      $("porConvenio").innerHTML = Object.entries(convenios).map(([conv, data]) => `
-        <div class="cardMini">
-          <b>${conv.toUpperCase()}</b>
-          <div class="muted">Sessões: ${data.total}</div>
-          <div class="muted">Realizadas: ${data.realizadas}</div>
-          <div class="muted">Valor: ${fmtMoney(data.valor)}</div>
-        </div>
-      `).join("");
-    }
-
-    // ========== DIÁRIO COM CONTROLE DE TOKENS ==========
-    function renderPatientSelect() {
-      const pats = loadPatients();
-      const sel = $("pPatient");
-      sel.innerHTML = pats.length ?
-        pats.map(p => `<option value="${p.id}">${escapeHtml(p.name)}${p.serviceType === 'cassems' ? ' (Cassems)' : ''}</option>`).join("") :
-        `<option value="">(Cadastre pacientes)</option>`;
-      
-      updateDefaultHint();
-    }
-
-    function updateDefaultHint() {
-      const pid = $("pPatient").value;
-      const p = getPatientById(pid);
-      if (!p) {
-        $("hintDefault").textContent = "";
-        return;
-      }
-      $("hintDefault").textContent = `${p.serviceType || "Particular"} • Valor: ${fmtMoney(p.defaultValue || 0)}`;
-    }
-
-    function renderDaily() {
-      const date = $("date").value;
-      const search = $("search").value.toLowerCase();
-      const sessions = loadSessions().filter(s => s.date === date);
-      const tokens = loadTokens();
-
-      const filtered = sessions.filter(s => {
-        const p = getPatientById(s.patientId);
-        return !search || (p?.name || "").toLowerCase().includes(search);
-      });
-
-      // Estatísticas de tokens do dia
-      const cassemsHoje = filtered.filter(s => {
-        const p = getPatientById(s.patientId);
-        return p?.serviceType === "cassems";
-      });
-
-      const tokensHojeEnviados = cassemsHoje.filter(s => tokens[s.id]?.status === "enviado").length;
-      const tokensHojePendentes = cassemsHoje.length - tokensHojeEnviados;
-
-      $("cassemsHoje").textContent = cassemsHoje.length;
-      $("tokensEnviadosHoje").textContent = tokensHojeEnviados;
-      $("tokensPendentesHoje").textContent = tokensHojePendentes;
-
-      const list = $("dayList");
-      list.innerHTML = filtered.map(s => {
-        const p = getPatientById(s.patientId);
-        const token = tokens[s.id];
-        
-        // Indicador de token para Cassems
-        let tokenIndicator = '';
-        if (p?.serviceType === 'cassems') {
-          if (token?.status === 'enviado') {
-            tokenIndicator = `<span class="pill token" style="background:rgba(34,197,94,.15);">✅ Token: ${token.code || 'Enviado'}</span>`;
-          } else if (token?.status === 'problema') {
-            tokenIndicator = `<span class="pill token" style="background:rgba(239,68,68,.15);">❌ Problema no token</span>`;
-          } else {
-            tokenIndicator = `<span class="pill token" style="background:rgba(245,158,11,.15);">⏳ Token pendente</span>`;
-          }
-        }
-
-        return `
-        <div class="item" id="session-${s.id}">
-          <div style="display:flex; justify-content:space-between;">
-            <div>
-              <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
-              <div class="muted">
-                ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
-                ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
-              </div>
-              <div style="margin-top:5px;">
-                ${tokenIndicator}
-              </div>
-            </div>
-            <div>
-              <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
-              <span class="pill">${fmtMoney(s.value)}</span>
-            </div>
-          </div>
-          <div class="actions" style="margin-top:10px;">
-            <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
-            <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
-            <button class="small" onclick="editSessionValue('${s.id}')">✏️ Editar valor</button>
-            ${p?.serviceType === 'cassems' ? `<button class="small token-btn" onclick="openTokenModal('${s.id}', '${p.name}', '${s.date}')">🎫 Token</button>` : ''}
-            <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
-          </div>
-        </div>
-      `;
-      }).join("") || "<div class='muted'>Nenhuma sessão neste dia</div>";
-
-      $("sumDay").innerHTML = `Total: ${filtered.length}`;
-      $("sumMoney").innerHTML = `Total: ${fmtMoney(filtered.reduce((s, r) => s + (Number(r.value) || 0), 0))}`;
-      $("sumAbsences").innerHTML = filtered.filter(s => s.did === "nao").length.toString();
-    }
-
-    // ========== MODAL DE TOKEN ==========
-    window.openTokenModal = (sessionId, patientName, sessionDate) => {
-      currentTokenSessionId = sessionId;
-      const token = getTokenForSession(sessionId);
-      
-      $("tokenDate").value = sessionDate;
-      $("tokenPatient").value = patientName;
-      $("tokenCode").value = token?.code || '';
-      $("tokenStatus").value = token?.status || 'pendente';
-      
-      $("tokenModal").classList.remove("hidden");
-    };
-
-    $("cancelToken").addEventListener("click", () => {
-      $("tokenModal").classList.add("hidden");
-      currentTokenSessionId = null;
-    });
-
-    $("saveToken").addEventListener("click", () => {
-      if (!currentTokenSessionId) return;
-      
-      const tokenData = {
-        sessionId: currentTokenSessionId,
-        date: $("tokenDate").value,
-        patientName: $("tokenPatient").value,
-        code: $("tokenCode").value,
-        status: $("tokenStatus").value
-      };
-      
-      registerToken(currentTokenSessionId, tokenData);
-      $("tokenModal").classList.add("hidden");
-      renderDaily();
-      renderDashboard();
-      generateReports();
-      showAlert("✅ Token registrado com sucesso!", "success");
-    });
-
-    // ========== AÇÕES DE SESSÃO ==========
-    window.toggleSessionDid = (id) => {
-      const sessions = loadSessions();
-      const idx = sessions.findIndex(s => s.id === id);
-      if (idx >= 0) {
-        sessions[idx].did = sessions[idx].did === "realizou" ? "nao" : "realizou";
-        if (sessions[idx].did === "nao" && !sessions[idx].just) {
-          sessions[idx].just = "nao_justificada";
-        }
-        saveSessions(sessions);
-        renderDaily();
-        renderDashboard();
-        showAlert("✅ Sessão atualizada!", "success");
-      }
-    };
-
-    window.toggleSessionPaid = (id) => {
-      const sessions = loadSessions();
-      const idx = sessions.findIndex(s => s.id === id);
-      if (idx >= 0) {
-        sessions[idx].paid = sessions[idx].paid === "pago" ? "nao_pago" : "pago";
-        saveSessions(sessions);
-        renderDaily();
-        renderDashboard();
-        if (openedPatientId) openPatientFolder(openedPatientId);
-        showAlert("💰 Status de pagamento atualizado!", "success");
-      }
-    };
-
-    window.editSessionValue = (id) => {
-      const sessions = loadSessions();
-      const idx = sessions.findIndex(s => s.id === id);
-      if (idx >= 0) {
-        const newValue = prompt("Novo valor (R$):", sessions[idx].value);
-        if (newValue !== null) {
-          sessions[idx].value = parseMoney(newValue);
-          saveSessions(sessions);
-          renderDaily();
-          showAlert("✅ Valor atualizado!", "success");
-        }
-      }
-    };
-
-    window.deleteSession = (id) => {
-      if (confirm("Excluir esta sessão?")) {
-        const sessions = loadSessions().filter(s => s.id !== id);
-        saveSessions(sessions);
-        
-        // Remover token associado
-        const tokens = loadTokens();
-        delete tokens[id];
-        saveTokens(tokens);
-        
-        renderDaily();
-        if (openedPatientId) openPatientFolder(openedPatientId);
-        showAlert("🗑️ Sessão excluída!", "success");
-      }
-    };
-
-    // ========== PASTAS DE PACIENTES ==========
-    function renderPatientFolders() {
-      const search = $("pSearch").value.toLowerCase();
-      let pats = loadPatients().filter(p => !search || p.name.toLowerCase().includes(search));
-
-      if (window.debtFilterActive) {
-        const sessions = loadSessions();
-        pats = pats.filter(p => {
-          const patientSessions = sessions.filter(s => s.patientId === p.id && s.paid !== "pago");
-          return patientSessions.length > 0;
-        });
-      }
-
-      const container = $("patientFolders");
-
-      container.innerHTML = pats.map(p => {
-        const sessions = loadSessions().filter(s => s.patientId === p.id);
-        const debt = sessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-        const totalSessoes = sessions.length;
-        const realizadas = sessions.filter(s => s.did === "realizou").length;
-        const cassemsIcon = p.serviceType === 'cassems' ? '🎫' : '';
-
-        return `
-        <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
-          <div style="display:flex; justify-content:space-between;">
-            <div>
-              <b>📁 ${escapeHtml(p.name)} ${cassemsIcon}</b>
-              <div class="muted">
-                ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
-              </div>
-            </div>
-            <div>
-              ${debt > 0 ? `<span class="pill bad">💰 ${fmtMoney(debt)}</span>` : ''}
-            </div>
-          </div>
-        </div>
-      `;
-      }).join("") || "<div class='muted'>Nenhum paciente</div>";
-    }
-
-    function openPatientFolder(id) {
-      openedPatientId = id;
-      const p = getPatientById(id);
-      $("foldersPane").classList.add("hidden");
-      $("folderOpenPane").classList.remove("hidden");
-      $("openPatientTitle").textContent = `📁 ${p?.name || "Paciente"}`;
-
-      const schedule = loadSchedule();
-      let pacoteInfo = "Pacote não encontrado na agenda";
-      
-      Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
-        if (entry.patientId === id && entry.plannedTotal > 1) {
-          const sessions = loadSessions().filter(s =>
-            s.patientId === id &&
-            s.did === "realizou" &&
-            s.date >= entry.startDate
-          ).length;
-          const remaining = entry.plannedTotal - sessions;
-          const percent = (sessions / entry.plannedTotal) * 100;
-          
-          pacoteInfo = `
-            <b>📦 Pacote de ${entry.plannedTotal} sessões</b>
-            <div class="progress-bar" style="margin:10px 0;">
-              <div class="progress-fill" style="width:${percent}%; background:#22c55e;"></div>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span>✅ ${sessions} realizadas</span>
-              <span>⏳ ${remaining} restantes</span>
-            </div>
-          `;
-        }
-      });
-      
-      $("pacoteProgresso").innerHTML = pacoteInfo;
-
-      const sessions = loadSessions().filter(s => s.patientId === id).sort((a, b) => b.date.localeCompare(a.date));
-      const tokens = loadTokens();
-
-      $("patientHistory").innerHTML = sessions.map(s => {
-        const token = tokens[s.id];
-        const tokenInfo = token ? 
-          `<div class="muted" style="font-size:0.85rem;">🎫 Token: ${token.code || '—'} (${token.status})</div>` : 
-          (p?.serviceType === 'cassems' ? '<div class="muted" style="font-size:0.85rem; color:#f59e0b;">⏳ Token pendente</div>' : '');
-        
-        return `
-        <div class="item">
-          <div style="display:flex; justify-content:space-between;">
-            <div>
-              <b>${s.date} ${s.time ? "às " + s.time : ""}</b>
-              <div class="muted">
-                ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"} • 
-                ${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"} • 
-                ${fmtMoney(s.value)}
-              </div>
-              ${tokenInfo}
-            </div>
-            <div>
-              <button class="small" onclick="event.stopPropagation(); toggleSessionPaid('${s.id}')">💰</button>
-            </div>
-          </div>
-        </div>
-      `}).join("") || "<div class='muted'>Nenhum histórico</div>";
-
-      $("openPatientMeta").innerHTML = `
-        ${p.serviceType || "Particular"} • 
-        ${p.phone ? `📱 ${p.phone}` : ""} • 
-        ${p.email ? `📧 ${p.email}` : ""}
-      `;
-    }
-
     // ========== INICIALIZAÇÃO ==========
     function init() {
-      $("date").value = todayISO();
-      $("schedRef").value = todayISO();
-      $("today").innerHTML = new Date().toLocaleDateString("pt-BR", {
-        weekday: "long", year: "numeric", month: "long", day: "numeric"
-      });
+      checkVersion();
+      renderApp();
+      
+      // Verificar tema salvo
+      const savedTheme = localStorage.getItem(KEYS.THEME);
+      if (savedTheme === "light") {
+        document.body.classList.add("light-mode");
+        const themeBtn = document.getElementById("themeToggle");
+        if (themeBtn) themeBtn.innerHTML = "🌙 Tema";
+      }
 
+      // Configurar data
+      const dateInput = document.getElementById("date");
+      if (dateInput) dateInput.value = todayISO();
+      
+      const schedRef = document.getElementById("schedRef");
+      if (schedRef) schedRef.value = todayISO();
+      
+      const todayEl = document.getElementById("today");
+      if (todayEl) {
+        todayEl.innerHTML = new Date().toLocaleDateString("pt-BR", {
+          weekday: "long", year: "numeric", month: "long", day: "numeric"
+        });
+      }
+
+      // Carregar configuração de auto backup
+      autoBackup = localStorage.getItem("autoBackup") !== "false";
+      const autoBackupBtn = document.getElementById("autoBackupToggle");
+      if (autoBackupBtn) {
+        autoBackupBtn.innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
+      }
+
+      // ========== EVENT LISTENERS ==========
+      
       // Backup
-      $("backupNow").addEventListener("click", downloadBackup);
-      $("restoreBackup").addEventListener("click", () => {
-        $("backupModal").classList.remove("hidden");
+      document.getElementById("backupNow")?.addEventListener("click", downloadBackup);
+      document.getElementById("restoreBackup")?.addEventListener("click", () => {
+        document.getElementById("backupModal").classList.remove("hidden");
       });
-      $("cancelBackup").addEventListener("click", () => {
-        $("backupModal").classList.add("hidden");
+      document.getElementById("cancelBackup")?.addEventListener("click", () => {
+        document.getElementById("backupModal").classList.add("hidden");
       });
-      $("confirmRestore").addEventListener("click", () => {
-        const file = $("backupFile").files[0];
+      document.getElementById("confirmRestore")?.addEventListener("click", () => {
+        const file = document.getElementById("backupFile").files[0];
         if (file) {
           restoreFromFile(file);
-          $("backupModal").classList.add("hidden");
+          document.getElementById("backupModal").classList.add("hidden");
         }
       });
 
-      $("autoBackupToggle").addEventListener("click", () => {
+      document.getElementById("autoBackupToggle")?.addEventListener("click", () => {
         autoBackup = !autoBackup;
         localStorage.setItem("autoBackup", autoBackup);
-        $("autoBackupToggle").innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
+        const btn = document.getElementById("autoBackupToggle");
+        if (btn) {
+          btn.innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
+        }
         showAlert(autoBackup ? "✅ Backup automático ativado" : "⚪ Backup automático desativado");
       });
 
       // Tabs
-      $("tabDashboard").addEventListener("click", () => setTab("dashboard"));
-      $("tabDaily").addEventListener("click", () => setTab("daily"));
-      $("tabPatients").addEventListener("click", () => setTab("patients"));
-      $("tabSchedule").addEventListener("click", () => { setTab("schedule"); renderSchedule(); });
-      $("tabReports").addEventListener("click", () => { setTab("reports"); generateReports(); });
+      document.getElementById("tabDashboard")?.addEventListener("click", () => setTab("dashboard"));
+      document.getElementById("tabDaily")?.addEventListener("click", () => setTab("daily"));
+      document.getElementById("tabPatients")?.addEventListener("click", () => setTab("patients"));
+      document.getElementById("tabSchedule")?.addEventListener("click", () => { setTab("schedule"); renderSchedule(); });
+      document.getElementById("tabReports")?.addEventListener("click", () => { setTab("reports"); generateReports(); });
 
       // Ações
-      $("addPatient").addEventListener("click", addPatient);
-      $("addSession").addEventListener("click", addSession);
-      $("findInDay").addEventListener("click", findInDay);
-      $("clearDay").addEventListener("click", clearDay);
-      $("resetAll").addEventListener("click", resetAll);
-      $("date").addEventListener("change", renderDaily);
-      $("search").addEventListener("input", renderDaily);
-      $("pPatient").addEventListener("change", updateDefaultHint);
-      $("pSearch").addEventListener("input", renderPatientFolders);
-      $("backToFolders").addEventListener("click", () => {
+      document.getElementById("addPatient")?.addEventListener("click", addPatient);
+      document.getElementById("addSession")?.addEventListener("click", addSession);
+      document.getElementById("findInDay")?.addEventListener("click", findInDay);
+      document.getElementById("clearDay")?.addEventListener("click", clearDay);
+      document.getElementById("resetAll")?.addEventListener("click", resetAll);
+      document.getElementById("date")?.addEventListener("change", renderDaily);
+      document.getElementById("search")?.addEventListener("input", renderDaily);
+      document.getElementById("pPatient")?.addEventListener("change", updateDefaultHint);
+      document.getElementById("pSearch")?.addEventListener("input", renderPatientFolders);
+      document.getElementById("backToFolders")?.addEventListener("click", () => {
         openedPatientId = null;
-        $("folderOpenPane").classList.add("hidden");
-        $("foldersPane").classList.remove("hidden");
+        document.getElementById("folderOpenPane").classList.add("hidden");
+        document.getElementById("foldersPane").classList.remove("hidden");
       });
-      $("schedRef").addEventListener("change", renderSchedule);
-      $("addTime").addEventListener("click", addTime);
-      $("resetTimes").addEventListener("click", resetTimes);
-      $("btnAnamnese").addEventListener("click", openAnamnese);
-      $("closeAnamnese").addEventListener("click", () => $("anamneseModal").classList.add("hidden"));
-      $("saveAnamnese").addEventListener("click", saveAnamnese);
-      $("openWhats").addEventListener("click", openWhatsApp);
-      $("renamePatient").addEventListener("click", renamePatient);
-      $("deletePatient").addEventListener("click", deletePatient);
-      $("onlyDebtFolders").addEventListener("click", toggleDebtFilter);
-      $("themeToggle").addEventListener("click", toggleTheme);
+      document.getElementById("schedRef")?.addEventListener("change", renderSchedule);
+      document.getElementById("addTime")?.addEventListener("click", addTime);
+      document.getElementById("resetTimes")?.addEventListener("click", resetTimes);
+      document.getElementById("btnAnamnese")?.addEventListener("click", openAnamnese);
+      document.getElementById("closeAnamnese")?.addEventListener("click", () => {
+        document.getElementById("anamneseModal").classList.add("hidden");
+      });
+      document.getElementById("saveAnamnese")?.addEventListener("click", saveAnamnese);
+      document.getElementById("openWhats")?.addEventListener("click", openWhatsApp);
+      document.getElementById("renamePatient")?.addEventListener("click", renamePatient);
+      document.getElementById("deletePatient")?.addEventListener("click", deletePatient);
+      document.getElementById("onlyDebtFolders")?.addEventListener("click", toggleDebtFilter);
+      document.getElementById("themeToggle")?.addEventListener("click", toggleTheme);
 
       // Filtros da agenda
-      $("filterHoje").addEventListener("click", filterHoje);
-      $("filterAmanha").addEventListener("click", () => {
+      document.getElementById("filterHoje")?.addEventListener("click", filterHoje);
+      document.getElementById("filterAmanha")?.addEventListener("click", () => {
         const amanha = (new Date().getDay() + 1) % 7;
         const rows = document.querySelectorAll("#schedTable tbody tr");
         rows.forEach(row => {
@@ -2059,7 +1880,7 @@
           });
         });
       });
-      $("filterSemana").addEventListener("click", () => {
+      document.getElementById("filterSemana")?.addEventListener("click", () => {
         const rows = document.querySelectorAll("#schedTable tbody tr");
         rows.forEach(row => {
           const cells = row.querySelectorAll("td:not(.timeCell)");
@@ -2069,9 +1890,111 @@
         });
       });
 
+      // Modais
+      document.getElementById("cancelToken")?.addEventListener("click", () => {
+        document.getElementById("tokenModal").classList.add("hidden");
+        currentTokenSessionId = null;
+      });
+
+      document.getElementById("saveToken")?.addEventListener("click", () => {
+        if (!currentTokenSessionId) return;
+        
+        const tokenData = {
+          sessionId: currentTokenSessionId,
+          date: document.getElementById("tokenDate").value,
+          patientName: document.getElementById("tokenPatient").value,
+          code: document.getElementById("tokenCode").value,
+          status: document.getElementById("tokenStatus").value
+        };
+        
+        registerToken(currentTokenSessionId, tokenData);
+        document.getElementById("tokenModal").classList.add("hidden");
+        renderDaily();
+        renderDashboard();
+        generateReports();
+        showAlert("✅ Token registrado com sucesso!", "success");
+      });
+
+      // Configurar seletores de dia
+      document.querySelectorAll('.weekday-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const freq = document.getElementById("packFrequency")?.value;
+          if (freq !== "2") return;
+          
+          const selected = document.querySelectorAll('.weekday-btn.selected').length;
+          if (btn.classList.contains('selected')) {
+            btn.classList.remove('selected');
+          } else if (selected < 2) {
+            btn.classList.add('selected');
+          } else {
+            showAlert("Selecione apenas 2 dias para 2x por semana", "warning");
+          }
+        });
+      });
+
+      document.getElementById("packFrequency")?.addEventListener("change", toggleWeekdaySelector);
+
+      document.getElementById("cancelPack")?.addEventListener("click", () => {
+        document.getElementById("packModal").classList.add("hidden");
+        currentPackPatientId = null;
+      });
+
+      document.getElementById("savePack")?.addEventListener("click", () => {
+        if (!currentPackPatientId) return;
+        
+        const patient = getPatientById(currentPackPatientId);
+        const startDate = document.getElementById("packStartDate").value;
+        const totalSessions = parseInt(document.getElementById("packTotal").value);
+        const frequency = parseInt(document.getElementById("packFrequency").value);
+        const time = document.getElementById("packTime").value;
+        
+        let weekdays = [];
+        if (frequency === 2) {
+          weekdays = Array.from(document.querySelectorAll('.weekday-btn.selected'))
+            .map(btn => parseInt(btn.dataset.day));
+          
+          if (weekdays.length !== 2) {
+            showAlert("Selecione exatamente 2 dias para 2x por semana", "warning");
+            return;
+          }
+        } else {
+          weekdays = [new Date(startDate).getDay()];
+        }
+        
+        const packConfig = {
+          patientId: currentPackPatientId,
+          patientName: patient.name,
+          serviceType: patient.serviceType,
+          startDate: startDate,
+          totalSessions: totalSessions,
+          frequency: frequency,
+          weekdays: weekdays,
+          time: time,
+          createdAt: new Date().toISOString()
+        };
+        
+        savePatientPack(currentPackPatientId, packConfig);
+        
+        // Gerar agenda automática
+        generatePackSchedule(currentPackPatientId, packConfig);
+        
+        document.getElementById("packModal").classList.add("hidden");
+        
+        if (openedPatientId === currentPackPatientId) {
+          openPatientFolder(currentPackPatientId);
+        }
+        
+        renderSchedule();
+        renderDashboard();
+        generateReports();
+        showAlert("✅ Configuração do pacote salva com sucesso!", "success");
+        
+        currentPackPatientId = null;
+      });
+
       // Atalhos
-      $("shortcutsHint").addEventListener("click", () => {
-        $("shortcutsPanel").classList.toggle("hidden");
+      document.getElementById("shortcutsHint")?.addEventListener("click", () => {
+        document.getElementById("shortcutsPanel").classList.toggle("hidden");
       });
 
       document.addEventListener("keydown", (e) => {
@@ -2080,14 +2003,14 @@
             case "n":
               e.preventDefault();
               setTab("patients");
-              $("cName").focus();
+              document.getElementById("cName")?.focus();
               break;
             case "f":
               e.preventDefault();
-              if ($("viewDaily").classList.contains("hidden")) {
+              if (document.getElementById("viewDaily").classList.contains("hidden")) {
                 setTab("daily");
               }
-              $("search").focus();
+              document.getElementById("search")?.focus();
               break;
             case "1":
               e.preventDefault();
@@ -2110,6 +2033,7 @@
         }
       });
 
+      // Carregar dados iniciais
       renderPatientSelect();
       renderDaily();
       renderPatientFolders();
@@ -2117,6 +2041,7 @@
       renderDashboard();
       generateReports();
 
+      // Backup automático a cada 5 minutos
       if (autoBackup) {
         setInterval(() => {
           createAutoBackup();
@@ -2124,297 +2049,15 @@
       }
     }
 
-    function setTab(tab) {
-      $("viewDashboard").classList.toggle("hidden", tab !== "dashboard");
-      $("viewDaily").classList.toggle("hidden", tab !== "daily");
-      $("viewPatients").classList.toggle("hidden", tab !== "patients");
-      $("viewSchedule").classList.toggle("hidden", tab !== "schedule");
-      $("viewReports").classList.toggle("hidden", tab !== "reports");
+    // ========== FUNÇÕES AUXILIARES (serão definidas aqui) ==========
+    // ... (todas as outras funções do sistema)
 
-      [$("tabDashboard"), $("tabDaily"), $("tabPatients"), $("tabSchedule"), $("tabReports")].forEach(t =>
-        t.classList.remove("active")
-      );
-      $(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add("active");
-
-      if (tab === "dashboard") renderDashboard();
-      if (tab === "reports") generateReports();
+    // Iniciar quando a página carregar
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
     }
-
-    // ========== AÇÕES DE PACIENTE ==========
-    function addPatient() {
-      const name = $("cName").value.trim();
-      if (!name) return showAlert("❌ Nome é obrigatório", "error");
-
-      const patient = {
-        id: uid(),
-        name,
-        birth: $("cBirth").value,
-        cpf: $("cCpf").value,
-        resp: $("cResp").value,
-        phone: $("cPhone").value,
-        email: $("cEmail").value,
-        serviceType: $("cServiceType").value,
-        defaultValue: parseMoney($("cDefaultValue").value),
-        billingType: $("cBillingType").value,
-        fixedDay: $("cFixDay").value,
-        fixedHour: $("cFixHour").value,
-        notes: $("cNotes").value,
-        anamnese: { queixa: "", historico: "", obs: "" },
-        createdAt: new Date().toISOString()
-      };
-
-      const patients = loadPatients();
-      patients.push(patient);
-      savePatients(patients);
-
-      if (patient.fixedDay && patient.fixedHour) {
-        const sch = loadSchedule();
-        sch.recurring = sch.recurring || {};
-        const key = recurKey(parseInt(patient.fixedDay), patient.fixedHour);
-
-        if (sch.recurring[key]) {
-          showAlert(`⚠️ Horário ${DAYS[parseInt(patient.fixedDay)]} ${patient.fixedHour} já está ocupado!`, "warning");
-        } else {
-          sch.recurring[key] = {
-            patientId: patient.id,
-            serviceType: patient.serviceType,
-            startDate: todayISO(),
-            plannedTotal: patient.billingType === "pack4" ? 4 :
-              patient.billingType === "pack8" ? 8 : 1
-          };
-
-          if (!sch.times.includes(patient.fixedHour)) {
-            sch.times.push(patient.fixedHour);
-            sch.times.sort();
-          }
-
-          saveSchedule(sch);
-          showAlert(`✅ Paciente agendado automaticamente para ${DAYS[parseInt(patient.fixedDay)]} ${patient.fixedHour}!`, "success");
-        }
-      }
-
-      $("cName").value = "";
-      $("cBirth").value = "";
-      $("cCpf").value = "";
-      $("cResp").value = "";
-      $("cPhone").value = "";
-      $("cEmail").value = "";
-      $("cDefaultValue").value = "";
-      $("cFixHour").value = "";
-      $("cNotes").value = "";
-
-      renderPatientSelect();
-      renderPatientFolders();
-      renderSchedule();
-      renderDashboard();
-      showAlert("✅ Paciente cadastrado com sucesso!", "success");
-    }
-
-    function openAnamnese() {
-      const p = getPatientById(openedPatientId);
-      if (p) {
-        $("aQueixa").value = p.anamnese?.queixa || "";
-        $("aHistorico").value = p.anamnese?.historico || "";
-        $("aObs").value = p.anamnese?.obs || "";
-        $("anamneseModal").classList.remove("hidden");
-      }
-    }
-
-    function saveAnamnese() {
-      const patients = loadPatients();
-      const idx = patients.findIndex(p => p.id === openedPatientId);
-      if (idx >= 0) {
-        patients[idx].anamnese = {
-          queixa: $("aQueixa").value,
-          historico: $("aHistorico").value,
-          obs: $("aObs").value
-        };
-        savePatients(patients);
-        $("anamneseModal").classList.add("hidden");
-        showAlert("✅ Anamnese salva!", "success");
-      }
-    }
-
-    function openWhatsApp() {
-      const p = getPatientById(openedPatientId);
-      if (p?.phone) {
-        window.open(`https://wa.me/55${p.phone}`, "_blank");
-      } else {
-        showAlert("❌ Paciente sem WhatsApp cadastrado", "error");
-      }
-    }
-
-    function renamePatient() {
-      const patients = loadPatients();
-      const idx = patients.findIndex(p => p.id === openedPatientId);
-      if (idx >= 0) {
-        const newName = prompt("Novo nome:", patients[idx].name);
-        if (newName) {
-          patients[idx].name = newName.trim();
-          savePatients(patients);
-          openPatientFolder(openedPatientId);
-          renderPatientFolders();
-          renderPatientSelect();
-          showAlert("✅ Nome atualizado!", "success");
-        }
-      }
-    }
-
-    function deletePatient() {
-      if (confirm("Excluir paciente e todo seu histórico?")) {
-        const patients = loadPatients().filter(p => p.id !== openedPatientId);
-        const sessions = loadSessions().filter(s => s.patientId !== openedPatientId);
-
-        const sch = loadSchedule();
-        if (sch.recurring) {
-          Object.keys(sch.recurring).forEach(key => {
-            if (sch.recurring[key].patientId === openedPatientId) {
-              delete sch.recurring[key];
-            }
-          });
-        }
-
-        savePatients(patients);
-        saveSessions(sessions);
-        saveSchedule(sch);
-
-        $("folderOpenPane").classList.add("hidden");
-        $("foldersPane").classList.remove("hidden");
-        renderPatientFolders();
-        renderPatientSelect();
-        renderSchedule();
-        renderDashboard();
-        showAlert("🗑️ Paciente excluído!", "success");
-      }
-    }
-
-    window.debtFilterActive = false;
-    function toggleDebtFilter() {
-      window.debtFilterActive = !window.debtFilterActive;
-      $("onlyDebtFolders").classList.toggle("primary", window.debtFilterActive);
-      renderPatientFolders();
-    }
-
-    // ========== AÇÕES DE SESSÃO ==========
-    function addSession() {
-      const date = $("date").value;
-      const patientId = $("pPatient").value;
-      const time = $("pTime").value;
-      const did = $("pDid").value;
-      const just = $("pJust").value;
-      const paid = $("pPaid").value;
-      const manualValue = $("pValue").value;
-
-      if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
-
-      const p = getPatientById(patientId);
-      let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
-      if (p?.serviceType === "cassems") value = 26;
-
-      const session = {
-        id: uid(),
-        date, patientId, time,
-        did: did,
-        just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
-        paid, value
-      };
-
-      const sessions = loadSessions();
-      sessions.push(session);
-      saveSessions(sessions);
-
-      // Se for Cassems, criar token pendente automaticamente
-      if (p?.serviceType === "cassems") {
-        registerToken(session.id, {
-          sessionId: session.id,
-          date: date,
-          patientName: p.name,
-          code: '',
-          status: 'pendente'
-        });
-      }
-
-      $("pTime").value = "";
-      $("pValue").value = "";
-      renderDaily();
-      renderDashboard();
-      if (openedPatientId) openPatientFolder(openedPatientId);
-      showAlert("✅ Sessão adicionada!", "success");
-    }
-
-    function findInDay() {
-      const term = $("search").value.toLowerCase();
-      const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
-      if (patient) {
-        $("pPatient").value = patient.id;
-        updateDefaultHint();
-        showAlert(`🔍 Paciente ${patient.name} selecionado`, "success");
-      }
-      renderDaily();
-    }
-
-    function clearDay() {
-      const date = $("date").value;
-      if (confirm(`Limpar todas as sessões de ${date}?`)) {
-        const sessions = loadSessions().filter(s => s.date !== date);
-        saveSessions(sessions);
-        
-        // Remover tokens das sessões excluídas
-        const tokens = loadTokens();
-        const sessionsToRemove = loadSessions().filter(s => s.date === date);
-        sessionsToRemove.forEach(s => {
-          delete tokens[s.id];
-        });
-        saveTokens(tokens);
-        
-        renderDaily();
-        renderDashboard();
-        showAlert("🗑️ Dia limpo!", "success");
-      }
-    }
-
-    function resetAll() {
-      if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
-        localStorage.removeItem(KEYS.PATIENTS);
-        localStorage.removeItem(KEYS.SESSIONS);
-        localStorage.removeItem(KEYS.SCHEDULE);
-        localStorage.removeItem(KEYS.TOKENS);
-        location.reload();
-      }
-    }
-
-    // ========== AÇÕES DE AGENDA ==========
-    function addTime() {
-      const time = $("newTime").value.trim();
-      if (!time) return;
-      if (!/^\d{1,2}:\d{2}$/.test(time)) {
-        return showAlert("❌ Formato inválido. Use HH:MM", "error");
-      }
-
-      const sch = loadSchedule();
-      if (!sch.times.includes(time)) {
-        sch.times.push(time);
-        sch.times.sort();
-        saveSchedule(sch);
-        renderSchedule();
-        showAlert(`✅ Horário ${time} adicionado!`, "success");
-      }
-      $("newTime").value = "";
-    }
-
-    function resetTimes() {
-      if (confirm("Restaurar horários padrão?")) {
-        const sch = loadSchedule();
-        sch.times = defaultTimes();
-        saveSchedule(sch);
-        renderSchedule();
-        showAlert("✅ Horários restaurados!", "success");
-      }
-    }
-
-    // Iniciar
-    init();
   </script>
 </body>
-
 </html>
