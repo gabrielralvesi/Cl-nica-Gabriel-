@@ -739,7 +739,7 @@
         </div>
       </section>
 
-      <!-- AGENDAMENTO COM HORÁRIOS 13:00-17:40 -->
+      <!-- AGENDAMENTO COM HORÁRIOS 13:00-17:40 (CORRIGIDO) -->
       <section id="viewSchedule" class="card hidden">
         <div class="row">
           <div>
@@ -770,7 +770,7 @@
           <span class="pill bad">🔴 Vago</span>
           <span class="pill">⚠️ Falta 1</span>
           <span class="pill">🏁 Pacote concluído</span>
-          <span class="pill pri">⏰ 13:00 às 17:40 (40min)</span>
+          <span class="pill pri">⏰ 13:00, 13:40, 14:20, 15:00, 15:40, 16:20, 17:00, 17:40</span>
         </div>
       </section>
     </main>
@@ -883,7 +883,7 @@
       "outros": "slotBlue"
     };
 
-    // HORÁRIOS PADRÃO: 13:00 ÀS 17:40 (40 em 40 minutos)
+    // ===== HORÁRIOS PADRÃO CORRIGIDOS: 13:00 ÀS 17:40 (40 em 40 minutos) =====
     const DEFAULT_TIMES = [
       "13:00", "13:40", "14:20", "15:00", "15:40", "16:20", "17:00", "17:40"
     ];
@@ -1231,10 +1231,8 @@
         setTab("patients");
         openPatientFolder(session.patientId);
         
-        // Mudar para aba de evolução
         showEvolucaoTab();
         
-        // Abrir modal de evolução
         setTimeout(() => {
           $("evoDate").value = session.date || todayISO();
           $("evoTexto").value = `Sessão de ${session.time || "horário não registrado"}\n\n`;
@@ -1695,10 +1693,8 @@
         ${p.email ? `📧 ${p.email}` : ""}
       `;
 
-      // Mostrar aba de histórico por padrão
       showHistoricoTab();
 
-      // Progresso do pacote
       const schedule = loadSchedule();
       let pacoteHtml = '<div class="muted">Nenhum pacote ativo</div>';
       
@@ -1735,7 +1731,6 @@
       });
       $("pacoteProgresso").innerHTML = pacoteHtml;
 
-      // Histórico de sessões
       const sessions = loadSessions()
         .filter(s => s.patientId === id)
         .sort((a, b) => b.date.localeCompare(a.date));
@@ -1761,7 +1756,6 @@
         </div>
       `).join("") : "<div class='muted'>Nenhuma sessão registrada</div>";
 
-      // Carregar metas no select do modal
       const metas = loadMetas(id);
       const selectMeta = $("evoMeta");
       selectMeta.innerHTML = '<option value="">— Selecione uma meta —</option>' +
@@ -1789,12 +1783,10 @@
       renderPatientFolders();
     });
 
-    // Abas da pasta
     $("tabPacienteHistorico").addEventListener("click", showHistoricoTab);
     $("tabPacienteEvolucao").addEventListener("click", showEvolucaoTab);
     $("tabPacienteMetas").addEventListener("click", showMetasTab);
 
-    // Anamnese
     $("btnAnamnese").addEventListener("click", () => {
       const p = getPatientById(openedPatientId);
       if (p) {
@@ -1824,7 +1816,6 @@
       }
     });
 
-    // Evolução
     $("btnEvolucao").addEventListener("click", () => {
       $("evoDate").value = todayISO();
       $("evoTexto").value = "";
@@ -1863,7 +1854,6 @@
       showAlert("✅ Evolução registrada!", "success");
     });
 
-    // Metas
     $("addMeta").addEventListener("click", () => {
       $("metaDesc").value = "";
       $("metaPrazo").value = "";
@@ -1894,7 +1884,6 @@
       showAlert("✅ Meta adicionada!", "success");
     });
 
-    // WhatsApp
     $("openWhats").addEventListener("click", () => {
       const p = getPatientById(openedPatientId);
       if (p?.phone) {
@@ -1924,7 +1913,6 @@
         const patients = loadPatients().filter(p => p.id !== openedPatientId);
         const sessions = loadSessions().filter(s => s.patientId !== openedPatientId);
         
-        // Remover evoluções e metas
         const evolucoes = loadData(KEYS.EVOLUTION, {});
         delete evolucoes[openedPatientId];
         saveData(KEYS.EVOLUTION, evolucoes);
