@@ -608,7 +608,7 @@
         <div class="list" id="dayList"></div>
       </section>
 
-      <!-- PACIENTES COM DATA DE INÍCIO E TÉRMINO DO PACOTE -->
+      <!-- PACIENTES COM DATAS MANUAIS E PACOTE 2X SEMANA -->
       <section id="viewPatients" class="card hidden">
         <div class="split">
           <!-- Cadastro com Datas do Pacote -->
@@ -655,14 +655,15 @@
               <div>
                 <label>Tipo de cobrança</label>
                 <select id="cBillingType">
-                  <option value="pack4">📦 Pacote 4 sessões</option>
-                  <option value="pack8">📦 Pacote 8 sessões</option>
+                  <option value="pack4">📦 Pacote 4 sessões (1x/semana)</option>
+                  <option value="pack8_1x">📦 Pacote 8 sessões (1x/semana)</option>
+                  <option value="pack8_2x">📦📦 Pacote 8 sessões (2x/semana)</option>
                   <option value="individual">💳 Individual</option>
                 </select>
               </div>
             </div>
 
-            <!-- NOVOS CAMPOS: Data de Início e Término do Pacote -->
+            <!-- NOVOS CAMPOS: Data de Início e Término do Pacote (MANUAL) -->
             <div class="grid2" style="margin-top:15px;">
               <div>
                 <label>📅 Data de início do pacote</label>
@@ -670,10 +671,35 @@
                 <small class="muted">Quando o paciente iniciou o tratamento</small>
               </div>
               <div>
-                <label>📅 Data de término prevista</label>
-                <input id="cDataTermino" type="date" readonly />
-                <small class="muted">Calculado automaticamente</small>
+                <label>📅 Data de término (manual)</label>
+                <input id="cDataTermino" type="date" />
+                <small class="muted">Deixe em branco para cálculo automático</small>
               </div>
+            </div>
+
+            <!-- PARA PACOTE 8 SESSÕES 2X SEMANA - SEGUNDO DIA -->
+            <div id="segundoDiaContainer" class="hidden" style="margin-top:15px; padding:15px; background:rgba(14,165,233,.1); border-radius:12px;">
+              <b>🔄 Segunda sessão da semana (pacote 8 sessões - 2x/semana)</b>
+              <div class="grid2" style="margin-top:10px;">
+                <div>
+                  <label>Dia da semana</label>
+                  <select id="cFixDay2">
+                    <option value="">Selecione</option>
+                    <option value="0">Segunda</option>
+                    <option value="1">Terça</option>
+                    <option value="2">Quarta</option>
+                    <option value="3">Quinta</option>
+                    <option value="4">Sexta</option>
+                    <option value="5">Sábado</option>
+                    <option value="6">Domingo</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Horário</label>
+                  <input id="cFixHour2" placeholder="14:30" />
+                </div>
+              </div>
+              <small class="muted">Escolha um dia diferente do primeiro horário</small>
             </div>
 
             <div>
@@ -686,7 +712,7 @@
             </div>
 
             <div style="margin-top:15px;">
-              <label>Horário fixo (opcional)</label>
+              <label>Horário fixo (primeiro horário da semana)</label>
               <div style="display:flex; gap:8px;">
                 <select id="cFixDay" style="flex:1;">
                   <option value="">Dia</option>
@@ -698,7 +724,7 @@
                   <option value="5">Sáb</option>
                   <option value="6">Dom</option>
                 </select>
-                <input id="cFixHour" placeholder="07:40" style="flex:1;" />
+                <input id="cFixHour" placeholder="13:00" style="flex:1;" />
               </div>
               <small class="muted">Agenda automática</small>
             </div>
@@ -914,12 +940,18 @@
       <div style="margin:15px 0;">
         <label>Data da primeira sessão</label>
         <input type="date" id="spDataInicio" />
-        <small class="muted">As sessões serão distribuídas semanalmente a partir desta data</small>
+        <small class="muted">As sessões serão distribuídas conforme a frequência do pacote</small>
       </div>
       
       <div style="margin:15px 0;">
-        <label>Horário das sessões</label>
+        <label>Horário das sessões (primeiro horário)</label>
         <input type="time" id="spHorario" value="13:00" />
+      </div>
+      
+      <!-- Segundo horário para pacote 2x semana -->
+      <div id="spSegundoHorarioContainer" class="hidden" style="margin:15px 0; padding:10px; background:rgba(14,165,233,.1); border-radius:8px;">
+        <label>Segundo horário (para pacote 2x/semana)</label>
+        <input type="time" id="spHorario2" value="14:30" />
       </div>
       
       <div style="margin:15px 0;">
@@ -1033,38 +1065,14 @@
       alertTimeout = setTimeout(() => alert.remove(), 3000);
     }
 
-    // ========== CÁLCULO DA DATA DE TÉRMINO ==========
-    function calcularDataTermino(dataInicio, tipoPacote) {
-      if (!dataInicio) return "";
-      
-      const inicio = new Date(dataInicio + "T00:00:00");
-      let totalSemanas = 0;
-      
-      if (tipoPacote === "pack4") totalSemanas = 4;
-      else if (tipoPacote === "pack8") totalSemanas = 8;
-      else return ""; // Individual não tem data de término
-      
-      // Adiciona as semanas (1 sessão por semana)
-      inicio.setDate(inicio.getDate() + (totalSemanas * 7));
-      
-      const ano = inicio.getFullYear();
-      const mes = String(inicio.getMonth() + 1).padStart(2, "0");
-      const dia = String(inicio.getDate()).padStart(2, "0");
-      
-      return `${ano}-${mes}-${dia}`;
-    }
-
-    // Atualizar data de término automaticamente
-    $("cDataInicio").addEventListener("change", () => {
-      const dataInicio = $("cDataInicio").value;
-      const tipoPacote = $("cBillingType").value;
-      $("cDataTermino").value = calcularDataTermino(dataInicio, tipoPacote);
-    });
-
+    // ========== CONTROLE DO SEGUNDO DIA (PACOTE 2X SEMANA) ==========
     $("cBillingType").addEventListener("change", () => {
-      const dataInicio = $("cDataInicio").value;
-      const tipoPacote = $("cBillingType").value;
-      $("cDataTermino").value = calcularDataTermino(dataInicio, tipoPacote);
+      const tipo = $("cBillingType").value;
+      if (tipo === "pack8_2x") {
+        $("segundoDiaContainer").classList.remove("hidden");
+      } else {
+        $("segundoDiaContainer").classList.add("hidden");
+      }
     });
 
     // ========== BACKUP ==========
@@ -1196,13 +1204,28 @@
     }
 
     // ========== FUNÇÃO PARA ADICIONAR SESSÕES PASSADAS ==========
-    function adicionarSessoesPassadas(patientId, quantidade, dataInicio, horario, status, pago) {
+    function adicionarSessoesPassadas(patientId, quantidade, dataInicio, horario1, horario2, status, pago, frequencia) {
       const sessions = loadSessions();
       const novasSessoes = [];
+      const data = new Date(dataInicio + "T00:00:00");
       
       for (let i = 0; i < quantidade; i++) {
-        const data = new Date(dataInicio + "T00:00:00");
-        data.setDate(data.getDate() + (i * 7)); // 1 sessão por semana
+        // Para pacote 2x por semana, intercala os horários
+        let horario = horario1;
+        if (frequencia === "2x" && i % 2 === 1 && horario2) {
+          horario = horario2;
+        }
+        
+        // Calcula a data: para 2x por semana, avança 3-4 dias entre sessões
+        if (frequencia === "2x" && i > 0) {
+          if (i % 2 === 1) {
+            data.setDate(data.getDate() + 3); // 3 dias após primeira da semana
+          } else {
+            data.setDate(data.getDate() + 4); // 4 dias após segunda da semana
+          }
+        } else if (i > 0) {
+          data.setDate(data.getDate() + 7); // 1x por semana
+        }
         
         const ano = data.getFullYear();
         const mes = String(data.getMonth() + 1).padStart(2, "0");
@@ -1220,17 +1243,15 @@
           did: status,
           just: status === "nao" ? "nao_justificada" : "na",
           paid: pago,
-          value: 0 // Será preenchido depois com o valor do paciente
+          value: 0
         });
       }
       
-      // Adicionar todas as sessões
       sessions.push(...novasSessoes);
       saveSessions(sessions);
       
       showAlert(`✅ ${novasSessoes.length} sessões passadas adicionadas!`, "success");
       
-      // Atualizar UI
       if (openedPatientId === patientId) {
         openPatientFolder(patientId);
       }
@@ -1553,23 +1574,18 @@
             else if (serviceType === "3") finalService = "unimed";
             else if (serviceType === "4") finalService = "outros";
 
-            const packageType = prompt(
-              `Tipo de pacote:\n` +
-              `1 - Individual\n2 - Pacote 4\n3 - Pacote 8`,
-              patient.billingType === "pack4" ? "2" :
-              patient.billingType === "pack8" ? "3" : "1"
-            );
-
             let plannedTotal = 1;
-            if (packageType === "2") plannedTotal = 4;
-            else if (packageType === "3") plannedTotal = 8;
+            if (patient.billingType === "pack4") plannedTotal = 4;
+            else if (patient.billingType === "pack8_1x") plannedTotal = 8;
+            else if (patient.billingType === "pack8_2x") plannedTotal = 8;
 
             sch.recurring = sch.recurring || {};
             sch.recurring[key] = {
               patientId: patient.id,
               serviceType: finalService,
               startDate: todayISO(),
-              plannedTotal: plannedTotal
+              plannedTotal: plannedTotal,
+              frequencia: patient.billingType === "pack8_2x" ? "2x" : "1x"
             };
 
             saveSchedule(sch);
@@ -1641,31 +1657,12 @@
         const totalSessoes = sessions.length;
         const realizadas = sessions.filter(s => s.did === "realizou").length;
 
-        // Calcular progresso do pacote
-        let progressoTexto = "";
-        if (p.dataInicio && (p.billingType === "pack4" || p.billingType === "pack8")) {
-          const schedule = loadSchedule();
-          let encontrou = false;
-          
-          Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
-            if (entry.patientId === p.id && entry.plannedTotal > 1) {
-              encontrou = true;
-              const sessionsPacote = sessions.filter(s =>
-                s.did === "realizou" &&
-                s.date >= entry.startDate
-              ).length;
-              const remaining = entry.plannedTotal - sessionsPacote;
-              progressoTexto = ` • ${sessionsPacote}/${entry.plannedTotal} sessões`;
-            }
-          });
-          
-          if (!encontrou) {
-            progressoTexto = ` • Início: ${new Date(p.dataInicio).toLocaleDateString("pt-BR")}`;
-            if (p.dataTermino) {
-              progressoTexto += ` → Término: ${new Date(p.dataTermino).toLocaleDateString("pt-BR")}`;
-            }
-          }
-        }
+        // Mostrar tipo de pacote
+        let tipoPacote = "";
+        if (p.billingType === "pack4") tipoPacote = "4 sessões (1x/sem)";
+        else if (p.billingType === "pack8_1x") tipoPacote = "8 sessões (1x/sem)";
+        else if (p.billingType === "pack8_2x") tipoPacote = "8 sessões (2x/sem)";
+        else if (p.billingType === "individual") tipoPacote = "Individual";
 
         const convenioClass = p.serviceType === "cassems" ? "ok" : 
                              p.serviceType === "unimed" ? "info" : 
@@ -1678,11 +1675,12 @@
                 <b>📁 ${escapeHtml(p.name)}</b>
                 <div class="muted" style="margin-top:5px;">
                   <span class="pill ${convenioClass}">${p.serviceType || "particular"}</span>
+                  <span class="pill info">${tipoPacote}</span>
                   <span class="pill">${totalSessoes} sessões</span>
                   <span class="pill ok">${realizadas} realizadas</span>
                   ${debt > 0 ? `<span class="pill bad">💰 ${fmtMoney(debt)}</span>` : ''}
-                  ${progressoTexto ? `<span class="pill info">${progressoTexto}</span>` : ''}
                 </div>
+                ${p.dataInicio ? `<div class="muted" style="font-size:0.8rem;">📅 Início: ${new Date(p.dataInicio).toLocaleDateString("pt-BR")} ${p.dataTermino ? `• Término: ${new Date(p.dataTermino).toLocaleDateString("pt-BR")}` : ''}</div>` : ''}
               </div>
               <div>
                 <button class="small primary" onclick="event.stopPropagation(); openPatientFolder('${p.id}')">Abrir</button>
@@ -1822,14 +1820,19 @@
       
       $("openPatientTitle").textContent = `📁 ${p.name}`;
       
-      // Meta info com datas do pacote
       let metaInfo = `${p.serviceType || "Particular"} • ${p.phone ? `📱 ${p.phone}` : "📱 Não cadastrado"}`;
       if (p.dataInicio) {
         metaInfo += ` • Início: ${new Date(p.dataInicio).toLocaleDateString("pt-BR")}`;
         if (p.dataTermino) {
-          metaInfo += ` • Término previsto: ${new Date(p.dataTermino).toLocaleDateString("pt-BR")}`;
+          metaInfo += ` • Término: ${new Date(p.dataTermino).toLocaleDateString("pt-BR")}`;
         }
       }
+      
+      // Tipo de pacote
+      if (p.billingType === "pack4") metaInfo += " • 4 sessões (1x/sem)";
+      else if (p.billingType === "pack8_1x") metaInfo += " • 8 sessões (1x/sem)";
+      else if (p.billingType === "pack8_2x") metaInfo += " • 8 sessões (2x/sem)";
+      
       $("openPatientMeta").innerHTML = metaInfo;
 
       showHistoricoTab();
@@ -2089,8 +2092,8 @@
       }
 
       const dataInicio = $("cDataInicio").value;
+      const dataTermino = $("cDataTermino").value || null;
       const tipoPacote = $("cBillingType").value;
-      const dataTermino = calcularDataTermino(dataInicio, tipoPacote);
 
       const patient = {
         id: uid(),
@@ -2104,9 +2107,11 @@
         defaultValue: parseMoney($("cDefaultValue").value),
         billingType: tipoPacote,
         dataInicio: dataInicio || null,
-        dataTermino: dataTermino || null,
+        dataTermino: dataTermino,
         fixedDay: $("cFixDay").value,
         fixedHour: $("cFixHour").value,
+        fixedDay2: $("cFixDay2").value,
+        fixedHour2: $("cFixHour2").value,
         notes: $("cNotes").value,
         anamnese: { queixa: "", historico: "", obs: "" },
         createdAt: new Date().toISOString()
@@ -2116,39 +2121,66 @@
       patients.push(patient);
       savePatients(patients);
 
-      // Se tiver data de início, criar entrada na agenda
-      if (dataInicio && (tipoPacote === "pack4" || tipoPacote === "pack8") && patient.fixedDay && patient.fixedHour) {
+      // Criar agendamentos automáticos
+      if (dataInicio && patient.fixedDay && patient.fixedHour) {
         const sch = loadSchedule();
         sch.recurring = sch.recurring || {};
-        const key = recurKey(parseInt(patient.fixedDay), patient.fixedHour);
-
-        if (!sch.recurring[key]) {
-          sch.recurring[key] = {
+        
+        // Primeiro horário
+        const key1 = recurKey(parseInt(patient.fixedDay), patient.fixedHour);
+        if (!sch.recurring[key1]) {
+          sch.recurring[key1] = {
             patientId: patient.id,
             serviceType: patient.serviceType,
             startDate: dataInicio,
-            plannedTotal: tipoPacote === "pack4" ? 4 : 8
+            plannedTotal: tipoPacote === "pack4" ? 4 : 
+                         (tipoPacote === "pack8_1x" || tipoPacote === "pack8_2x") ? 8 : 1,
+            frequencia: tipoPacote === "pack8_2x" ? "2x" : "1x"
           };
-
+          
           if (!sch.times.includes(patient.fixedHour)) {
             sch.times.push(patient.fixedHour);
             sch.times.sort();
           }
-          saveSchedule(sch);
         }
+        
+        // Segundo horário para pacote 2x semana
+        if (tipoPacote === "pack8_2x" && patient.fixedDay2 && patient.fixedHour2) {
+          const key2 = recurKey(parseInt(patient.fixedDay2), patient.fixedHour2);
+          if (!sch.recurring[key2]) {
+            sch.recurring[key2] = {
+              patientId: patient.id,
+              serviceType: patient.serviceType,
+              startDate: dataInicio,
+              plannedTotal: 8,
+              frequencia: "2x"
+            };
+            
+            if (!sch.times.includes(patient.fixedHour2)) {
+              sch.times.push(patient.fixedHour2);
+              sch.times.sort();
+            }
+          }
+        }
+        
+        saveSchedule(sch);
       }
 
-      // Se informou sessões já realizadas, adicionar automaticamente
+      // Se informou sessões já realizadas
       const sessoesRealizadas = parseInt($("cSessoesRealizadas").value) || 0;
       if (sessoesRealizadas > 0 && dataInicio && patient.fixedHour) {
-        // Abrir modal para detalhar as sessões passadas
         $("spQuantidade").value = sessoesRealizadas;
         $("spDataInicio").value = dataInicio;
         $("spHorario").value = patient.fixedHour;
+        if (patient.fixedHour2) {
+          $("spHorario2").value = patient.fixedHour2;
+          $("spSegundoHorarioContainer").classList.remove("hidden");
+        } else {
+          $("spSegundoHorarioContainer").classList.add("hidden");
+        }
         $("sessoesPassadasModal").classList.remove("hidden");
-        
-        // Guardar o ID do paciente para quando confirmar
         $("confirmSessoesPassadas").dataset.patientId = patient.id;
+        $("confirmSessoesPassadas").dataset.frequencia = tipoPacote === "pack8_2x" ? "2x" : "1x";
       }
 
       // Limpar formulário
@@ -2163,6 +2195,7 @@
       $("cDataTermino").value = "";
       $("cSessoesRealizadas").value = "0";
       $("cFixHour").value = "";
+      $("cFixHour2").value = "";
       $("cNotes").value = "";
 
       renderPatientSelect();
@@ -2178,11 +2211,20 @@
         return;
       }
       
+      const p = getPatientById(openedPatientId);
+      
       $("spQuantidade").value = "1";
-      $("spDataInicio").value = todayISO();
-      $("spHorario").value = "13:00";
+      $("spDataInicio").value = p.dataInicio || todayISO();
+      $("spHorario").value = p.fixedHour || "13:00";
+      if (p.fixedHour2) {
+        $("spHorario2").value = p.fixedHour2;
+        $("spSegundoHorarioContainer").classList.remove("hidden");
+      } else {
+        $("spSegundoHorarioContainer").classList.add("hidden");
+      }
       $("sessoesPassadasModal").classList.remove("hidden");
       $("confirmSessoesPassadas").dataset.patientId = openedPatientId;
+      $("confirmSessoesPassadas").dataset.frequencia = p.billingType === "pack8_2x" ? "2x" : "1x";
     });
 
     $("cancelSessoesPassadas").addEventListener("click", () => {
@@ -2191,11 +2233,13 @@
 
     $("confirmSessoesPassadas").addEventListener("click", (e) => {
       const patientId = e.target.dataset.patientId;
+      const frequencia = e.target.dataset.frequencia || "1x";
       if (!patientId) return;
       
       const quantidade = parseInt($("spQuantidade").value) || 1;
       const dataInicio = $("spDataInicio").value;
-      const horario = $("spHorario").value;
+      const horario1 = $("spHorario").value;
+      const horario2 = frequencia === "2x" ? $("spHorario2").value : null;
       const status = $("spStatus").value;
       const pago = $("spPaid").value;
       
@@ -2204,10 +2248,9 @@
         return;
       }
       
-      adicionarSessoesPassadas(patientId, quantidade, dataInicio, horario, status, pago);
+      adicionarSessoesPassadas(patientId, quantidade, dataInicio, horario1, horario2, status, pago, frequencia);
       $("sessoesPassadasModal").classList.add("hidden");
       
-      // Atualizar valor das sessões com o valor padrão do paciente
       const sessions = loadSessions();
       const p = getPatientById(patientId);
       const valor = p?.defaultValue || 0;
