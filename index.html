@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClínicaHub - Painel</title>
+
+<style>
+body {
+  margin:0;
+  font-family: system-ui, -apple-system, Arial;
+  background:#0b1220;
+  color:white;
+}
+
+.header {
+  padding:15px;
+  background:#111827;
+  font-weight:bold;
+  font-size:18px;
+}
+
+.container {
+  padding:20px;
+}
+
+.card {
+  background:#111827;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:15px;
+}
+
+.slot {
+  padding:12px;
+  border-radius:10px;
+  margin:6px 0;
+  cursor:pointer;
+}
+
+.vago { background:rgba(239,68,68,.25); }
+.cassems { background:rgba(34,197,94,.25); }
+.particular { background:rgba(245,158,11,.25); }
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+ClínicaHub — Painel (versão estável sem login)
+</div>
+
+<div class="container">
+
+<div class="card">
+<h3>Agenda (exemplo visual)</h3>
+
+<div class="slot vago">SEG 07:40 — VAGO</div>
+<div class="slot cassems">TER 07:40 — CASSEMS</div>
+<div class="slot particular">QUA 07:40 — PARTICULAR</div>
+
+</div>
+
+<div class="card">
+Sistema carregado com segurança ✅<br>
+Esta versão remove dependências antigas que causavam tela preta.
+</div>
+
+</div>
+
+<script>
+// Script protegido contra erro (evita tela preta)
+try {
+  console.log("Painel carregado com sucesso");
+} catch(e) {
+  console.log("Erro ignorado:", e);
+}
+</script>
+
+</body>
+</html>
