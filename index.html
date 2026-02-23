@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Fgo. Gabriel Alves — Sistema de Gestão Clínica</title>
   
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Fgo.%20Gabriel%20Alves%22%2C%22short_name%22%3A%22Cl%C3%ADnica%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a0f1c%22%2C%22theme_color%22%3A%22%230ea5e9%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABcklEQVRYhe2WvUoDQRDHf7mLTYggImghCNZaiA9gYadY+AiCD2Bj7Qto4StY+QAWFoKNoFgJgiC20tjbzEKMm9zebna9S3LAkA8y2Zv57czOf3YhCIIgCIIgCIIg/KOo1WqjWq02iuN4FACkaQoApmlCmqYAYBgGpGkKAJqmQZqm4HkeAEClUgFBEKCiKABFUSCKIgCApmkQRRGLoggAoGkaRFH0TFEUAEVRIAiCKIoAiKIIBEEQRVH0BEEQRVH0hKIo4nmeKIqCJEkEQRCSJAnHcQAAYRgCQRCEIAgAAMdxAABhGAIACIIA4DgOACAMQwAAQRAAnucBABiGAQAIggDwPA8AgOM4AADDMAAAhGEIAMBxHAAAYRgCAMAwDAAAYRgCAMC9FgCAYRgAAH3fBwBgGAYAQNd1AQA8zwMAYJomAADLsQAAHMcBAHieBwDA8zwAAMuyAACe5wEAcBwHAKAoCgDgui4AgO/7AADHcQAApmkCADAMAwAwTRMAgK7rAgDwPA8AgOd5AACO4wAAHMf9OhQEQRCEvyRfFGwwI+O1q1YAAAAASUVORK5CYII=%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image/png%22%7D%5D%7D" />
+  
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
@@ -266,6 +269,42 @@
       .grid3 {
         grid-template-columns: 1fr;
       }
+    }
+
+    /* Foto do paciente */
+    .photo-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .photo-preview {
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+      border: 3px solid var(--pri);
+      object-fit: cover;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .photo-preview.small {
+      width: 60px;
+      height: 60px;
+      border-width: 2px;
+    }
+
+    .photo-placeholder {
+      width: 120px;
+      height: 120px;
+      border-radius: 60px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      border: 3px solid var(--line);
     }
 
     .time-list {
@@ -564,6 +603,19 @@
       }
     }
 
+    .notification-permission {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: var(--card);
+      border: 1px solid var(--pri);
+      border-radius: 14px;
+      padding: 16px;
+      max-width: 300px;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
     .shortcuts-hint {
       position: fixed;
       bottom: 20px;
@@ -610,19 +662,37 @@
 <body>
   <div id="app"></div>
 
+  <!-- Modal de Notificação -->
+  <div id="notificationModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 style="margin-bottom:15px;">🔔 Ativar Notificações</h3>
+      <p class="muted">Quer receber lembretes dos próximos atendimentos?</p>
+      <p class="muted" style="margin:10px 0;">Você será avisado 15 minutos antes de cada sessão.</p>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+        <button id="cancelNotification" class="small">Agora não</button>
+        <button id="enableNotifications" class="primary small">🔔 Ativar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
   <script>
-    const APP_VERSION = '2.1.0';
+    const APP_VERSION = '3.0.0';
     const CLINIC_NAME = "Fgo. Gabriel Alves";
     
     const KEYS = {
-      PATIENTS: "fgogabriel_patients_v2",
-      SESSIONS: "fgogabriel_sessions_v2",
-      SCHEDULE: "fgogabriel_schedule_v2",
-      TOKENS: "fgogabriel_tokens_v2",
-      PACKS: "fgogabriel_packs_v2",
-      BACKUP: "fgogabriel_backup_v2",
-      THEME: "fgogabriel_theme_v2",
-      VERSION: "fgogabriel_version"
+      PATIENTS: "fgogabriel_patients_v3",
+      SESSIONS: "fgogabriel_sessions_v3",
+      SCHEDULE: "fgogabriel_schedule_v3",
+      TOKENS: "fgogabriel_tokens_v3",
+      PACKS: "fgogabriel_packs_v3",
+      BACKUP: "fgogabriel_backup_v3",
+      THEME: "fgogabriel_theme_v3",
+      VERSION: "fgogabriel_version",
+      NOTIFICATIONS: "fgogabriel_notifications",
+      PHOTOS: "fgogabriel_photos"
     };
 
     const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -640,6 +710,9 @@
     let currentTokenSessionId = null;
     let currentPackPatientId = null;
     let debtFilterActive = false;
+    let notificationsEnabled = false;
+    let notificationInterval = null;
+    let currentPhotoFile = null;
 
     function $(id) {
       return document.getElementById(id);
@@ -718,7 +791,161 @@
       return ["07:00", "07:40", "08:20", "09:00", "09:40", "10:20", "11:00", "13:20", "14:00", "14:40", "15:20", "16:00", "16:40", "17:20"];
     }
 
-    // Funções de dados
+    // ========== NOTIFICAÇÕES ==========
+    async function requestNotificationPermission() {
+      if (!("Notification" in window)) {
+        showAlert("❌ Seu navegador não suporta notificações", "error");
+        return false;
+      }
+      
+      const permission = await Notification.requestPermission();
+      notificationsEnabled = permission === "granted";
+      
+      if (notificationsEnabled) {
+        localStorage.setItem(KEYS.NOTIFICATIONS, "granted");
+        startNotificationChecker();
+        showAlert("✅ Notificações ativadas com sucesso!", "success");
+        $("notificationModal")?.classList.add("hidden");
+      }
+      
+      return notificationsEnabled;
+    }
+
+    function startNotificationChecker() {
+      if (notificationInterval) clearInterval(notificationInterval);
+      
+      notificationInterval = setInterval(() => {
+        checkUpcomingSessions();
+      }, 60000); // Verificar a cada minuto
+    }
+
+    function checkUpcomingSessions() {
+      if (!notificationsEnabled) return;
+      
+      const agora = nowTime();
+      const hoje = new Date().getDay();
+      const schedule = loadSchedule();
+      
+      Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
+        const [day, time] = key.split("|");
+        if (parseInt(day) === hoje) {
+          const [h1, m1] = time.split(":").map(Number);
+          const [h2, m2] = agora.split(":").map(Number);
+          const diffMinutes = (h1 * 60 + m1) - (h2 * 60 + m2);
+          
+          if (diffMinutes === 15) { // Exatamente 15 minutos antes
+            const patient = getPatientById(entry.patientId);
+            if (patient) {
+              new Notification("🔔 Próximo atendimento!", {
+                body: `${patient.name} em 15 minutos (${time})`,
+                icon: patient.photo || "/icon-192.png",
+                silent: false
+              });
+            }
+          }
+        }
+      });
+    }
+
+    // ========== FOTO DO PACIENTE ==========
+    function handlePhotoUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        currentPhotoFile = e.target.result;
+        const preview = $("photoPreview");
+        if (preview) {
+          preview.src = e.target.result;
+          preview.classList.remove("hidden");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function savePatientPhoto(patientId, photoData) {
+      const photos = loadData(KEYS.PHOTOS, {});
+      photos[patientId] = photoData;
+      saveData(KEYS.PHOTOS, photos);
+    }
+
+    function getPatientPhoto(patientId) {
+      const photos = loadData(KEYS.PHOTOS, {});
+      return photos[patientId] || null;
+    }
+
+    // ========== RELATÓRIO PDF ==========
+    function generatePDFReport() {
+      const { jsPDF } = window.jspdf;
+      
+      const doc = new jsPDF();
+      const patients = loadPatients();
+      const sessions = loadSessions();
+      const today = new Date().toLocaleDateString("pt-BR");
+      
+      // Título
+      doc.setFontSize(18);
+      doc.text(`${CLINIC_NAME} - Relatório Geral`, 14, 20);
+      
+      doc.setFontSize(11);
+      doc.text(`Gerado em: ${today}`, 14, 30);
+      
+      // Estatísticas
+      doc.setFontSize(14);
+      doc.text("📊 Estatísticas Gerais", 14, 45);
+      
+      doc.setFontSize(10);
+      doc.text(`Total de pacientes: ${patients.length}`, 14, 55);
+      doc.text(`Total de sessões: ${sessions.length}`, 14, 62);
+      
+      const realizadas = sessions.filter(s => s.did === "realizou").length;
+      const faltas = sessions.filter(s => s.did === "nao").length;
+      
+      doc.text(`Sessões realizadas: ${realizadas}`, 14, 69);
+      doc.text(`Faltas: ${faltas}`, 14, 76);
+      
+      // Tabela de pacientes
+      doc.setFontSize(14);
+      doc.text("📋 Lista de Pacientes", 14, 93);
+      
+      const tableData = patients.map(p => [
+        p.name,
+        p.serviceType || "Particular",
+        p.phone || "-",
+        sessions.filter(s => s.patientId === p.id).length.toString()
+      ]);
+      
+      doc.autoTable({
+        startY: 100,
+        head: [["Nome", "Convênio", "WhatsApp", "Sessões"]],
+        body: tableData,
+        theme: "grid",
+        styles: { fontSize: 8 }
+      });
+      
+      doc.save(`relatorio_${todayISO()}.pdf`);
+      showAlert("✅ PDF gerado com sucesso!", "success");
+    }
+
+    // ========== BACKUP GOOGLE DRIVE ==========
+    function backupToGoogleDrive() {
+      const backup = createBackup();
+      const dataStr = JSON.stringify(backup, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      
+      // Criar link de download como fallback
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `backup_${todayISO()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showAlert("✅ Backup baixado! Para salvar no Google Drive, faça upload manualmente.", "success");
+    }
+
+    // ========== FUNÇÕES EXISTENTES ==========
     function loadPatients() { return loadData(KEYS.PATIENTS, []); }
     function savePatients(p) { saveData(KEYS.PATIENTS, p); }
 
@@ -818,7 +1045,6 @@
       saveSchedule(schedule);
     }
 
-    // Backup
     function createBackup() {
       return {
         version: "1.0",
@@ -829,7 +1055,8 @@
           sessions: loadSessions(),
           schedule: loadSchedule(),
           tokens: loadTokens(),
-          packs: loadPacks()
+          packs: loadPacks(),
+          photos: loadData(KEYS.PHOTOS, {})
         }
       };
     }
@@ -857,6 +1084,7 @@
             saveData(KEYS.SCHEDULE, backup.data.schedule || { times: defaultTimes(), recurring: {} });
             saveData(KEYS.TOKENS, backup.data.tokens || {});
             saveData(KEYS.PACKS, backup.data.packs || {});
+            if (backup.data.photos) saveData(KEYS.PHOTOS, backup.data.photos);
 
             showAlert("✅ Backup restaurado com sucesso!", "success");
             setTimeout(() => location.reload(), 1500);
@@ -878,7 +1106,6 @@
       saveData(KEYS.BACKUP, backups);
     }
 
-    // Tema
     function toggleTheme() {
       document.body.classList.toggle("light-mode");
       const isLight = document.body.classList.contains("light-mode");
@@ -887,7 +1114,6 @@
       if (themeBtn) themeBtn.innerHTML = isLight ? "🌙 Tema" : "☀️ Tema";
     }
 
-    // Navegação
     function setTab(tab) {
       $("viewDashboard")?.classList.toggle("hidden", tab !== "dashboard");
       $("viewDaily")?.classList.toggle("hidden", tab !== "daily");
@@ -907,7 +1133,6 @@
       if (tab === "reports") generateReports();
     }
 
-    // Gerenciamento de múltiplos horários
     function addTimeSlot() {
       const container = $("timeSlotsContainer");
       if (!container) return;
@@ -947,7 +1172,7 @@
       return slots;
     }
 
-    // Renderização
+    // ========== RENDERIZAÇÃO DO HTML ==========
     function renderApp() {
       const app = document.getElementById('app');
       
@@ -958,12 +1183,14 @@
               <h1>🏥 ${CLINIC_NAME}</h1>
               <div id="today" class="muted"></div>
               <button id="themeToggle" class="small" style="border-radius:30px;">🌓 Tema</button>
+              <button id="installPWA" class="small primary" style="display:none;">📱 Instalar App</button>
             </div>
 
             <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
               <div class="backup-bar">
                 <span class="muted">💾 Backup:</span>
                 <button id="backupNow" class="small">⬇️ Baixar</button>
+                <button id="backupDrive" class="small">☁️ Drive</button>
                 <button id="restoreBackup" class="small">📂 Restaurar</button>
                 <button id="autoBackupToggle" class="small pri">🔵 Auto: ON</button>
               </div>
@@ -1033,6 +1260,10 @@
               <div style="margin-top:20px;">
                 <h3>⏰ Próximos Atendimentos</h3>
                 <div id="proximosAtendimentos" class="list"></div>
+              </div>
+
+              <div style="margin-top:20px;">
+                <button id="generatePDF" class="small primary">📄 Gerar Relatório PDF</button>
               </div>
             </section>
 
@@ -1132,11 +1363,20 @@
               <div class="list" id="dayList"></div>
             </section>
 
-            <!-- Pacientes com Múltiplos Horários -->
+            <!-- Pacientes com Foto -->
             <section id="viewPatients" class="card hidden">
               <div class="split">
                 <div class="card">
                   <b>👤 Cadastro de Paciente</b>
+                  
+                  <!-- Foto do Paciente -->
+                  <div class="photo-upload">
+                    <img id="photoPreview" class="photo-preview hidden" src="" alt="Foto do paciente" />
+                    <div id="photoPlaceholder" class="photo-placeholder">📷</div>
+                    <input type="file" id="patientPhoto" accept="image/*" style="display:none;" />
+                    <button class="small" onclick="document.getElementById('patientPhoto').click()">📸 Escolher foto</button>
+                  </div>
+
                   <div class="grid2" style="margin-top:15px;">
                     <div>
                       <label>Nome completo *</label>
@@ -1213,7 +1453,7 @@
                         <input type="time" class="time-slot-hour" placeholder="07:40" step="600" style="flex:1;" />
                       </div>
                     </div>
-                    <small class="muted">Adicione quantos horários precisar (útil para pacotes de 8 sessões)</small>
+                    <small class="muted">Adicione quantos horários precisar</small>
                   </div>
 
                   <label style="margin-top:20px;">Observações iniciais</label>
@@ -1239,6 +1479,7 @@
                   <div id="folderOpenPane" class="hidden">
                     <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
                       <button id="backToFolders" class="small">← Voltar</button>
+                      <img id="folderPatientPhoto" class="photo-preview small hidden" src="" alt="" />
                       <div style="flex:1;">
                         <b id="openPatientTitle">Paciente</b>
                         <div class="muted" id="openPatientMeta"></div>
@@ -1348,6 +1589,11 @@
                 <b>Pacientes com maior débito</b>
                 <div id="topDebtors" class="list" style="margin-top:10px;"></div>
               </div>
+
+              <div style="margin-top:20px; display:flex; gap:10px;">
+                <button id="generatePDF" class="primary">📄 Gerar PDF</button>
+                <button id="backupDrive" class="primary">☁️ Backup Drive</button>
+              </div>
             </section>
           </main>
 
@@ -1360,6 +1606,7 @@
             <div class="shortcut-item"><span>Diário</span> <span class="shortcut-key">Ctrl+2</span></div>
             <div class="shortcut-item"><span>Pacientes</span> <span class="shortcut-key">Ctrl+3</span></div>
             <div class="shortcut-item"><span>Agenda</span> <span class="shortcut-key">Ctrl+4</span></div>
+            <div class="shortcut-item"><span>Relatórios</span> <span class="shortcut-key">Ctrl+5</span></div>
           </div>
         </section>
 
@@ -1483,7 +1730,7 @@
       `;
     }
 
-    // Funções do Diário
+    // ========== FUNÇÕES DO DIÁRIO ==========
     function renderPatientSelect() {
       const pats = loadPatients();
       const sel = $("pPatient");
@@ -1537,6 +1784,7 @@
       list.innerHTML = filtered.map(s => {
         const p = getPatientById(s.patientId);
         const token = tokens[s.id];
+        const photo = getPatientPhoto(s.patientId);
         
         let tokenIndicator = '';
         if (p?.serviceType === 'cassems') {
@@ -1551,28 +1799,33 @@
 
         return `
         <div class="item" id="session-${s.id}">
-          <div style="display:flex; justify-content:space-between;">
-            <div>
-              <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
-              <div class="muted">
-                ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
-                ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
+          <div style="display:flex; gap:10px;">
+            ${photo ? `<img src="${photo}" class="photo-preview small" style="width:40px; height:40px;" />` : ''}
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between;">
+                <div>
+                  <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
+                  <div class="muted">
+                    ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
+                    ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
+                  </div>
+                  <div style="margin-top:5px;">
+                    ${tokenIndicator}
+                  </div>
+                </div>
+                <div>
+                  <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
+                  <span class="pill">${fmtMoney(s.value)}</span>
+                </div>
               </div>
-              <div style="margin-top:5px;">
-                ${tokenIndicator}
+              <div class="actions" style="margin-top:10px;">
+                <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
+                <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
+                <button class="small" onclick="editSessionValue('${s.id}')">✏️ Editar valor</button>
+                ${p?.serviceType === 'cassems' ? `<button class="small token-btn" onclick="openTokenModal('${s.id}', '${p.name}', '${s.date}')">🎫 Token</button>` : ''}
+                <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
               </div>
             </div>
-            <div>
-              <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
-              <span class="pill">${fmtMoney(s.value)}</span>
-            </div>
-          </div>
-          <div class="actions" style="margin-top:10px;">
-            <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
-            <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
-            <button class="small" onclick="editSessionValue('${s.id}')">✏️ Editar valor</button>
-            ${p?.serviceType === 'cassems' ? `<button class="small token-btn" onclick="openTokenModal('${s.id}', '${p.name}', '${s.date}')">🎫 Token</button>` : ''}
-            <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
           </div>
         </div>
       `;
@@ -1927,13 +2180,20 @@
       });
       
       $("aniversariantes").innerHTML = aniversariantes.length ? 
-        aniversariantes.map(p => `
+        aniversariantes.map(p => {
+          const photo = getPatientPhoto(p.id);
+          return `
           <div class="item">
-            <b>🎂 ${escapeHtml(p.name)}</b>
-            <div class="muted">${new Date(p.birth).toLocaleDateString("pt-BR")}</div>
-            <button class="small" onclick="sendBirthdayMessage('${p.id}')">📱 Enviar mensagem</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+              ${photo ? `<img src="${photo}" class="photo-preview small" style="width:40px; height:40px;" />` : ''}
+              <div>
+                <b>🎂 ${escapeHtml(p.name)}</b>
+                <div class="muted">${new Date(p.birth).toLocaleDateString("pt-BR")}</div>
+                <button class="small" onclick="sendBirthdayMessage('${p.id}')">📱 Enviar mensagem</button>
+              </div>
+            </div>
           </div>
-        `).join("") : 
+        `}).join("") : 
         "<div class='muted'>Nenhum aniversariante este mês</div>";
       
       const proximosAtendimentos = [];
@@ -1994,20 +2254,26 @@
         const pack = getPatientPack(p.id);
         const packIcon = pack ? '📦' : '';
         const timeSlots = p.timeSlots || [];
+        const photo = getPatientPhoto(p.id);
 
         return `
         <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
-          <div style="display:flex; justify-content:space-between;">
-            <div>
-              <b>📁 ${escapeHtml(p.name)} ${cassemsIcon} ${packIcon}</b>
-              <div class="muted">
-                ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
-                ${pack ? ` • ${pack.totalSessions} sessões no pacote` : ''}
-                ${timeSlots.length ? ` • ${timeSlots.length} horários` : ''}
+          <div style="display:flex; gap:10px;">
+            ${photo ? `<img src="${photo}" class="photo-preview small" style="width:50px; height:50px;" />` : ''}
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between;">
+                <div>
+                  <b>📁 ${escapeHtml(p.name)} ${cassemsIcon} ${packIcon}</b>
+                  <div class="muted">
+                    ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
+                    ${pack ? ` • ${pack.totalSessions} sessões no pacote` : ''}
+                    ${timeSlots.length ? ` • ${timeSlots.length} horários` : ''}
+                  </div>
+                </div>
+                <div>
+                  ${debt > 0 ? `<span class="pill bad">💰 ${fmtMoney(debt)}</span>` : ''}
+                </div>
               </div>
-            </div>
-            <div>
-              ${debt > 0 ? `<span class="pill bad">💰 ${fmtMoney(debt)}</span>` : ''}
             </div>
           </div>
         </div>
@@ -2019,10 +2285,21 @@
       openedPatientId = id;
       const p = getPatientById(id);
       const pack = getPatientPack(id);
+      const photo = getPatientPhoto(id);
       
       $("foldersPane").classList.add("hidden");
       $("folderOpenPane").classList.remove("hidden");
       $("openPatientTitle").textContent = `📁 ${p?.name || "Paciente"}`;
+      
+      const folderPhoto = $("folderPatientPhoto");
+      if (folderPhoto) {
+        if (photo) {
+          folderPhoto.src = photo;
+          folderPhoto.classList.remove("hidden");
+        } else {
+          folderPhoto.classList.add("hidden");
+        }
+      }
 
       let pacoteInfo = "Nenhum pacote configurado";
       if (pack) {
@@ -2265,6 +2542,11 @@
       patients.push(patient);
       savePatients(patients);
 
+      // Salvar foto se houver
+      if (currentPhotoFile) {
+        savePatientPhoto(patient.id, currentPhotoFile);
+      }
+
       // Configurar pacote automaticamente
       if (patient.billingType !== "individual") {
         const sch = loadSchedule();
@@ -2310,7 +2592,12 @@
       $("cDefaultValue").value = "";
       $("cNotes").value = "";
       
-      // Limpar time slots (manter apenas um vazio)
+      // Limpar foto
+      currentPhotoFile = null;
+      $("photoPreview")?.classList.add("hidden");
+      $("photoPlaceholder")?.classList.remove("hidden");
+      
+      // Limpar time slots
       const container = $("timeSlotsContainer");
       if (container) {
         container.innerHTML = `
@@ -2404,6 +2691,11 @@
         const packs = loadPacks();
         delete packs[openedPatientId];
         savePacks(packs);
+
+        // Remover foto
+        const photos = loadData(KEYS.PHOTOS, {});
+        delete photos[openedPatientId];
+        saveData(KEYS.PHOTOS, photos);
 
         savePatients(patients);
         saveSessions(sessions);
@@ -2514,6 +2806,7 @@
         localStorage.removeItem(KEYS.SCHEDULE);
         localStorage.removeItem(KEYS.TOKENS);
         localStorage.removeItem(KEYS.PACKS);
+        localStorage.removeItem(KEYS.PHOTOS);
         location.reload();
       }
     }
@@ -2560,6 +2853,25 @@
       });
     }
 
+    // PWA Installation
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      $("installPWA").style.display = "inline-block";
+      
+      $("installPWA").addEventListener("click", () => {
+        $("installPWA").style.display = "none";
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            showAlert("✅ App instalado com sucesso!", "success");
+          }
+          deferredPrompt = null;
+        });
+      });
+    });
+
     // Inicialização
     function init() {
       const lastVersion = localStorage.getItem(KEYS.VERSION);
@@ -2584,8 +2896,28 @@
       autoBackup = localStorage.getItem("autoBackup") !== "false";
       $("autoBackupToggle").innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
 
+      // Verificar permissão de notificações
+      const notificationStatus = localStorage.getItem(KEYS.NOTIFICATIONS);
+      if (notificationStatus === "granted") {
+        notificationsEnabled = true;
+        startNotificationChecker();
+      } else if (Notification.permission === "granted") {
+        notificationsEnabled = true;
+        localStorage.setItem(KEYS.NOTIFICATIONS, "granted");
+        startNotificationChecker();
+      } else if (Notification.permission !== "denied") {
+        // Perguntar depois de 30 segundos
+        setTimeout(() => {
+          $("notificationModal")?.classList.remove("hidden");
+        }, 30000);
+      }
+
+      // Upload de foto
+      $("patientPhoto")?.addEventListener("change", (e) => handlePhotoUpload(e.target));
+
       // Event Listeners
       $("backupNow")?.addEventListener("click", downloadBackup);
+      $("backupDrive")?.addEventListener("click", backupToGoogleDrive);
       $("restoreBackup")?.addEventListener("click", () => $("backupModal")?.classList.remove("hidden"));
       $("cancelBackup")?.addEventListener("click", () => $("backupModal")?.classList.add("hidden"));
       $("confirmRestore")?.addEventListener("click", () => {
@@ -2634,6 +2966,16 @@
       $("deletePatient")?.addEventListener("click", deletePatient);
       $("onlyDebtFolders")?.addEventListener("click", toggleDebtFilter);
       $("themeToggle")?.addEventListener("click", toggleTheme);
+      $("generatePDF")?.addEventListener("click", generatePDFReport);
+
+      // Notificações
+      $("enableNotifications")?.addEventListener("click", () => {
+        requestNotificationPermission();
+      });
+      
+      $("cancelNotification")?.addEventListener("click", () => {
+        $("notificationModal")?.classList.add("hidden");
+      });
 
       $("filterHoje")?.addEventListener("click", filterHoje);
       $("filterAmanha")?.addEventListener("click", () => {
@@ -2763,6 +3105,7 @@
             case "2": e.preventDefault(); setTab("daily"); break;
             case "3": e.preventDefault(); setTab("patients"); break;
             case "4": e.preventDefault(); setTab("schedule"); renderSchedule(); break;
+            case "5": e.preventDefault(); setTab("reports"); generateReports(); break;
           }
         }
       });
