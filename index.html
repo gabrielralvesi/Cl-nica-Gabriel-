@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Gabriel Alves - Fonoaudiologia Infantil</title>
-    
-    <!-- Google API Client -->
-    <script src="https://apis.google.com/js/api.js"></script>
     
     <style>
         /* ===== PALETA DE CORES ===== */
@@ -198,34 +192,6 @@
             border: 1px solid rgba(44, 122, 90, 0.3);
             border-radius: 40px;
             padding: 6px 12px;
-        }
-
-        .drive-status {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 6px;
-        }
-
-        .drive-status.online {
-            background: #22c55e;
-            box-shadow: 0 0 5px #22c55e;
-        }
-
-        .drive-status.offline {
-            background: #ef4444;
-        }
-
-        .drive-status.syncing {
-            background: #e8c66a;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
         }
 
         .tabs {
@@ -634,6 +600,9 @@
 <body>
     <div id="app"></div>
 
+    <!-- Input oculto para importar arquivo -->
+    <input type="file" id="importFile" accept=".json" style="display:none">
+
     <!-- MODAIS -->
     <div id="notificationModal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -788,28 +757,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONFIGURAÇÃO DO DRIVE -->
-    <div id="driveConfigModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3 style="margin-bottom:15px;">☁️ Configurar Google Drive</h3>
-            <p class="muted">Para salvar e restaurar seus dados na nuvem, precisamos de permissão para acessar seu Google Drive.</p>
-            
-            <div style="margin:20px 0; text-align:center;">
-                <button id="authorizeDrive" class="primary" style="width:100%;">🔌 Conectar com Google Drive</button>
-            </div>
-            
-            <div style="margin:20px 0; padding:15px; background:rgba(44,122,90,0.1); border-radius:10px;">
-                <p style="margin-bottom:10px;"><strong>📁 Pasta no Drive:</strong></p>
-                <p class="muted">Os dados serão salvos em:</p>
-                <code style="display:block; padding:10px; background:rgba(0,0,0,0.2); border-radius:5px;">📁 ClinicaFono/dados.json</code>
-            </div>
-            
-            <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button id="cancelDriveConfig" class="small">Fechar</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         // ========== CONFIGURAÇÕES ==========
         const APP_VERSION = '4.0.0';
@@ -817,23 +764,19 @@
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
         
-     // !!! COLE AQUI SEU CLIENT ID DO GOOGLE CLOUD !!!
-const CLIENT_ID = '374170060350-1brohs0mi6jv0iriniu3qsas94efvu46.apps.googleusercontent.com';
-
-const KEYS = {
-    PATIENTS: "gabriel_fono_patients_v4",
-    SESSIONS: "gabriel_fono_sessions_v4",
-    SCHEDULE: "gabriel_fono_schedule_v4",
-    TOKENS: "gabriel_fono_tokens_v4",
-    PACKS: "gabriel_fono_packs_v4",
-    BACKUP: "gabriel_fono_backup_v4",
-    THEME: "gabriel_fono_theme_v4",
-    VERSION: "gabriel_fono_version",
-    NOTIFICATIONS: "gabriel_fono_notifications",
-    PHOTOS: "gabriel_fono_photos",
-    EVOLUCOES: "gabriel_fono_evolucoes",
-    DRIVE_FOLDER_ID: "gabriel_fono_drive_folder"
-}; // <---- FECHA O OBJETO
+        const KEYS = {
+            PATIENTS: "gabriel_fono_patients_v4",
+            SESSIONS: "gabriel_fono_sessions_v4",
+            SCHEDULE: "gabriel_fono_schedule_v4",
+            TOKENS: "gabriel_fono_tokens_v4",
+            PACKS: "gabriel_fono_packs_v4",
+            BACKUP: "gabriel_fono_backup_v4",
+            THEME: "gabriel_fono_theme_v4",
+            VERSION: "gabriel_fono_version",
+            NOTIFICATIONS: "gabriel_fono_notifications",
+            PHOTOS: "gabriel_fono_photos",
+            EVOLUCOES: "gabriel_fono_evolucoes"
+        };
 
         const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
         const SERVICE_COLORS = {
@@ -855,11 +798,6 @@ const KEYS = {
         let currentPhotoFile = null;
         let deferredPrompt = null;
         let currentEvolucaoId = null;
-        
-        // Variáveis do Google Drive
-        let gapiReady = false;
-        let driveFolderId = localStorage.getItem(KEYS.DRIVE_FOLDER_ID) || null;
-        let driveStatus = 'offline';
 
         // ========== FUNÇÕES UTILITÁRIAS ==========
         function $(id) {
@@ -931,14 +869,6 @@ const KEYS = {
             alertTimeout = setTimeout(() => {
                 if (alert.parentNode) alert.remove();
             }, 3000);
-        }
-
-        function updateDriveStatus(status) {
-            driveStatus = status;
-            const statusEl = $("driveStatus");
-            if (statusEl) {
-                statusEl.className = `drive-status ${status}`;
-            }
         }
 
         function recurKey(day, time) { return `${day}|${time}`; }
@@ -1094,328 +1024,6 @@ const KEYS = {
             }
         }
 
-        // ========== FUNÇÕES DO GOOGLE DRIVE ==========
-
-        // Inicializar API do Google
-        function initGoogleDrive() {
-            console.log('🔄 Inicializando Google Drive...');
-            
-            gapi.load('client:auth2', function() {
-                gapi.client.init({
-                    clientId: CLIENT_ID,
-                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-                    scope: 'https://www.googleapis.com/auth/drive.file'
-                }).then(function() {
-                    console.log('✅ Google API inicializada');
-                    
-                    const auth = gapi.auth2.getAuthInstance();
-                    
-                    // Verificar se já está logado
-                    if (auth.isSignedIn.get()) {
-                        gapiReady = true;
-                        updateDriveStatus('online');
-                        console.log('✅ Já conectado ao Google Drive');
-                        
-                        // Buscar pasta
-                        setTimeout(() => createDriveFolder(), 1000);
-                    } else {
-                        updateDriveStatus('offline');
-                        console.log('🔌 Aguardando conexão');
-                    }
-                }).catch(function(error) {
-                    console.error('❌ Erro ao inicializar Google API:', error);
-                    updateDriveStatus('offline');
-                });
-            });
-        }
-
-        // Abrir modal de configuração do Drive
-        window.openDriveConfig = function() {
-            console.log('🔵 Abrindo modal de configuração');
-            const modal = document.getElementById('driveConfigModal');
-            if (modal) {
-                modal.classList.remove('hidden');
-            } else {
-                console.error('❌ Modal não encontrado');
-            }
-        };
-
-        // Autorizar Google Drive (VERSÃO CORRIGIDA)
-        window.authorizeDrive = async function() {
-            console.log('🔵 Iniciando conexão com Google Drive...');
-            
-            try {
-                updateDriveStatus('syncing');
-                
-                const auth = gapi.auth2.getAuthInstance();
-                
-                if (!auth) {
-                    console.error('❌ Auth não inicializado');
-                    showAlert('❌ Erro: API do Google não carregada', 'error');
-                    updateDriveStatus('offline');
-                    return;
-                }
-                
-                console.log('🔄 Abrindo pop-up de autorização...');
-                
-                // Forçar pop-up
-                await auth.signIn({
-                    prompt: 'select_account',
-                    ux_mode: 'popup'
-                });
-                
-                console.log('✅ Conectado com sucesso!');
-                gapiReady = true;
-                updateDriveStatus('online');
-                showAlert('✅ Conectado ao Google Drive!', 'success');
-                
-                // Fechar modal
-                const modal = document.getElementById('driveConfigModal');
-                if (modal) {
-                    modal.classList.add('hidden');
-                }
-                
-                // Criar pasta
-                await createDriveFolder();
-                
-            } catch (error) {
-                console.error('❌ Erro detalhado:', error);
-                updateDriveStatus('offline');
-                
-                // Mensagens específicas
-                if (error.error === 'popup_blocked_by_browser') {
-                    showAlert('❌ Pop-up bloqueado! Clique no ícone 🔔 na barra de endereço e permita pop-ups', 'error');
-                } else if (error.error === 'access_denied') {
-                    showAlert('❌ Acesso negado. Você precisa autorizar o aplicativo', 'error');
-                } else if (error.error === 'redirect_uri_mismatch') {
-                    showAlert('❌ Erro de redirecionamento. Verifique as URIs no Google Cloud Console', 'error');
-                } else {
-                    showAlert('❌ Erro ao conectar: ' + (error.message || 'Tente novamente'), 'error');
-                }
-            }
-        };
-
-        // Criar pasta no Drive
-        async function createDriveFolder() {
-            if (!gapiReady) return null;
-            
-            try {
-                console.log('📁 Verificando pasta no Drive...');
-                
-                // Verificar se pasta já existe
-                const response = await gapi.client.drive.files.list({
-                    q: "name='ClinicaFono' and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                    fields: 'files(id, name)',
-                    spaces: 'drive'
-                });
-
-                if (response.result.files.length > 0) {
-                    driveFolderId = response.result.files[0].id;
-                    localStorage.setItem(KEYS.DRIVE_FOLDER_ID, driveFolderId);
-                    console.log('📁 Pasta encontrada:', driveFolderId);
-                    return driveFolderId;
-                }
-
-                console.log('📁 Criando nova pasta...');
-                
-                // Criar nova pasta
-                const folderResponse = await gapi.client.drive.files.create({
-                    resource: {
-                        name: 'ClinicaFono',
-                        mimeType: 'application/vnd.google-apps.folder'
-                    }
-                });
-
-                driveFolderId = folderResponse.result.id;
-                localStorage.setItem(KEYS.DRIVE_FOLDER_ID, driveFolderId);
-                console.log('📁 Pasta criada:', driveFolderId);
-                return driveFolderId;
-                
-            } catch (e) {
-                console.error('❌ Erro ao criar pasta:', e);
-                return null;
-            }
-        }
-
-        // Salvar no Google Drive
-        window.saveToDrive = async function() {
-            if (!gapiReady) {
-                openDriveConfig();
-                return;
-            }
-            
-            updateDriveStatus('syncing');
-            
-            try {
-                console.log('💾 Salvando dados no Drive...');
-                
-                // Garantir que a pasta existe
-                if (!driveFolderId) {
-                    await createDriveFolder();
-                }
-                
-                if (!driveFolderId) {
-                    throw new Error('Não foi possível criar pasta');
-                }
-                
-                // Preparar dados
-                const data = {
-                    version: APP_VERSION,
-                    clinic: CLINIC_NAME,
-                    lastSync: new Date().toISOString(),
-                    patients: loadPatients(),
-                    sessions: loadSessions(),
-                    schedule: loadSchedule(),
-                    tokens: loadTokens(),
-                    packs: loadPacks(),
-                    photos: loadPhotos(),
-                    evolucoes: loadEvolucoes()
-                };
-
-                // Verificar se arquivo já existe
-                const response = await gapi.client.drive.files.list({
-                    q: `name='dados.json' and '${driveFolderId}' in parents and trashed=false`,
-                    fields: 'files(id, name)',
-                    spaces: 'drive'
-                });
-
-                const fileContent = JSON.stringify(data, null, 2);
-                const blob = new Blob([fileContent], { type: 'application/json' });
-                
-                // Converter para base64
-                const reader = new FileReader();
-                const result = await new Promise((resolve, reject) => {
-                    reader.onload = () => resolve(reader.result.split(',')[1]);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(blob);
-                });
-                
-                if (response.result.files.length > 0) {
-                    // Atualizar arquivo existente
-                    const fileId = response.result.files[0].id;
-                    await gapi.client.request({
-                        path: `/upload/drive/v3/files/${fileId}`,
-                        method: 'PATCH',
-                        params: { uploadType: 'media' },
-                        headers: { 'Content-Type': 'application/json' },
-                        body: result
-                    });
-                    console.log('📄 Arquivo atualizado:', fileId);
-                } else {
-                    // Criar novo arquivo
-                    const metadata = {
-                        name: 'dados.json',
-                        parents: [driveFolderId]
-                    };
-                    
-                    await gapi.client.request({
-                        path: '/upload/drive/v3/files',
-                        method: 'POST',
-                        params: { uploadType: 'multipart' },
-                        headers: { 'Content-Type': 'multipart/related' },
-                        body: createMultipart(metadata, blob)
-                    });
-                    console.log('📄 Arquivo criado');
-                }
-                
-                updateDriveStatus('online');
-                showAlert("✅ Dados salvos no Google Drive!", "success");
-                
-            } catch (e) {
-                console.error('❌ Erro ao salvar:', e);
-                updateDriveStatus('offline');
-                showAlert("❌ Erro ao salvar: " + (e.message || 'Tente novamente'), 'error');
-            }
-        };
-
-        // Função auxiliar para criar multipart
-        function createMultipart(metadata, blob) {
-            const boundary = '-------314159265358979323846';
-            const delimiter = "\r\n--" + boundary + "\r\n";
-            const closeDelimiter = "\r\n--" + boundary + "--";
-            
-            const metadataPart = JSON.stringify(metadata);
-            
-            const multipartBody = delimiter +
-                'Content-Type: application/json\r\n\r\n' +
-                metadataPart +
-                delimiter +
-                'Content-Type: application/json\r\n\r\n' +
-                blob +
-                closeDelimiter;
-            
-            return multipartBody;
-        }
-
-        // Restaurar do Google Drive
-        window.restoreFromDrive = async function() {
-            if (!gapiReady) {
-                openDriveConfig();
-                return;
-            }
-            
-            if (!confirm("Restaurar dados do Google Drive? Isso substituirá todos os dados atuais.")) {
-                return;
-            }
-            
-            updateDriveStatus('syncing');
-            
-            try {
-                console.log('📂 Restaurando dados do Drive...');
-                
-                if (!driveFolderId) {
-                    await createDriveFolder();
-                }
-                
-                if (!driveFolderId) {
-                    throw new Error('Pasta não encontrada');
-                }
-                
-                // Buscar arquivo
-                const response = await gapi.client.drive.files.list({
-                    q: `name='dados.json' and '${driveFolderId}' in parents and trashed=false`,
-                    fields: 'files(id, name)',
-                    spaces: 'drive'
-                });
-
-                if (response.result.files.length === 0) {
-                    showAlert("❌ Nenhum backup encontrado", "error");
-                    updateDriveStatus('offline');
-                    return;
-                }
-
-                const fileId = response.result.files[0].id;
-                
-                // Baixar arquivo
-                const fileResponse = await gapi.client.drive.files.get({
-                    fileId: fileId,
-                    alt: 'media'
-                });
-                
-                const data = fileResponse.result;
-                
-                // Restaurar dados
-                if (data.patients) savePatients(data.patients);
-                if (data.sessions) saveSessions(data.sessions);
-                if (data.schedule) saveSchedule(data.schedule);
-                if (data.tokens) saveTokens(data.tokens);
-                if (data.packs) savePacks(data.packs);
-                if (data.photos) savePhotos(data.photos);
-                if (data.evolucoes) saveEvolucoes(data.evolucoes);
-                
-                updateDriveStatus('online');
-                showAlert("✅ Dados restaurados do Google Drive!", "success");
-                
-                // Recarregar interface
-                setTimeout(() => location.reload(), 1500);
-                
-            } catch (e) {
-                console.error('❌ Erro ao restaurar:', e);
-                updateDriveStatus('offline');
-                showAlert("❌ Erro ao restaurar", "error");
-            }
-        };
-
         // ========== NOTIFICAÇÕES ==========
         window.requestNotificationPermission = async function() {
             if (!("Notification" in window)) {
@@ -1503,6 +1111,77 @@ const KEYS = {
             const photos = loadPhotos();
             return photos[patientId] || null;
         }
+
+        // ========== EXPORTAR/IMPORTAR DADOS (NOVA FUNÇÃO) ==========
+        
+        window.exportarDados = function() {
+            try {
+                // Coletar todos os dados
+                const dados = {
+                    pacientes: loadPatients(),
+                    sessoes: loadSessions(),
+                    agenda: loadSchedule(),
+                    tokens: loadTokens(),
+                    pacotes: loadPacks(),
+                    fotos: loadPhotos(),
+                    evolucoes: loadEvolucoes(),
+                    dataExport: new Date().toISOString(),
+                    versao: APP_VERSION
+                };
+                
+                // Criar arquivo JSON
+                const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `backup_clinica_${todayISO()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                showAlert('✅ Dados exportados com sucesso!', 'success');
+            } catch (erro) {
+                console.error('Erro ao exportar:', erro);
+                showAlert('❌ Erro ao exportar dados', 'error');
+            }
+        };
+
+        window.importarDados = function() {
+            document.getElementById('importFile').click();
+        };
+
+        window.carregarArquivo = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const dados = JSON.parse(e.target.result);
+                    
+                    // Restaurar dados
+                    if (dados.pacientes) savePatients(dados.pacientes);
+                    if (dados.sessoes) saveSessions(dados.sessoes);
+                    if (dados.agenda) saveSchedule(dados.agenda);
+                    if (dados.tokens) saveTokens(dados.tokens);
+                    if (dados.pacotes) savePacks(dados.pacotes);
+                    if (dados.fotos) savePhotos(dados.fotos);
+                    if (dados.evolucoes) saveEvolucoes(dados.evolucoes);
+                    
+                    showAlert('✅ Dados importados com sucesso!', 'success');
+                    
+                    // Recarregar a página para mostrar os novos dados
+                    setTimeout(() => location.reload(), 1500);
+                    
+                } catch (erro) {
+                    console.error('Erro ao importar:', erro);
+                    showAlert('❌ Arquivo inválido', 'error');
+                }
+            };
+            reader.readAsText(file);
+            
+            // Limpar input para poder selecionar o mesmo arquivo novamente
+            event.target.value = '';
+        };
 
         // ========== TEMA ==========
         window.toggleTheme = function() {
@@ -1773,6 +1452,24 @@ const KEYS = {
             $("tokenModal")?.classList.remove("hidden");
         };
 
+        window.saveToken = function() {
+            if (!currentTokenSessionId) return;
+            
+            registerToken(currentTokenSessionId, {
+                sessionId: currentTokenSessionId,
+                date: $("tokenDate")?.value,
+                patientName: $("tokenPatient")?.value,
+                code: $("tokenCode")?.value,
+                status: $("tokenStatus")?.value
+            });
+            
+            $("tokenModal")?.classList.add("hidden");
+            renderDaily();
+            renderDashboard();
+            generateReports();
+            showAlert("✅ Token registrado com sucesso!", "success");
+        };
+
         window.openPackModal = function(patientId) {
             currentPackPatientId = patientId;
             const patient = getPatientById(patientId);
@@ -1821,6 +1518,55 @@ const KEYS = {
             
             toggleWeekdaySelector();
             $("packModal")?.classList.remove("hidden");
+        };
+
+        window.savePack = function() {
+            if (!currentPackPatientId) return;
+            
+            const patient = getPatientById(currentPackPatientId);
+            const startDate = $("packStartDate")?.value;
+            const totalSessions = parseInt($("packTotal")?.value || "4");
+            const frequency = parseInt($("packFrequency")?.value || "1");
+            const time = $("packTime")?.value;
+            
+            let weekdays = [];
+            if (frequency === 2) {
+                weekdays = Array.from(document.querySelectorAll('.weekday-btn.selected'))
+                    .map(btn => parseInt(btn.dataset.day));
+                if (weekdays.length !== 2) {
+                    showAlert("Selecione exatamente 2 dias para 2x por semana", "warning");
+                    return;
+                }
+            } else {
+                weekdays = [new Date(startDate).getDay()];
+            }
+            
+            const packConfig = {
+                patientId: currentPackPatientId,
+                patientName: patient.name,
+                serviceType: patient.serviceType,
+                startDate: startDate,
+                totalSessions: totalSessions,
+                frequency: frequency,
+                weekdays: weekdays,
+                time: time,
+                createdAt: new Date().toISOString()
+            };
+            
+            savePatientPack(currentPackPatientId, packConfig);
+            generatePackSchedule(currentPackPatientId, packConfig);
+            
+            $("packModal")?.classList.add("hidden");
+            
+            if (openedPatientId === currentPackPatientId) {
+                openPatientFolder(currentPackPatientId);
+            }
+            
+            renderSchedule();
+            renderDashboard();
+            generateReports();
+            showAlert("✅ Configuração do pacote salva com sucesso!", "success");
+            currentPackPatientId = null;
         };
 
         function toggleWeekdaySelector() {
@@ -2350,6 +2096,12 @@ const KEYS = {
                     ${p?.email ? `📧 ${p.email}` : ""}
                 `;
             }
+        };
+
+        window.closePatientFolder = function() {
+            openedPatientId = null;
+            $("folderOpenPane")?.classList.add("hidden");
+            $("foldersPane")?.classList.remove("hidden");
         };
 
         window.showPackSchedule = function(patientId) {
@@ -2960,85 +2712,9 @@ const KEYS = {
             }
         };
 
-        window.savePack = function() {
-            if (!currentPackPatientId) return;
-            
-            const patient = getPatientById(currentPackPatientId);
-            const startDate = $("packStartDate")?.value;
-            const totalSessions = parseInt($("packTotal")?.value || "4");
-            const frequency = parseInt($("packFrequency")?.value || "1");
-            const time = $("packTime")?.value;
-            
-            let weekdays = [];
-            if (frequency === 2) {
-                weekdays = Array.from(document.querySelectorAll('.weekday-btn.selected'))
-                    .map(btn => parseInt(btn.dataset.day));
-                if (weekdays.length !== 2) {
-                    showAlert("Selecione exatamente 2 dias para 2x por semana", "warning");
-                    return;
-                }
-            } else {
-                weekdays = [new Date(startDate).getDay()];
-            }
-            
-            const packConfig = {
-                patientId: currentPackPatientId,
-                patientName: patient.name,
-                serviceType: patient.serviceType,
-                startDate: startDate,
-                totalSessions: totalSessions,
-                frequency: frequency,
-                weekdays: weekdays,
-                time: time,
-                createdAt: new Date().toISOString()
-            };
-            
-            savePatientPack(currentPackPatientId, packConfig);
-            generatePackSchedule(currentPackPatientId, packConfig);
-            
-            $("packModal")?.classList.add("hidden");
-            
-            if (openedPatientId === currentPackPatientId) {
-                openPatientFolder(currentPackPatientId);
-            }
-            
-            renderSchedule();
-            renderDashboard();
-            generateReports();
-            showAlert("✅ Configuração do pacote salva com sucesso!", "success");
-            currentPackPatientId = null;
-        };
-
-        window.saveToken = function() {
-            if (!currentTokenSessionId) return;
-            
-            registerToken(currentTokenSessionId, {
-                sessionId: currentTokenSessionId,
-                date: $("tokenDate")?.value,
-                patientName: $("tokenPatient")?.value,
-                code: $("tokenCode")?.value,
-                status: $("tokenStatus")?.value
-            });
-            
-            $("tokenModal")?.classList.add("hidden");
-            renderDaily();
-            renderDashboard();
-            generateReports();
-            showAlert("✅ Token registrado com sucesso!", "success");
-        };
-
-        window.closePatientFolder = function() {
-            openedPatientId = null;
-            $("folderOpenPane")?.classList.add("hidden");
-            $("foldersPane")?.classList.remove("hidden");
-        };
-
-        window.toggleAutoBackup = function() {
-            autoBackup = !autoBackup;
-            localStorage.setItem("autoBackup", autoBackup);
-            const btn = $("autoBackupToggle");
-            if (btn) btn.innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
-            showAlert(autoBackup ? "✅ Backup automático ativado" : "⚪ Backup automático desativado");
+        // ========== ATALHOS ==========
+        window.toggleShortcuts = function() {
+            $("shortcutsPanel")?.classList.toggle("hidden");
         };
 
         window.installPWA = function() {
@@ -3051,10 +2727,6 @@ const KEYS = {
                     deferredPrompt = null;
                 });
             }
-        };
-
-        window.toggleShortcuts = function() {
-            $("shortcutsPanel")?.classList.toggle("hidden");
         };
 
         // ========== RENDERIZAÇÃO DO HTML ==========
@@ -3081,11 +2753,9 @@ const KEYS = {
 
                         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
                             <div class="backup-bar">
-                                <span class="muted">☁️ Drive:</span>
-                                <span id="driveStatus" class="drive-status offline"></span>
-                                <button class="small" onclick="openDriveConfig()">🔌 Configurar</button>
-                                <button class="small primary" onclick="saveToDrive()">💾 Salvar no Drive</button>
-                                <button class="small" onclick="restoreFromDrive()">📂 Restaurar do Drive</button>
+                                <span class="muted">💾 Backup:</span>
+                                <button class="small primary" onclick="exportarDados()">📤 Exportar</button>
+                                <button class="small" onclick="importarDados()">📥 Importar</button>
                             </div>
 
                             <div class="tabs">
@@ -3532,12 +3202,7 @@ const KEYS = {
             }
 
             autoBackup = localStorage.getItem("autoBackup") !== "false";
-            const autoBackupBtn = $("autoBackupToggle");
-            if (autoBackupBtn) autoBackupBtn.innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
-
-            // Inicializar Google Drive
-            initGoogleDrive();
-
+            
             // Verificar permissão de notificações
             const notificationStatus = localStorage.getItem(KEYS.NOTIFICATIONS);
             if (notificationStatus === "granted") {
@@ -3553,22 +3218,11 @@ const KEYS = {
                 }, 30000);
             }
 
-            // Configurar seletores de dia
-            document.querySelectorAll('.weekday-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const freq = $("packFrequency")?.value;
-                    if (freq !== "2") return;
-                    
-                    const selected = document.querySelectorAll('.weekday-btn.selected').length;
-                    if (btn.classList.contains('selected')) {
-                        btn.classList.remove('selected');
-                    } else if (selected < 2) {
-                        btn.classList.add('selected');
-                    } else {
-                        showAlert("Selecione apenas 2 dias para 2x por semana", "warning");
-                    }
-                });
-            });
+            // Configurar input de arquivo
+            const importFile = $("importFile");
+            if (importFile) {
+                importFile.addEventListener('change', carregarArquivo);
+            }
 
             // PWA Installation
             window.addEventListener('beforeinstallprompt', (e) => {
@@ -3638,12 +3292,6 @@ const KEYS = {
 
             $("saveEditEvolucao")?.addEventListener("click", saveEditEvolucao);
 
-            $("cancelDriveConfig")?.addEventListener("click", () => {
-                $("driveConfigModal")?.classList.add("hidden");
-            });
-
-            $("authorizeDrive")?.addEventListener("click", authorizeDrive);
-
             renderPatientSelect();
             renderDaily();
             renderPatientFolders();
@@ -3651,10 +3299,9 @@ const KEYS = {
             renderDashboard();
             generateReports();
 
+            // Auto-backup (mantido para compatibilidade)
             if (autoBackup) {
-                setInterval(() => {
-                    // Auto backup function (optional)
-                }, 5 * 60 * 1000);
+                setInterval(() => {}, 5 * 60 * 1000);
             }
         }
 
