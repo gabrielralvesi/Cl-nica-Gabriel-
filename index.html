@@ -636,7 +636,6 @@
             margin-top: 10px;
         }
 
-        /* Cronograma do Pacote */
         .schedule-timeline {
             margin-top: 20px;
             border: 1px solid var(--line);
@@ -837,24 +836,22 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '6.2.0';
+        const APP_VERSION = '7.0.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
         
         const KEYS = {
-            PATIENTS: "gabriel_fono_patients_v6",
-            SESSIONS: "gabriel_fono_sessions_v6",
-            SCHEDULE: "gabriel_fono_schedule_v6",
-            TOKENS: "gabriel_fono_tokens_v6",
-            PACKS: "gabriel_fono_packs_v6",
-            BACKUP: "gabriel_fono_backup_v6",
-            THEME: "gabriel_fono_theme_v6",
+            PATIENTS: "gabriel_fono_patients_v7",
+            SESSIONS: "gabriel_fono_sessions_v7",
+            SCHEDULE: "gabriel_fono_schedule_v7",
+            TOKENS: "gabriel_fono_tokens_v7",
+            BACKUP: "gabriel_fono_backup_v7",
+            THEME: "gabriel_fono_theme_v7",
             VERSION: "gabriel_fono_version",
             NOTIFICATIONS: "gabriel_fono_notifications",
             PHOTOS: "gabriel_fono_photos",
-            EVOLUCOES: "gabriel_fono_evolucoes",
-            PACK_SESSIONS: "gabriel_fono_pack_sessions"
+            EVOLUCOES: "gabriel_fono_evolucoes"
         };
 
         const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -871,7 +868,6 @@
         let openedPatientId = null;
         let alertTimeout = null;
         let currentTokenSessionId = null;
-        let currentPackPatientId = null;
         let debtFilterActive = false;
         let notificationsEnabled = false;
         let notificationInterval = null;
@@ -953,126 +949,17 @@
 
         function recurKey(day, time) { return `${day}|${time}`; }
 
-        // ========== HORÁRIOS CORRIGIDOS ==========
         function defaultTimes() {
             return [
-                // Manhã - 07:00 às 11:00 (de 40 em 40 minutos)
                 "07:00", "07:40", "08:20", "09:00", "09:40", "10:20", "11:00",
-                // Tarde - 13:00 às 17:40 (de 40 em 40 minutos)
                 "13:00", "13:40", "14:20", "15:00", "15:40", "16:20", "17:00", "17:40"
             ];
         }
 
-        // ========== FUNÇÕES DE DATA ==========
         function addDays(dateStr, days) {
             const date = new Date(dateStr + 'T12:00:00');
             date.setDate(date.getDate() + days);
             return date.toISOString().split('T')[0];
-        }
-
-        function getNextWeekday(dateStr, targetDay) {
-            const date = new Date(dateStr + 'T12:00:00');
-            const currentDay = date.getDay();
-            
-            // Converter para nosso formato (0=Seg, 1=Ter, ..., 6=Dom)
-            let currentDayIndex = currentDay === 0 ? 6 : currentDay - 1;
-            
-            let daysToAdd = targetDay - currentDayIndex;
-            if (daysToAdd < 0) daysToAdd += 7;
-            
-            return addDays(dateStr, daysToAdd);
-        }
-
-        // ========== FUNÇÃO CORRIGIDA PARA 8 SESSÕES EM 30 DIAS ==========
-        function gerarCronograma(startDate, endDate, frequency, weekdays, time) {
-            const sessions = [];
-            let sessionCount = 0;
-            const maxIterations = 20;
-            
-            if (frequency === 1) {
-                // 1x por semana - 4 sessões em 28 dias
-                const targetDay = weekdays[0];
-                let dataAtual = getNextWeekday(startDate, targetDay);
-                
-                while (dataAtual <= endDate && sessionCount < maxIterations) {
-                    sessions.push({
-                        id: uid(),
-                        date: dataAtual,
-                        time: time,
-                        status: 'pending',
-                        originalDate: dataAtual
-                    });
-                    sessionCount++;
-                    dataAtual = addDays(dataAtual, 7);
-                }
-                
-            } else if (frequency === 2 && weekdays.length === 2) {
-                // 2x por semana - 8 sessões em 28-30 dias
-                const [day1, day2] = weekdays.sort((a, b) => a - b);
-                
-                // Encontrar a primeira ocorrência de cada dia
-                let primeiraData1 = getNextWeekday(startDate, day1);
-                let primeiraData2 = getNextWeekday(primeiraData1, day2);
-                
-                let semana = 0;
-                
-                while (sessionCount < maxIterations) {
-                    const data1 = addDays(primeiraData1, semana * 7);
-                    const data2 = addDays(primeiraData2, semana * 7);
-                    
-                    if (data1 <= endDate) {
-                        sessions.push({
-                            id: uid(),
-                            date: data1,
-                            time: time,
-                            status: 'pending',
-                            originalDate: data1
-                        });
-                        sessionCount++;
-                    }
-                    
-                    if (data2 <= endDate) {
-                        sessions.push({
-                            id: uid(),
-                            date: data2,
-                            time: time,
-                            status: 'pending',
-                            originalDate: data2
-                        });
-                        sessionCount++;
-                    }
-                    
-                    semana++;
-                    
-                    if (data1 > endDate && data2 > endDate) break;
-                }
-            }
-            
-            // Ordenar por data
-            sessions.sort((a, b) => a.date.localeCompare(b.date));
-            
-            return sessions;
-        }
-
-        function atualizarStatusCronograma(patientId) {
-            const packSessions = getPackSessions(patientId);
-            const sessions = loadSessions().filter(s => s.patientId === patientId);
-            
-            const updatedSessions = packSessions.map(ps => {
-                const session = sessions.find(s => s.date === ps.date && s.time === ps.time);
-                if (session) {
-                    return {
-                        ...ps,
-                        status: session.did === 'realizou' ? 'completed' : 
-                                session.did === 'nao' ? 'missed' : 'pending',
-                        sessionId: session.id
-                    };
-                }
-                return ps;
-            });
-            
-            savePackSessionsForPatient(patientId, updatedSessions);
-            return updatedSessions;
         }
 
         // ========== FUNÇÕES DE DADOS ==========
@@ -1090,31 +977,14 @@
         function loadTokens() { return loadData(KEYS.TOKENS, {}); }
         function saveTokens(tokens) { saveData(KEYS.TOKENS, tokens); }
 
-        function loadPacks() { return loadData(KEYS.PACKS, {}); }
-        function savePacks(packs) { saveData(KEYS.PACKS, packs); }
-
         function loadPhotos() { return loadData(KEYS.PHOTOS, {}); }
         function savePhotos(photos) { saveData(KEYS.PHOTOS, photos); }
 
         function loadEvolucoes() { return loadData(KEYS.EVOLUCOES, {}); }
         function saveEvolucoes(evolucoes) { saveData(KEYS.EVOLUCOES, evolucoes); }
 
-        function loadPackSessions() { return loadData(KEYS.PACK_SESSIONS, {}); }
-        function savePackSessions(packSessions) { saveData(KEYS.PACK_SESSIONS, packSessions); }
-
         function getPatientById(id) {
             return loadPatients().find(p => p.id === id);
-        }
-
-        function getPackSessions(patientId) {
-            const packSessions = loadPackSessions();
-            return packSessions[patientId] || [];
-        }
-
-        function savePackSessionsForPatient(patientId, sessions) {
-            const packSessions = loadPackSessions();
-            packSessions[patientId] = sessions;
-            savePackSessions(packSessions);
         }
 
         function getTokenForSession(sessionId) {
@@ -1130,23 +1000,6 @@
             };
             saveTokens(tokens);
             return tokens[sessionId];
-        }
-
-        function calculateSessionsProgress(patientId) {
-            const packSessions = getPackSessions(patientId);
-            if (packSessions.length === 0) return { completed: 0, missed: 0, pending: 0, total: 0 };
-            
-            const completed = packSessions.filter(s => s.status === 'completed').length;
-            const missed = packSessions.filter(s => s.status === 'missed').length;
-            const pending = packSessions.filter(s => s.status === 'pending').length;
-            
-            return {
-                completed,
-                missed,
-                pending,
-                total: packSessions.length,
-                percent: packSessions.length > 0 ? (completed / packSessions.length) * 100 : 0
-            };
         }
 
         // ========== NOTIFICAÇÕES ==========
@@ -1245,10 +1098,8 @@
                     sessoes: loadSessions(),
                     agenda: loadSchedule(),
                     tokens: loadTokens(),
-                    pacotes: loadPacks(),
                     fotos: loadPhotos(),
                     evolucoes: loadEvolucoes(),
-                    cronogramas: loadPackSessions(),
                     dataExport: new Date().toISOString(),
                     versao: APP_VERSION
                 };
@@ -1285,10 +1136,8 @@
                     if (dados.sessoes) saveSessions(dados.sessoes);
                     if (dados.agenda) saveSchedule(dados.agenda);
                     if (dados.tokens) saveTokens(dados.tokens);
-                    if (dados.pacotes) savePacks(dados.pacotes);
                     if (dados.fotos) savePhotos(dados.fotos);
                     if (dados.evolucoes) saveEvolucoes(dados.evolucoes);
-                    if (dados.cronogramas) savePackSessions(dados.cronogramas);
                     
                     showAlert('✅ Dados importados com sucesso!', 'success');
                     
@@ -1460,10 +1309,6 @@
                 }
                 saveSessions(sessions);
                 
-                if (sessions[idx].patientId) {
-                    atualizarStatusCronograma(sessions[idx].patientId);
-                }
-                
                 renderDaily();
                 renderDashboard();
                 if (openedPatientId) openPatientFolder(openedPatientId);
@@ -1560,31 +1405,10 @@
         function renderSchedule() {
             const sch = loadSchedule();
             const patients = loadPatients();
-            const packSessions = loadPackSessions();
             const times = (sch.times || []).sort();
             const table = $("schedTable");
             
             if (!table) return;
-
-            const sessoesPorDia = {};
-            
-            patients.forEach(patient => {
-                const sessions = packSessions[patient.id] || [];
-                sessions.forEach(sessao => {
-                    const diaSemana = new Date(sessao.date + 'T12:00:00').getDay();
-                    const diaIndex = diaSemana === 0 ? 6 : diaSemana - 1;
-                    const key = `${diaIndex}|${sessao.time}`;
-                    
-                    sessoesPorDia[key] = {
-                        patientId: patient.id,
-                        patientName: patient.name,
-                        serviceType: patient.serviceType,
-                        status: sessao.status,
-                        time: sessao.time,
-                        date: sessao.date
-                    };
-                });
-            });
 
             let html = "<thead><tr><th class='timeCell'>Horário</th>";
             DAYS.forEach(day => html += `<th>${day}</th>`);
@@ -1594,30 +1418,21 @@
                 html += `<tr><td class="timeCell">${escapeHtml(time)}</td>`;
 
                 for (let day = 0; day < 7; day++) {
-                    const key = `${day}|${time}`;
-                    const sessao = sessoesPorDia[key];
+                    const key = recurKey(day, time);
+                    const entry = sch.recurring?.[key];
 
-                    if (sessao) {
-                        const patient = getPatientById(sessao.patientId);
-                        const colorClass = sessao.serviceType === "cassems" ? "slotGreen" : 
-                                          sessao.serviceType === "particular" ? "slotAmber" :
-                                          sessao.serviceType === "unimed" ? "slotBlue" : "slotPurple";
-                        
-                        const serviceLabel = sessao.serviceType === "cassems" ? "Cassems" :
-                                            sessao.serviceType === "unimed" ? "Unimed" :
-                                            sessao.serviceType === "outros" ? "Outros" : "Particular";
+                    if (entry) {
+                        const patient = getPatientById(entry.patientId);
+                        const colorClass = SERVICE_COLORS[entry.serviceType] || "slotAmber";
+                        const serviceLabel = entry.serviceType === "cassems" ? "Cassems" :
+                            entry.serviceType === "unimed" ? "Unimed" :
+                                entry.serviceType === "outros" ? "Outros" : "Particular";
 
-                        const tokenIcon = sessao.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
-                        
-                        let statusIcon = '';
-                        if (sessao.status === 'completed') statusIcon = '✅ ';
-                        else if (sessao.status === 'missed') statusIcon = '❌ ';
-                        else statusIcon = '⏳ ';
+                        const tokenIcon = entry.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
 
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox ${colorClass}">
-                            <div style="font-weight:600;">${statusIcon} ${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
+                            <div style="font-weight:600;">${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
                             <div class="muted" style="font-size:0.85rem;">${serviceLabel}</div>
-                            <div class="muted" style="font-size:0.75rem;">${new Date(sessao.date).toLocaleDateString()}</div>
                         </td>`;
                     } else {
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor:pointer;">
@@ -1904,13 +1719,9 @@
                 const totalSessoes = sessions.length;
                 const realizadas = sessions.filter(s => s.did === "realizou").length;
                 const cassemsIcon = p.serviceType === 'cassems' ? '🎫' : '';
-                const pack = p.totalSessoes ? '📦' : '';
                 const photo = getPatientPhoto(p.id);
                 const evolucoes = getPatientEvolucoes(p.id);
                 const evolucoesCount = evolucoes.length;
-                const packSessions = getPackSessions(p.id);
-                const progress = packSessions.length > 0 ? 
-                    Math.round((packSessions.filter(s => s.status === 'completed').length / packSessions.length) * 100) : 0;
 
                 return `
                 <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
@@ -1919,10 +1730,9 @@
                         <div style="flex:1;">
                             <div style="display:flex; justify-content:space-between;">
                                 <div>
-                                    <b>📁 ${escapeHtml(p.name)} ${cassemsIcon} ${pack}</b>
+                                    <b>📁 ${escapeHtml(p.name)} ${cassemsIcon}</b>
                                     <div class="muted">
                                         ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
-                                        ${p.totalSessoes ? ` • ${p.totalSessoes} sessões (${progress}%)` : ''}
                                         ${evolucoesCount > 0 ? ` • 📝 ${evolucoesCount} evoluções` : ''}
                                     </div>
                                 </div>
@@ -1942,13 +1752,18 @@
             const p = getPatientById(id);
             const photo = getPatientPhoto(id);
             const evolucoes = getPatientEvolucoes(id);
-            const packSessions = getPackSessions(id);
             
-            $("foldersPane").classList.add("hidden");
-            $("folderOpenPane").classList.remove("hidden");
-            $("openPatientTitle").textContent = `📁 ${p?.name || "Paciente"}`;
-            
+            const foldersPane = $("foldersPane");
+            const folderOpenPane = $("folderOpenPane");
+            const openPatientTitle = $("openPatientTitle");
             const folderPatientPhoto = $("folderPatientPhoto");
+            const openPatientMeta = $("openPatientMeta");
+            const pacoteProgresso = $("pacoteProgresso");
+            
+            if (foldersPane) foldersPane.classList.add("hidden");
+            if (folderOpenPane) folderOpenPane.classList.remove("hidden");
+            if (openPatientTitle) openPatientTitle.textContent = `📁 ${p?.name || "Paciente"}`;
+            
             if (folderPatientPhoto) {
                 if (photo) {
                     folderPatientPhoto.src = photo;
@@ -1958,312 +1773,87 @@
                 }
             }
 
-            const cronogramaAtualizado = atualizarStatusCronograma(id);
-            
-            const completed = cronogramaAtualizado.filter(s => s.status === 'completed').length;
-            const missed = cronogramaAtualizado.filter(s => s.status === 'missed').length;
-            const pending = cronogramaAtualizado.filter(s => s.status === 'pending').length;
-            const total = cronogramaAtualizado.length;
-
-            let pacoteHtml = '';
-            
-            if (total > 0) {
-                const percent = total > 0 ? (completed / total) * 100 : 0;
-                
-                pacoteHtml = `
-                    <div style="margin:10px 0;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                            <div>
-                                <b>📦 Pacote de ${total} sessões</b>
-                                <div class="muted">${p?.startDate && p?.endDate ? `Período: ${new Date(p.startDate).toLocaleDateString()} a ${new Date(p.endDate).toLocaleDateString()}` : ''}</div>
-                            </div>
-                        </div>
-                        
-                        <div class="progress-bar" style="margin:10px 0;">
-                            <div class="progress-fill" style="width:${percent}%; background:#2C7A5A;"></div>
-                        </div>
-                        
-                        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                            <span>✅ ${completed} realizadas</span>
-                            <span>❌ ${missed} faltas</span>
-                            <span>⏳ ${pending} pendentes</span>
-                        </div>
-                        
-                        <div class="schedule-timeline">
-                            <div class="schedule-header">
-                                <span><b>📅 Cronograma</b></span>
-                                <span class="muted">${total} sessões</span>
-                            </div>
-                            <div class="schedule-dates">
-                                ${cronogramaAtualizado.map((s, index) => {
-                                    const statusClass = s.status === 'completed' ? 'completed' : 
-                                                       s.status === 'missed' ? 'missed' : 'pending';
-                                    const statusText = s.status === 'completed' ? '✅' : 
-                                                      s.status === 'missed' ? '❌' : '⏳';
-                                    return `
-                                        <div class="schedule-row ${statusClass}">
-                                            <span class="schedule-index">#${index + 1}</span>
-                                            <span class="schedule-date">${new Date(s.date).toLocaleDateString()} às ${s.time}</span>
-                                            <span class="schedule-status status-${s.status}">${statusText}</span>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
+            // Informações do período (apenas para referência)
+            if (p?.startDate && p?.endDate) {
+                $("pacoteProgresso").innerHTML = `
+                    <div class="info-box" style="margin:10px 0;">
+                        <b>📅 Período do tratamento</b><br>
+                        Início: ${new Date(p.startDate).toLocaleDateString()}<br>
+                        Término: ${new Date(p.endDate).toLocaleDateString()}
                     </div>
                 `;
             } else {
-                pacoteHtml = `<div class="muted" style="text-align:center;">Nenhum pacote configurado</div>`;
+                $("pacoteProgresso").innerHTML = '';
             }
-            
-            $("pacoteProgresso").innerHTML = pacoteHtml;
 
+            // Histórico de sessões
             const patientSessions = loadSessions().filter(s => s.patientId === id).sort((a, b) => b.date.localeCompare(a.date));
             const tokens = loadTokens();
 
-            $("patientHistory").innerHTML = patientSessions.map(s => {
-                const token = tokens[s.id];
-                const tokenInfo = token ? 
-                    `<div class="muted">🎫 Token: ${token.code || '—'}</div>` : 
-                    (p?.serviceType === 'cassems' ? '<div class="muted">⏳ Token pendente</div>' : '');
-                
-                return `
-                <div class="item">
-                    <div style="display:flex; justify-content:space-between;">
-                        <div>
-                            <b>${new Date(s.date).toLocaleDateString()} ${s.time ? "às " + s.time : ""}</b>
-                            <div class="muted">
-                                ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"} • 
-                                ${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"} • 
-                                ${fmtMoney(s.value)}
+            const patientHistory = $("patientHistory");
+            if (patientHistory) {
+                patientHistory.innerHTML = patientSessions.map(s => {
+                    const token = tokens[s.id];
+                    const tokenInfo = token ? 
+                        `<div class="muted" style="font-size:0.85rem;">🎫 Token: ${token.code || '—'} (${token.status})</div>` : 
+                        (p?.serviceType === 'cassems' ? '<div class="muted" style="font-size:0.85rem; color:#E8C66A;">⏳ Token pendente</div>' : '');
+                    
+                    return `
+                    <div class="item">
+                        <div style="display:flex; justify-content:space-between;">
+                            <div>
+                                <b>${new Date(s.date).toLocaleDateString()} ${s.time ? "às " + s.time : ""}</b>
+                                <div class="muted">
+                                    ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"} • 
+                                    ${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"} • 
+                                    ${fmtMoney(s.value)}
+                                </div>
+                                ${tokenInfo}
                             </div>
-                            ${tokenInfo}
-                        </div>
-                        <div>
-                            <button class="small" onclick="event.stopPropagation(); toggleSessionPaid('${s.id}')">💰</button>
+                            <div>
+                                <button class="small" onclick="event.stopPropagation(); toggleSessionPaid('${s.id}')">💰</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `}).join("") || "<div class='muted'>Nenhum histórico</div>";
+                `}).join("") || "<div class='muted'>Nenhum histórico</div>";
+            }
 
-            $("openPatientMeta").innerHTML = `
-                ${p?.serviceType || "Particular"} • 
-                ${p?.phone ? `📱 ${p.phone}` : ""}
-            `;
+            // Seção de Evolução
+            const evolucoesSection = $("evolucoesSection");
+            if (evolucoesSection) {
+                if (evolucoes.length === 0) {
+                    evolucoesSection.innerHTML = `
+                        <div style="text-align:center; padding:20px;">
+                            <p class="muted">Nenhuma evolução registrada</p>
+                            <button class="small primary" onclick="openEvolucaoModal()">➕ Registrar Primeira Evolução</button>
+                        </div>
+                    `;
+                } else {
+                    evolucoesSection.innerHTML = `
+                        <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="margin:0;">📝 Evoluções do Caso</h3>
+                            <button class="small primary" onclick="openEvolucaoModal()">➕ Nova Evolução</button>
+                        </div>
+                        <div id="evolucoesList" class="timeline"></div>
+                    `;
+                    renderEvolucoes();
+                }
+            }
+
+            if (openPatientMeta) {
+                openPatientMeta.innerHTML = `
+                    ${p?.serviceType || "Particular"} • 
+                    ${p?.phone ? `📱 ${p.phone}` : ""} • 
+                    ${p?.email ? `📧 ${p.email}` : ""}
+                `;
+            }
         };
 
         window.closePatientFolder = function() {
             openedPatientId = null;
-            $("folderOpenPane").classList.add("hidden");
-            $("foldersPane").classList.remove("hidden");
+            $("folderOpenPane")?.classList.add("hidden");
+            $("foldersPane")?.classList.remove("hidden");
         };
-
-        window.exportPackProgress = function(patientId) {
-            const p = getPatientById(patientId);
-            const packSessions = getPackSessions(patientId);
-            const progress = calculateSessionsProgress(patientId);
-            
-            const data = {
-                paciente: p.name,
-                totalSessoes: progress.total,
-                realizadas: progress.completed,
-                faltas: progress.missed,
-                pendentes: progress.pending,
-                percentual: `${progress.percent.toFixed(1)}%`,
-                cronograma: packSessions.map(s => ({
-                    data: s.date,
-                    hora: s.time,
-                    status: s.status
-                }))
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `pacote_${p.name}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            showAlert("✅ Dados do pacote exportados!", "success");
-        };
-
-        // ========== FUNÇÕES DE EVOLUÇÃO ==========
-        function getPatientEvolucoes(patientId) {
-            const evolucoes = loadEvolucoes();
-            return evolucoes[patientId] || [];
-        }
-
-        function savePatientEvolucao(patientId, evolucaoData) {
-            const evolucoes = loadEvolucoes();
-            if (!evolucoes[patientId]) {
-                evolucoes[patientId] = [];
-            }
-            
-            if (evolucaoData.id) {
-                const index = evolucoes[patientId].findIndex(e => e.id === evolucaoData.id);
-                if (index !== -1) {
-                    evolucoes[patientId][index] = {
-                        ...evolucaoData,
-                        updatedAt: new Date().toISOString()
-                    };
-                }
-            } else {
-                evolucaoData.id = uid();
-                evolucaoData.createdAt = new Date().toISOString();
-                evolucoes[patientId].push(evolucaoData);
-            }
-            
-            evolucoes[patientId].sort((a, b) => b.date.localeCompare(a.date));
-            saveEvolucoes(evolucoes);
-            return evolucaoData;
-        }
-
-        function deletePatientEvolucao(patientId, evolucaoId) {
-            const evolucoes = loadEvolucoes();
-            if (evolucoes[patientId]) {
-                evolucoes[patientId] = evolucoes[patientId].filter(e => e.id !== evolucaoId);
-                if (evolucoes[patientId].length === 0) {
-                    delete evolucoes[patientId];
-                }
-                saveEvolucoes(evolucoes);
-            }
-        }
-
-        window.openEvolucaoModal = function() {
-            if (!openedPatientId) return;
-            $("evolucaoData").value = todayISO();
-            $("evolucaoTexto").value = "";
-            $("evolucaoModal").classList.remove("hidden");
-        };
-
-        window.saveEvolucao = function() {
-            if (!openedPatientId) return;
-            const data = $("evolucaoData").value;
-            const texto = $("evolucaoTexto").value.trim();
-            if (!texto) return showAlert("❌ Escreva a evolução", "error");
-            
-            savePatientEvolucao(openedPatientId, { date: data, text: texto });
-            $("evolucaoModal").classList.add("hidden");
-            openPatientFolder(openedPatientId);
-            showAlert("✅ Evolução registrada!", "success");
-        };
-
-        window.editEvolucao = function(evolucaoId) {
-            if (!openedPatientId) return;
-            const evolucoes = getPatientEvolucoes(openedPatientId);
-            const evolucao = evolucoes.find(e => e.id === evolucaoId);
-            if (!evolucao) return;
-            
-            currentEvolucaoId = evolucaoId;
-            $("editEvolucaoData").value = evolucao.date;
-            $("editEvolucaoTexto").value = evolucao.text;
-            $("editEvolucaoModal").classList.remove("hidden");
-        };
-
-        window.saveEditEvolucao = function() {
-            if (!openedPatientId || !currentEvolucaoId) return;
-            const data = $("editEvolucaoData").value;
-            const texto = $("editEvolucaoTexto").value.trim();
-            if (!texto) return showAlert("❌ Escreva a evolução", "error");
-            
-            savePatientEvolucao(openedPatientId, {
-                id: currentEvolucaoId,
-                date: data,
-                text: texto
-            });
-            
-            $("editEvolucaoModal").classList.add("hidden");
-            currentEvolucaoId = null;
-            openPatientFolder(openedPatientId);
-            showAlert("✅ Evolução atualizada!", "success");
-        };
-
-        window.deleteEvolucao = function(evolucaoId) {
-            if (!openedPatientId) return;
-            if (!confirm("Excluir esta evolução?")) return;
-            deletePatientEvolucao(openedPatientId, evolucaoId);
-            openPatientFolder(openedPatientId);
-            showAlert("🗑️ Evolução excluída!", "success");
-        };
-
-        function renderEvolucoes() {
-            const container = $("evolucoesList");
-            if (!container || !openedPatientId) return;
-            const evolucoes = getPatientEvolucoes(openedPatientId);
-            container.innerHTML = evolucoes.map(ev => `
-                <div class="timeline-item">
-                    <div class="timeline-date">📅 ${new Date(ev.date).toLocaleDateString()}</div>
-                    <div class="timeline-content">${escapeHtml(ev.text)}</div>
-                    <div class="timeline-actions">
-                        <button class="small" onclick="editEvolucao('${ev.id}')">✏️</button>
-                        <button class="small danger" onclick="deleteEvolucao('${ev.id}')">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // ========== RELATÓRIOS ==========
-        function generateReports() {
-            const sessions = loadSessions();
-            const patients = loadPatients();
-            const tokens = loadTokens();
-            const packSessions = loadPackSessions();
-            const currentMonth = todayISO().slice(0, 7);
-
-            const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
-            const realizacoes = monthSessions.filter(s => s.did === "realizou");
-            const faltas = monthSessions.filter(s => s.did === "nao");
-            const faturamento = realizacoes.reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-            const aReceber = monthSessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-
-            $("monthSummary").innerHTML = `Sessões: ${monthSessions.length}<br>Realizadas: ${realizacoes.length}<br>Faltas: ${faltas.length}`;
-            $("absenceRate").innerHTML = monthSessions.length ? `${((faltas.length / monthSessions.length) * 100).toFixed(1)}%` : "0%";
-            $("revenueStats").innerHTML = `Faturado: ${fmtMoney(faturamento)}<br>A receber: ${fmtMoney(aReceber)}`;
-            $("activePatients").innerHTML = patients.length.toString();
-
-            const sessoesCassems = sessions.filter(s => {
-                const p = getPatientById(s.patientId);
-                return p?.serviceType === "cassems";
-            });
-
-            const tokensEnviados = Object.values(tokens).filter(t => t.status === "enviado").length;
-            $("totalSessoesCassems").textContent = sessoesCassems.length;
-            $("totalTokensEnviados").textContent = tokensEnviados;
-            $("totalTokensPendentes").textContent = Math.max(0, sessoesCassems.length - tokensEnviados);
-
-            const packStatus = [];
-            Object.entries(packSessions).forEach(([patientId, sessions]) => {
-                const patient = getPatientById(patientId);
-                if (patient) {
-                    const completed = sessions.filter(s => s.status === 'completed').length;
-                    packStatus.push({
-                        patient: patient.name,
-                        total: sessions.length,
-                        completed,
-                        percent: (completed / sessions.length) * 100
-                    });
-                }
-            });
-
-            $("packStatus").innerHTML = packStatus.map(p => `
-                <div class="cardMini">
-                    <b>${escapeHtml(p.patient)}</b>
-                    <div class="progress-bar"><div class="progress-fill" style="width:${p.percent}%"></div></div>
-                    <div class="muted">${p.completed}/${p.total} concluídas</div>
-                </div>
-            `).join("") || "<div class='muted'>Nenhum pacote</div>";
-
-            const debtors = patients.map(p => {
-                const debt = sessions.filter(s => s.patientId === p.id && s.paid !== "pago")
-                    .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-                return { name: p.name, debt };
-            }).filter(d => d.debt > 0).sort((a, b) => b.debt - a.debt).slice(0, 5);
-
-            $("topDebtors").innerHTML = debtors.map(d => `
-                <div class="item"><b>${escapeHtml(d.name)}</b><div class="muted">${fmtMoney(d.debt)}</div></div>
-            `).join("") || "<div class='muted'>Nenhum devedor</div>";
-        }
 
         // ========== FUNÇÕES DE HORÁRIOS POR DIA ==========
         window.atualizarDiasSemana = function() {
@@ -2406,59 +1996,24 @@
             return horarios;
         }
 
-        // ========== AÇÕES DE PACIENTE ==========
+        // ========== ADD PATIENT SIMPLIFICADO (MANUAL) ==========
         window.addPatient = function() {
             const name = $("cName")?.value.trim();
-            if (!name) return showAlert("❌ Nome obrigatório", "error");
+            if (!name) return showAlert("❌ Nome é obrigatório", "error");
 
             const phone = $("cPhone")?.value || "";
             const serviceType = $("cServiceType")?.value || "particular";
             const value = parseMoney($("cValue")?.value);
             const billingType = $("cBillingType")?.value || "pack4";
             
-            const startDate = $("cStartDate")?.value;
-            const endDate = $("cEndDate")?.value;
-            
-            if (!startDate || !endDate) {
-                return showAlert("❌ Preencha as datas", "error");
-            }
-            
-            if (endDate < startDate) {
-                return showAlert("❌ Data de término deve ser após início", "error");
-            }
+            // Datas são apenas informativas
+            const startDate = $("cStartDate")?.value || todayISO();
+            const endDate = $("cEndDate")?.value || addDays(todayISO(), 30);
 
+            // Horários são apenas para referência
             const horarios = coletarHorarios();
             
-            if (billingType === "pack4" && horarios.length !== 1) {
-                return showAlert("❌ Para 4 sessões, preencha 1 dia e horário", "error");
-            }
-            if (billingType === "pack8" && horarios.length !== 2) {
-                return showAlert("❌ Para 8 sessões, preencha 2 dias e horários", "error");
-            }
-            if (billingType === "individual" && horarios.length === 0) {
-                return showAlert("❌ Adicione pelo menos 1 horário", "error");
-            }
-
-            const frequency = billingType === "pack8" ? 2 : 1;
-
-            let todasSessoes = [];
-            horarios.forEach(h => {
-                const sessions = gerarCronograma(
-                    startDate, 
-                    endDate, 
-                    frequency, 
-                    [h.dia], 
-                    h.horario
-                );
-                todasSessoes = [...todasSessoes, ...sessions];
-            });
-
-            todasSessoes.sort((a, b) => a.date.localeCompare(b.date));
-
-            if (todasSessoes.length === 0) {
-                return showAlert("❌ Nenhuma sessão possível no período", "error");
-            }
-
+            // Criar paciente SEM validações automáticas
             const patient = {
                 id: uid(),
                 name,
@@ -2466,11 +2021,9 @@
                 serviceType,
                 defaultValue: value,
                 billingType,
-                frequency,
                 horarios: horarios,
                 startDate,
                 endDate,
-                totalSessoes: todasSessoes.length,
                 notes: $("cNotes")?.value || "",
                 anamnese: { queixa: "", historico: "", obs: "" },
                 createdAt: new Date().toISOString()
@@ -2480,12 +2033,11 @@
             patients.push(patient);
             savePatients(patients);
 
-            savePackSessionsForPatient(patient.id, todasSessoes);
-
             if (currentPhotoFile) {
                 savePatientPhoto(patient.id, currentPhotoFile);
             }
 
+            // Limpar formulário
             $("cName").value = "";
             $("cPhone").value = "";
             $("cValue").value = "";
@@ -2506,7 +2058,7 @@
             renderPatientFolders();
             renderDashboard();
             
-            showAlert(`✅ Paciente cadastrado! ${todasSessoes.length} sessões.`, "success");
+            showAlert(`✅ Paciente ${name} cadastrado!`, "success");
         };
 
         window.openAnamnese = function() {
@@ -2574,25 +2126,17 @@
                 });
             }
 
-            const packs = loadPacks();
-            delete packs[openedPatientId];
-
             const photos = loadPhotos();
             delete photos[openedPatientId];
 
             const evolucoes = loadEvolucoes();
             delete evolucoes[openedPatientId];
 
-            const packSessions = loadPackSessions();
-            delete packSessions[openedPatientId];
-
             savePatients(patients);
             saveSessions(sessions);
             saveSchedule(sch);
-            savePacks(packs);
             savePhotos(photos);
             saveEvolucoes(evolucoes);
-            savePackSessions(packSessions);
 
             $("foldersPane").classList.remove("hidden");
             $("folderOpenPane").classList.add("hidden");
@@ -2612,127 +2156,159 @@
             renderPatientFolders();
         };
 
-        // ========== AÇÕES DE SESSÃO ==========
-        window.addSession = function() {
-            const date = $("date")?.value;
-            const patientId = $("pPatient")?.value;
-            const time = $("pTime")?.value;
-            const did = $("pDid")?.value;
-            const just = $("pJust")?.value;
-            const paid = $("pPaid")?.value;
-            const manualValue = $("pValue")?.value;
+        // ========== FUNÇÕES DE EVOLUÇÃO ==========
+        function getPatientEvolucoes(patientId) {
+            const evolucoes = loadEvolucoes();
+            return evolucoes[patientId] || [];
+        }
 
-            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
+        function savePatientEvolucao(patientId, evolucaoData) {
+            const evolucoes = loadEvolucoes();
+            if (!evolucoes[patientId]) {
+                evolucoes[patientId] = [];
+            }
+            
+            if (evolucaoData.id) {
+                const index = evolucoes[patientId].findIndex(e => e.id === evolucaoData.id);
+                if (index !== -1) {
+                    evolucoes[patientId][index] = {
+                        ...evolucaoData,
+                        updatedAt: new Date().toISOString()
+                    };
+                }
+            } else {
+                evolucaoData.id = uid();
+                evolucaoData.createdAt = new Date().toISOString();
+                evolucoes[patientId].push(evolucaoData);
+            }
+            
+            evolucoes[patientId].sort((a, b) => b.date.localeCompare(a.date));
+            saveEvolucoes(evolucoes);
+            return evolucaoData;
+        }
 
-            const p = getPatientById(patientId);
-            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
-            if (p?.serviceType === "cassems") value = 26;
+        function deletePatientEvolucao(patientId, evolucaoId) {
+            const evolucoes = loadEvolucoes();
+            if (evolucoes[patientId]) {
+                evolucoes[patientId] = evolucoes[patientId].filter(e => e.id !== evolucaoId);
+                if (evolucoes[patientId].length === 0) {
+                    delete evolucoes[patientId];
+                }
+                saveEvolucoes(evolucoes);
+            }
+        }
 
-            const session = {
-                id: uid(),
-                date, patientId, time,
-                did: did,
-                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
-                paid, value
-            };
+        window.openEvolucaoModal = function() {
+            if (!openedPatientId) return;
+            $("evolucaoData").value = todayISO();
+            $("evolucaoTexto").value = "";
+            $("evolucaoModal").classList.remove("hidden");
+        };
 
+        window.saveEvolucao = function() {
+            if (!openedPatientId) return;
+            const data = $("evolucaoData").value;
+            const texto = $("evolucaoTexto").value.trim();
+            if (!texto) return showAlert("❌ Escreva a evolução", "error");
+            
+            savePatientEvolucao(openedPatientId, { date: data, text: texto });
+            $("evolucaoModal").classList.add("hidden");
+            openPatientFolder(openedPatientId);
+            showAlert("✅ Evolução registrada!", "success");
+        };
+
+        window.editEvolucao = function(evolucaoId) {
+            if (!openedPatientId) return;
+            const evolucoes = getPatientEvolucoes(openedPatientId);
+            const evolucao = evolucoes.find(e => e.id === evolucaoId);
+            if (!evolucao) return;
+            
+            currentEvolucaoId = evolucaoId;
+            $("editEvolucaoData").value = evolucao.date;
+            $("editEvolucaoTexto").value = evolucao.text;
+            $("editEvolucaoModal").classList.remove("hidden");
+        };
+
+        window.saveEditEvolucao = function() {
+            if (!openedPatientId || !currentEvolucaoId) return;
+            const data = $("editEvolucaoData").value;
+            const texto = $("editEvolucaoTexto").value.trim();
+            if (!texto) return showAlert("❌ Escreva a evolução", "error");
+            
+            savePatientEvolucao(openedPatientId, {
+                id: currentEvolucaoId,
+                date: data,
+                text: texto
+            });
+            
+            $("editEvolucaoModal").classList.add("hidden");
+            currentEvolucaoId = null;
+            openPatientFolder(openedPatientId);
+            showAlert("✅ Evolução atualizada!", "success");
+        };
+
+        window.deleteEvolucao = function(evolucaoId) {
+            if (!openedPatientId) return;
+            if (!confirm("Excluir esta evolução?")) return;
+            deletePatientEvolucao(openedPatientId, evolucaoId);
+            openPatientFolder(openedPatientId);
+            showAlert("🗑️ Evolução excluída!", "success");
+        };
+
+        function renderEvolucoes() {
+            const container = $("evolucoesList");
+            if (!container || !openedPatientId) return;
+            const evolucoes = getPatientEvolucoes(openedPatientId);
+            container.innerHTML = evolucoes.map(ev => `
+                <div class="timeline-item">
+                    <div class="timeline-date">📅 ${new Date(ev.date).toLocaleDateString()}</div>
+                    <div class="timeline-content">${escapeHtml(ev.text)}</div>
+                    <div class="timeline-actions">
+                        <button class="small" onclick="editEvolucao('${ev.id}')">✏️</button>
+                        <button class="small danger" onclick="deleteEvolucao('${ev.id}')">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== RELATÓRIOS ==========
+        function generateReports() {
             const sessions = loadSessions();
-            sessions.push(session);
-            saveSessions(sessions);
+            const patients = loadPatients();
+            const tokens = loadTokens();
+            const currentMonth = todayISO().slice(0, 7);
 
-            if (p?.serviceType === "cassems") {
-                registerToken(session.id, {
-                    sessionId: session.id,
-                    date: date,
-                    patientName: p.name,
-                    code: '',
-                    status: 'pendente'
-                });
-            }
+            const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
+            const realizacoes = monthSessions.filter(s => s.did === "realizou");
+            const faltas = monthSessions.filter(s => s.did === "nao");
+            const faturamento = realizacoes.reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+            const aReceber = monthSessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
 
-            atualizarStatusCronograma(patientId);
+            $("monthSummary").innerHTML = `Sessões: ${monthSessions.length}<br>Realizadas: ${realizacoes.length}<br>Faltas: ${faltas.length}`;
+            $("absenceRate").innerHTML = monthSessions.length ? `${((faltas.length / monthSessions.length) * 100).toFixed(1)}%` : "0%";
+            $("revenueStats").innerHTML = `Faturado: ${fmtMoney(faturamento)}<br>A receber: ${fmtMoney(aReceber)}`;
+            $("activePatients").innerHTML = patients.length.toString();
 
-            $("pTime").value = "";
-            $("pValue").value = "";
-            
-            renderDaily();
-            renderDashboard();
-            if (openedPatientId) openPatientFolder(openedPatientId);
-            showAlert("✅ Sessão adicionada!", "success");
-        };
+            const sessoesCassems = sessions.filter(s => {
+                const p = getPatientById(s.patientId);
+                return p?.serviceType === "cassems";
+            });
 
-        window.findInDay = function() {
-            const term = $("search")?.value.toLowerCase() || "";
-            const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
-            if (patient) {
-                $("pPatient").value = patient.id;
-                updateDefaultHint();
-                showAlert(`🔍 ${patient.name} selecionado`, "success");
-            }
-            renderDaily();
-        };
+            const tokensEnviados = Object.values(tokens).filter(t => t.status === "enviado").length;
+            $("totalSessoesCassems").textContent = sessoesCassems.length;
+            $("totalTokensEnviados").textContent = tokensEnviados;
+            $("totalTokensPendentes").textContent = Math.max(0, sessoesCassems.length - tokensEnviados);
 
-        window.clearDay = function() {
-            const date = $("date")?.value;
-            if (!date) return;
-            
-            if (confirm(`Limpar todas as sessões de ${date}?`)) {
-                const sessions = loadSessions().filter(s => s.date !== date);
-                saveSessions(sessions);
-                
-                const tokens = loadTokens();
-                const sessionsToRemove = loadSessions().filter(s => s.date === date);
-                sessionsToRemove.forEach(s => delete tokens[s.id]);
-                saveTokens(tokens);
-                
-                renderDaily();
-                renderDashboard();
-                showAlert("🗑️ Dia limpo!", "success");
-            }
-        };
+            const debtors = patients.map(p => {
+                const debt = sessions.filter(s => s.patientId === p.id && s.paid !== "pago")
+                    .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+                return { name: p.name, debt };
+            }).filter(d => d.debt > 0).sort((a, b) => b.debt - a.debt).slice(0, 5);
 
-        window.resetAll = function() {
-            if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
-                localStorage.removeItem(KEYS.PATIENTS);
-                localStorage.removeItem(KEYS.SESSIONS);
-                localStorage.removeItem(KEYS.SCHEDULE);
-                localStorage.removeItem(KEYS.TOKENS);
-                localStorage.removeItem(KEYS.PACKS);
-                localStorage.removeItem(KEYS.PHOTOS);
-                localStorage.removeItem(KEYS.EVOLUCOES);
-                localStorage.removeItem(KEYS.PACK_SESSIONS);
-                location.reload();
-            }
-        };
-
-        // ========== AÇÕES DE AGENDA ==========
-        window.addTime = function() {
-            const time = $("newTime")?.value.trim();
-            if (!time) return;
-            if (!/^\d{1,2}:\d{2}$/.test(time)) {
-                return showAlert("❌ Formato inválido. Use HH:MM", "error");
-            }
-
-            const sch = loadSchedule();
-            if (!sch.times.includes(time)) {
-                sch.times.push(time);
-                sch.times.sort();
-                saveSchedule(sch);
-                renderSchedule();
-                showAlert(`✅ Horário ${time} adicionado!`, "success");
-            }
-            $("newTime").value = "";
-        };
-
-        window.resetTimes = function() {
-            if (confirm("Restaurar horários padrão?")) {
-                const sch = loadSchedule();
-                sch.times = defaultTimes();
-                saveSchedule(sch);
-                renderSchedule();
-                showAlert("✅ Horários restaurados!", "success");
-            }
-        };
+            $("topDebtors").innerHTML = debtors.map(d => `
+                <div class="item"><b>${escapeHtml(d.name)}</b><div class="muted">${fmtMoney(d.debt)}</div></div>
+            `).join("") || "<div class='muted'>Nenhum devedor</div>";
+        }
 
         // ========== RENDERIZAÇÃO DO HTML ==========
         function renderApp() {
@@ -2971,8 +2547,8 @@
                                         <div>
                                             <label>Pacote</label>
                                             <select id="cBillingType" onchange="atualizarDiasSemana()">
-                                                <option value="pack4">4 sessões (1x/semana)</option>
-                                                <option value="pack8">8 sessões (2x/semana)</option>
+                                                <option value="pack4">4 sessões</option>
+                                                <option value="pack8">8 sessões</option>
                                                 <option value="individual">Individual</option>
                                             </select>
                                         </div>
@@ -2983,23 +2559,23 @@
                                     </div>
 
                                     <div style="margin:15px 0;">
-                                        <label>📅 Período do pacote</label>
+                                        <label>📅 Período (referência)</label>
                                         <div class="grid2">
                                             <div>
                                                 <input type="date" id="cStartDate" />
-                                                <small class="muted">Data de início</small>
+                                                <small class="muted">Início</small>
                                             </div>
                                             <div>
                                                 <input type="date" id="cEndDate" />
-                                                <small class="muted">Data de término</small>
+                                                <small class="muted">Término</small>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div style="margin:15px 0;">
-                                        <label>📆 Dias e horários das sessões</label>
+                                        <label>📆 Horários de referência</label>
                                         <div id="horariosContainer"></div>
-                                        <small class="muted" id="weekdayHint">Selecione o tipo de pacote primeiro</small>
+                                        <small class="muted">Apenas para consulta</small>
                                     </div>
 
                                     <label style="margin-top:15px;">Observações</label>
@@ -3035,7 +2611,6 @@
                                                 <button id="openWhats" class="small" onclick="openWhatsApp()">📱 WhatsApp</button>
                                                 <button id="renamePatient" class="small" onclick="renamePatient()">✏️ Renomear</button>
                                                 <button id="deletePatient" class="small danger" onclick="deletePatient()">🗑️ Excluir</button>
-                                                <button class="small" onclick="exportPackProgress(openedPatientId)">📤 Exportar</button>
                                             </div>
                                         </div>
 
@@ -3085,8 +2660,6 @@
                                 <span class="pill warn">🟡 Particular</span>
                                 <span class="pill info">🔵 Unimed/Outros</span>
                                 <span class="pill bad">🔴 Vago</span>
-                                <span class="pill">⚠️ Falta 1</span>
-                                <span class="pill">🏁 Última</span>
                                 <span class="pill token">🎫 Token</span>
                             </div>
                         </section>
@@ -3133,11 +2706,6 @@
                             </div>
 
                             <div style="margin-top:20px;">
-                                <b>📊 Status dos Pacotes</b>
-                                <div id="packStatus" class="grid2" style="margin-top:10px;"></div>
-                            </div>
-
-                            <div style="margin-top:20px;">
                                 <b>Pacientes com maior débito</b>
                                 <div id="topDebtors" class="list" style="margin-top:10px;"></div>
                             </div>
@@ -3173,6 +2741,124 @@
                     }
                     deferredPrompt = null;
                 });
+            }
+        };
+
+        // ========== AÇÕES DE SESSÃO ==========
+        window.addSession = function() {
+            const date = $("date")?.value;
+            const patientId = $("pPatient")?.value;
+            const time = $("pTime")?.value;
+            const did = $("pDid")?.value;
+            const just = $("pJust")?.value;
+            const paid = $("pPaid")?.value;
+            const manualValue = $("pValue")?.value;
+
+            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
+
+            const p = getPatientById(patientId);
+            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
+            if (p?.serviceType === "cassems") value = 26;
+
+            const session = {
+                id: uid(),
+                date, patientId, time,
+                did: did,
+                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
+                paid, value
+            };
+
+            const sessions = loadSessions();
+            sessions.push(session);
+            saveSessions(sessions);
+
+            if (p?.serviceType === "cassems") {
+                registerToken(session.id, {
+                    sessionId: session.id,
+                    date: date,
+                    patientName: p.name,
+                    code: '',
+                    status: 'pendente'
+                });
+            }
+
+            $("pTime").value = "";
+            $("pValue").value = "";
+            
+            renderDaily();
+            renderDashboard();
+            if (openedPatientId) openPatientFolder(openedPatientId);
+            showAlert("✅ Sessão adicionada!", "success");
+        };
+
+        window.findInDay = function() {
+            const term = $("search")?.value.toLowerCase() || "";
+            const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
+            if (patient) {
+                $("pPatient").value = patient.id;
+                updateDefaultHint();
+                showAlert(`🔍 ${patient.name} selecionado`, "success");
+            }
+            renderDaily();
+        };
+
+        window.clearDay = function() {
+            const date = $("date")?.value;
+            if (!date) return;
+            
+            if (confirm(`Limpar todas as sessões de ${date}?`)) {
+                const sessions = loadSessions().filter(s => s.date !== date);
+                saveSessions(sessions);
+                
+                const tokens = loadTokens();
+                const sessionsToRemove = loadSessions().filter(s => s.date === date);
+                sessionsToRemove.forEach(s => delete tokens[s.id]);
+                saveTokens(tokens);
+                
+                renderDaily();
+                renderDashboard();
+                showAlert("🗑️ Dia limpo!", "success");
+            }
+        };
+
+        window.resetAll = function() {
+            if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
+                localStorage.removeItem(KEYS.PATIENTS);
+                localStorage.removeItem(KEYS.SESSIONS);
+                localStorage.removeItem(KEYS.SCHEDULE);
+                localStorage.removeItem(KEYS.TOKENS);
+                localStorage.removeItem(KEYS.PHOTOS);
+                localStorage.removeItem(KEYS.EVOLUCOES);
+                location.reload();
+            }
+        };
+
+        // ========== AÇÕES DE AGENDA ==========
+        window.addTime = function() {
+            const time = $("newTime")?.value.trim();
+            if (!time) return;
+            if (!/^\d{1,2}:\d{2}$/.test(time)) {
+                return showAlert("❌ Formato inválido. Use HH:MM", "error");
+            }
+
+            const sch = loadSchedule();
+            if (!sch.times.includes(time)) {
+                sch.times.push(time);
+                sch.times.sort();
+                saveSchedule(sch);
+                renderSchedule();
+                showAlert(`✅ Horário ${time} adicionado!`, "success");
+            }
+            $("newTime").value = "";
+        };
+
+        window.resetTimes = function() {
+            if (confirm("Restaurar horários padrão?")) {
+                const sch = loadSchedule();
+                sch.times = defaultTimes();
+                saveSchedule(sch);
+                renderSchedule();
+                showAlert("✅ Horários restaurados!", "success");
             }
         };
 
