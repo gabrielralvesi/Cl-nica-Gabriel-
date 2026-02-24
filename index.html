@@ -1653,7 +1653,7 @@
             showAlert("✅ Token registrado com sucesso!", "success");
         };
 
-        // ========== FUNÇÕES DE PACOTE (ATUALIZADAS) ==========
+        // ========== FUNÇÕES DE PACOTE ==========
         
         window.openPackModal = function(patientId) {
             currentPackPatientId = patientId;
@@ -1698,7 +1698,7 @@
                 
             } else {
                 if (packStartDate) packStartDate.value = todayISO();
-                if (packEndDate) packEndDate.value = addDays(todayISO(), 30); // +30 dias como sugestão
+                if (packEndDate) packEndDate.value = addDays(todayISO(), 30);
                 if (packFrequency) packFrequency.value = "1";
                 if (packTime) packTime.value = "08:00";
                 document.querySelectorAll('.weekday-btn').forEach(btn => btn.classList.remove('selected'));
@@ -1737,7 +1737,6 @@
                     return;
                 }
             } else {
-                // Para 1x por semana, precisamos de um dia selecionado
                 const selected = document.querySelectorAll('.weekday-btn.selected');
                 if (selected.length === 0) {
                     showAlert("Selecione o dia da semana para as sessões", "warning");
@@ -1779,19 +1778,6 @@
                 if (!sch.times.includes(time)) {
                     sch.times.push(time);
                 }
-                
-                // Criar entradas na agenda para as sessões futuras
-                packSessions.forEach(session => {
-                    const key = recurKey(day, time);
-                    if (!sch.recurring[key]) {
-                        sch.recurring[key] = {
-                            patientId: currentPackPatientId,
-                            serviceType: patient.serviceType,
-                            startDate: session.date,
-                            plannedTotal: packSessions.length
-                        };
-                    }
-                });
             });
             
             sch.times.sort();
@@ -1814,11 +1800,10 @@
             const freq = $("packFrequency")?.value;
             const container = $("weekdaysContainer");
             if (container) {
-                container.style.display = freq === "2" ? "block" : "block"; // Sempre mostrar, mas ajustar instrução
+                container.style.display = "block";
             }
         }
 
-        // Atualizar preview de total de sessões
         function updateTotalSessionsPreview() {
             const startDate = $("packStartDate")?.value;
             const endDate = $("packEndDate")?.value;
@@ -1884,21 +1869,21 @@
                         let progressHtml = "";
                         let warningIcon = "";
                         if (entry.plannedTotal > 1) {
-                            const sessions = loadSessions().filter(s =>
+                            const sessionsCount = loadSessions().filter(s =>
                                 s.patientId === entry.patientId &&
                                 s.did === "realizou" &&
                                 s.date >= entry.startDate
                             ).length;
-                            const remaining = Math.max(0, entry.plannedTotal - sessions);
+                            const remaining = Math.max(0, entry.plannedTotal - sessionsCount);
 
-                            const percent = (sessions / entry.plannedTotal) * 100;
+                            const percent = (sessionsCount / entry.plannedTotal) * 100;
                             progressHtml = `
                                 <div style="margin-top:8px;">
                                     <div class="progress-bar" style="height:4px;">
                                         <div class="progress-fill" style="width:${percent}%; background:#2C7A5A;"></div>
                                     </div>
                                     <div style="font-size:0.8rem; display:flex; justify-content:space-between; margin-top:4px;">
-                                        <span>${sessions}/${entry.plannedTotal}</span>
+                                        <span>${sessionsCount}/${entry.plannedTotal}</span>
                                         <span>${remaining} restam</span>
                                     </div>
                                 </div>
@@ -2443,6 +2428,47 @@
         };
 
         // ========== FUNÇÕES DE EVOLUÇÃO ==========
+        function getPatientEvolucoes(patientId) {
+            const evolucoes = loadEvolucoes();
+            return evolucoes[patientId] || [];
+        }
+
+        function savePatientEvolucao(patientId, evolucaoData) {
+            const evolucoes = loadEvolucoes();
+            if (!evolucoes[patientId]) {
+                evolucoes[patientId] = [];
+            }
+            
+            if (evolucaoData.id) {
+                const index = evolucoes[patientId].findIndex(e => e.id === evolucaoData.id);
+                if (index !== -1) {
+                    evolucoes[patientId][index] = {
+                        ...evolucaoData,
+                        updatedAt: new Date().toISOString()
+                    };
+                }
+            } else {
+                evolucaoData.id = uid();
+                evolucaoData.createdAt = new Date().toISOString();
+                evolucoes[patientId].push(evolucaoData);
+            }
+            
+            evolucoes[patientId].sort((a, b) => b.date.localeCompare(a.date));
+            saveEvolucoes(evolucoes);
+            return evolucaoData;
+        }
+
+        function deletePatientEvolucao(patientId, evolucaoId) {
+            const evolucoes = loadEvolucoes();
+            if (evolucoes[patientId]) {
+                evolucoes[patientId] = evolucoes[patientId].filter(e => e.id !== evolucaoId);
+                if (evolucoes[patientId].length === 0) {
+                    delete evolucoes[patientId];
+                }
+                saveEvolucoes(evolucoes);
+            }
+        }
+
         window.openEvolucaoModal = function() {
             if (!openedPatientId) return;
             
@@ -2605,14 +2631,14 @@
             Object.entries(packs).forEach(([patientId, pack]) => {
                 const patient = getPatientById(patientId);
                 if (patient) {
-                    const sessions = packSessions[patientId] || [];
-                    const completed = sessions.filter(s => s.status === 'completed').length;
+                    const sessionsList = packSessions[patientId] || [];
+                    const completed = sessionsList.filter(s => s.status === 'completed').length;
                     packStatus.push({
                         patient: patient.name,
                         total: pack.totalSessions,
                         completed: completed,
                         remaining: pack.totalSessions - completed,
-                        percent: (completed / pack.totalSessions) * 100
+                        percent: pack.totalSessions > 0 ? (completed / pack.totalSessions) * 100 : 0
                     });
                 }
             });
@@ -2935,14 +2961,6 @@
                     delete tokens[s.id];
                 });
                 saveTokens(tokens);
-                
-                // Atualizar cronogramas
-                if (openedPatientId) {
-                    const packSessions = getPackSessions(openedPatientId);
-                    if (packSessions.length > 0) {
-                        updatePackScheduleWithSessions(openedPatientId, packSessions);
-                    }
-                }
                 
                 renderDaily();
                 renderDashboard();
@@ -3608,11 +3626,6 @@
             renderSchedule();
             renderDashboard();
             generateReports();
-
-            // Auto-backup (mantido para compatibilidade)
-            if (autoBackup) {
-                setInterval(() => {}, 5 * 60 * 1000);
-            }
         }
 
         if (document.readyState === 'loading') {
