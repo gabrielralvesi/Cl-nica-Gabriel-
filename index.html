@@ -795,7 +795,7 @@
             </div>
             
             <div style="margin:20px 0;" id="weekdaysContainer">
-                <label>📆 Dias da semana (para 2x)</label>
+                <label>📆 Dias da semana</label>
                 <div class="weekday-selector" id="weekdaySelector">
                     <div class="weekday-btn" data-day="0">S</div>
                     <div class="weekday-btn" data-day="1">T</div>
@@ -805,7 +805,7 @@
                     <div class="weekday-btn" data-day="5">S</div>
                     <div class="weekday-btn" data-day="6">D</div>
                 </div>
-                <small class="muted">Selecione os dias das sessões</small>
+                <small class="muted">Selecione 1 dia para 1x/semana ou 2 dias para 2x/semana</small>
             </div>
             
             <div style="margin:20px 0;">
@@ -865,7 +865,7 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '5.1.0';
+        const APP_VERSION = '5.2.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
@@ -992,13 +992,6 @@
             return date.toISOString().split('T')[0];
         }
 
-        function daysBetween(startDate, endDate) {
-            const start = new Date(startDate + 'T12:00:00');
-            const end = new Date(endDate + 'T12:00:00');
-            const diffTime = Math.abs(end - start);
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        }
-
         function getNextWeekday(dateStr, targetDay) {
             const date = new Date(dateStr + 'T12:00:00');
             const currentDay = date.getDay(); // 0 = Dom, 1 = Seg, ..., 6 = Sáb
@@ -1084,22 +1077,20 @@
             return tokens[sessionId];
         }
 
-        function calculateSessionsProgress(patientId, packConfig) {
-            const sessions = loadSessions().filter(s => 
-                s.patientId === patientId && 
-                s.did === "realizou" &&
-                s.date >= packConfig.startDate &&
-                s.date <= packConfig.endDate
-            );
-            
+        function calculateSessionsProgress(patientId) {
             const packSessions = getPackSessions(patientId);
-            const total = packSessions.length;
+            if (packSessions.length === 0) return { completed: 0, missed: 0, pending: 0, total: 0 };
+            
+            const completed = packSessions.filter(s => s.status === 'completed').length;
+            const missed = packSessions.filter(s => s.status === 'missed').length;
+            const pending = packSessions.filter(s => s.status === 'pending').length;
             
             return {
-                completed: sessions.length,
-                remaining: Math.max(0, total - sessions.length),
-                percent: total > 0 ? (sessions.length / total) * 100 : 0,
-                total: total
+                completed,
+                missed,
+                pending,
+                total: packSessions.length,
+                percent: (completed / packSessions.length) * 100
             };
         }
 
@@ -1109,11 +1100,11 @@
             const sessions = [];
             let currentDate = startDate;
             let sessionCount = 0;
-            let maxIterations = 100; // Segurança para evitar loop infinito
+            let maxIterations = 100; // Segurança
             
             while (currentDate <= endDate && sessionCount < maxIterations) {
                 if (frequency === 1) {
-                    // 1x por semana - usar o primeiro dia da semana selecionado
+                    // 1x por semana - usar o dia selecionado
                     const targetDay = weekdays[0];
                     const nextDate = getNextWeekday(currentDate, targetDay);
                     
@@ -1127,7 +1118,6 @@
                         originalDate: nextDate
                     });
                     
-                    // Avançar 7 dias
                     currentDate = addDays(nextDate, 7);
                     sessionCount++;
                     
@@ -1159,9 +1149,10 @@
                         });
                     }
                     
-                    // Avançar para próxima semana
                     currentDate = addDays(nextDate1, 7);
                     sessionCount += 2;
+                } else {
+                    break;
                 }
             }
             
@@ -1171,7 +1162,6 @@
         function updatePackScheduleWithSessions(patientId, packSessions) {
             const sessions = loadSessions();
             const updatedPackSessions = packSessions.map(packSession => {
-                // Verificar se já existe uma sessão nesta data
                 const existingSession = sessions.find(s => 
                     s.patientId === patientId && 
                     s.date === packSession.date &&
@@ -1546,10 +1536,10 @@
                 saveSessions(sessions);
                 
                 // Atualizar cronograma do paciente
-                if (openedPatientId) {
-                    const packSessions = getPackSessions(openedPatientId);
+                if (sessions[idx].patientId) {
+                    const packSessions = getPackSessions(sessions[idx].patientId);
                     if (packSessions.length > 0) {
-                        updatePackScheduleWithSessions(openedPatientId, packSessions);
+                        updatePackScheduleWithSessions(sessions[idx].patientId, packSessions);
                     }
                 }
                 
@@ -1595,14 +1585,6 @@
                 const tokens = loadTokens();
                 delete tokens[id];
                 saveTokens(tokens);
-                
-                // Atualizar cronograma do paciente
-                if (openedPatientId) {
-                    const packSessions = getPackSessions(openedPatientId);
-                    if (packSessions.length > 0) {
-                        updatePackScheduleWithSessions(openedPatientId, packSessions);
-                    }
-                }
                 
                 renderDaily();
                 if (openedPatientId) openPatientFolder(openedPatientId);
@@ -1686,13 +1668,13 @@
                 
                 // Mostrar resumo
                 if (packSummary) {
-                    const sessions = getPackSessions(patientId);
-                    const completed = sessions.filter(s => s.status === 'completed').length;
+                    const progress = calculateSessionsProgress(patientId);
                     packSummary.innerHTML = `
                         <strong>📊 Status atual:</strong><br>
-                        Sessões previstas: ${sessions.length}<br>
-                        Realizadas: ${completed}<br>
-                        Pendentes: ${sessions.length - completed}
+                        Sessões previstas: ${progress.total}<br>
+                        Realizadas: ${progress.completed}<br>
+                        Pendentes: ${progress.pending}<br>
+                        Faltas: ${progress.missed}
                     `;
                 }
                 
@@ -1705,7 +1687,7 @@
                 if (packSummary) packSummary.innerHTML = 'Configure as datas para ver o resumo';
             }
             
-            toggleWeekdaySelector();
+            updateTotalSessionsPreview();
             $("packModal")?.classList.remove("hidden");
         };
 
@@ -1770,19 +1752,6 @@
             savePatientPack(currentPackPatientId, packConfig);
             savePackSessionsForPatient(currentPackPatientId, packSessions);
             
-            // Atualizar agenda
-            const sch = loadSchedule();
-            sch.recurring = sch.recurring || {};
-            
-            weekdays.forEach(day => {
-                if (!sch.times.includes(time)) {
-                    sch.times.push(time);
-                }
-            });
-            
-            sch.times.sort();
-            saveSchedule(sch);
-            
             $("packModal")?.classList.add("hidden");
             
             if (openedPatientId === currentPackPatientId) {
@@ -1795,14 +1764,6 @@
             showAlert(`✅ Pacote configurado com ${packSessions.length} sessões!`, "success");
             currentPackPatientId = null;
         };
-
-        function toggleWeekdaySelector() {
-            const freq = $("packFrequency")?.value;
-            const container = $("weekdaysContainer");
-            if (container) {
-                container.style.display = "block";
-            }
-        }
 
         function updateTotalSessionsPreview() {
             const startDate = $("packStartDate")?.value;
@@ -1866,37 +1827,9 @@
 
                         const tokenIcon = entry.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
 
-                        let progressHtml = "";
-                        let warningIcon = "";
-                        if (entry.plannedTotal > 1) {
-                            const sessionsCount = loadSessions().filter(s =>
-                                s.patientId === entry.patientId &&
-                                s.did === "realizou" &&
-                                s.date >= entry.startDate
-                            ).length;
-                            const remaining = Math.max(0, entry.plannedTotal - sessionsCount);
-
-                            const percent = (sessionsCount / entry.plannedTotal) * 100;
-                            progressHtml = `
-                                <div style="margin-top:8px;">
-                                    <div class="progress-bar" style="height:4px;">
-                                        <div class="progress-fill" style="width:${percent}%; background:#2C7A5A;"></div>
-                                    </div>
-                                    <div style="font-size:0.8rem; display:flex; justify-content:space-between; margin-top:4px;">
-                                        <span>${sessionsCount}/${entry.plannedTotal}</span>
-                                        <span>${remaining} restam</span>
-                                    </div>
-                                </div>
-                            `;
-
-                            if (remaining === 1) warningIcon = `<span class="iconAlert">⚠️</span>`;
-                            if (remaining === 0) warningIcon = `<span class="iconAlert">🏁</span>`;
-                        }
-
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox ${colorClass}">
-                            <div style="font-weight:600;">${warningIcon} ${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
+                            <div style="font-weight:600;">${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
                             <div class="muted" style="font-size:0.85rem;">${serviceLabel}</div>
-                            ${progressHtml}
                         </td>`;
                     } else {
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor:pointer;">
@@ -1949,16 +1882,11 @@
                         const patient = patients[idx];
                         const finalService = patient.serviceType || "particular";
                         
-                        let plannedTotal = 1;
-                        if (patient.billingType === "pack4") plannedTotal = 4;
-                        else if (patient.billingType === "pack8") plannedTotal = 8;
-
                         sch.recurring = sch.recurring || {};
                         sch.recurring[key] = {
                             patientId: patient.id,
                             serviceType: finalService,
-                            startDate: todayISO(),
-                            plannedTotal: plannedTotal
+                            startDate: todayISO()
                         };
 
                         saveSchedule(sch);
@@ -2194,9 +2122,7 @@
                 const photo = getPatientPhoto(p.id);
                 const evolucoes = getPatientEvolucoes(p.id);
                 const evolucoesCount = evolucoes.length;
-                const packSessions = getPackSessions(p.id);
-                const packProgress = packSessions.length > 0 ? 
-                    Math.round((packSessions.filter(s => s.status === 'completed').length / packSessions.length) * 100) : 0;
+                const progress = pack ? calculateSessionsProgress(p.id) : null;
 
                 return `
                 <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
@@ -2208,7 +2134,7 @@
                                     <b>📁 ${escapeHtml(p.name)} ${cassemsIcon} ${packIcon}</b>
                                     <div class="muted">
                                         ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
-                                        ${pack ? ` • ${pack.totalSessions} sessões (${packProgress}%)` : ''}
+                                        ${pack ? ` • ${progress.completed}/${progress.total} sessões (${Math.round(progress.percent)}%)` : ''}
                                         ${timeSlots.length ? ` • ${timeSlots.length} horários` : ''}
                                         ${evolucoesCount > 0 ? ` • 📝 ${evolucoesCount} evoluções` : ''}
                                     </div>
@@ -2238,7 +2164,6 @@
             const folderPatientPhoto = $("folderPatientPhoto");
             const openPatientMeta = $("openPatientMeta");
             const pacoteProgresso = $("pacoteProgresso");
-            const packControl = $("packControl");
             
             if (foldersPane) foldersPane.classList.add("hidden");
             if (folderOpenPane) folderOpenPane.classList.remove("hidden");
@@ -2257,9 +2182,7 @@
             let pacoteHtml = '';
             
             if (pack) {
-                const completed = packSessions.filter(s => s.status === 'completed').length;
-                const missed = packSessions.filter(s => s.status === 'missed').length;
-                const pending = packSessions.filter(s => s.status === 'pending').length;
+                const progress = calculateSessionsProgress(id);
                 
                 pacoteHtml = `
                     <div style="margin:10px 0;">
@@ -2273,13 +2196,13 @@
                         </div>
                         
                         <div class="progress-bar" style="margin:10px 0;">
-                            <div class="progress-fill" style="width:${(completed/pack.totalSessions)*100}%; background:#2C7A5A;"></div>
+                            <div class="progress-fill" style="width:${progress.percent}%; background:#2C7A5A;"></div>
                         </div>
                         
                         <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                            <span>✅ ${completed} realizadas</span>
-                            <span>❌ ${missed} faltas</span>
-                            <span>⏳ ${pending} pendentes</span>
+                            <span>✅ ${progress.completed} realizadas</span>
+                            <span>❌ ${progress.missed} faltas</span>
+                            <span>⏳ ${progress.pending} pendentes</span>
                         </div>
                         
                         <div class="schedule-timeline">
@@ -2400,15 +2323,16 @@
             const pack = getPatientPack(patientId);
             const patient = getPatientById(patientId);
             const packSessions = getPackSessions(patientId);
-            const completed = packSessions.filter(s => s.status === 'completed').length;
+            const progress = calculateSessionsProgress(patientId);
             
             const data = {
                 paciente: patient.name,
                 periodo: `${pack.startDate} a ${pack.endDate}`,
                 totalSessoes: pack.totalSessions,
-                realizadas: completed,
-                faltas: packSessions.filter(s => s.status === 'missed').length,
-                pendentes: packSessions.filter(s => s.status === 'pending').length,
+                realizadas: progress.completed,
+                faltas: progress.missed,
+                pendentes: progress.pending,
+                percentual: `${progress.percent.toFixed(1)}%`,
                 cronograma: packSessions.map(s => ({
                     data: s.date,
                     hora: s.time,
@@ -2916,11 +2840,9 @@
             }
 
             // Atualizar cronograma do paciente
-            if (openedPatientId) {
-                const packSessions = getPackSessions(openedPatientId);
-                if (packSessions.length > 0) {
-                    updatePackScheduleWithSessions(openedPatientId, packSessions);
-                }
+            const packSessions = getPackSessions(patientId);
+            if (packSessions.length > 0) {
+                updatePackScheduleWithSessions(patientId, packSessions);
             }
 
             const pTime = $("pTime");
@@ -3375,7 +3297,6 @@
                                         </div>
 
                                         <div id="pacoteProgresso" style="margin:10px 0; padding:10px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
-                                        <div id="packControl" class="pack-control"></div>
                                         
                                         <!-- Histórico de Sessões -->
                                         <div style="margin-top:20px;">
