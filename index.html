@@ -252,11 +252,21 @@
             align-items: flex-end;
         }
 
+        .row > * {
+            flex: 1 1 200px;
+        }
+
         .grid2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-top: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .grid2 {
+                grid-template-columns: 1fr;
+            }
         }
 
         .grid3 {
@@ -267,9 +277,24 @@
         }
 
         @media (max-width: 900px) {
-            .grid2, .grid3 {
+            .grid3 {
                 grid-template-columns: 1fr;
             }
+        }
+
+        .sum {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .sum .cardMini {
+            flex: 1 1 250px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
         }
 
         .list {
@@ -284,6 +309,17 @@
             background: rgba(255, 255, 255, 0.03);
             border-radius: 14px;
             padding: 15px;
+        }
+
+        .item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .itemTop {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .actions {
@@ -305,24 +341,63 @@
             }
         }
 
+        .photo-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
         .photo-preview {
             width: 120px;
             height: 120px;
             border-radius: 60px;
             border: 3px solid var(--primary);
             object-fit: cover;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .photo-preview.small {
             width: 40px;
             height: 40px;
+            border-width: 2px;
+        }
+
+        .photo-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 60px;
+            background: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            border: 3px solid var(--primary);
+        }
+
+        .time-list {
+            margin-top: 10px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 10px;
         }
 
         .time-item {
             display: flex;
+            align-items: center;
             gap: 8px;
             padding: 8px;
             border-bottom: 1px solid var(--line);
+        }
+
+        .time-item:last-child {
+            border-bottom: none;
+        }
+
+        .time-item input, .time-item select {
+            min-height: 36px;
         }
 
         .stat-card {
@@ -357,9 +432,12 @@
 
         .schedWrap {
             overflow-x: auto;
+            overflow-y: auto;
             border: 1px solid var(--line);
             border-radius: 14px;
+            background: rgba(255, 255, 255, 0.02);
             max-height: 600px;
+            -webkit-overflow-scrolling: touch;
         }
 
         table.sched {
@@ -369,43 +447,90 @@
         }
 
         .sched th, .sched td {
-            border: 1px solid var(--line);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 12px;
+            vertical-align: top;
         }
 
         .sched th {
             background: rgba(255, 255, 255, 0.04);
             position: sticky;
             top: 0;
+            z-index: 2;
+        }
+
+        .sched td {
+            min-width: 150px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sched td:hover {
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .timeCell {
             position: sticky;
             left: 0;
+            z-index: 1;
             background: rgba(255, 255, 255, 0.04);
             font-weight: 800;
         }
 
-        .slotGreen { background: rgba(44, 122, 90, 0.15); border-left: 4px solid var(--primary); }
-        .slotAmber { background: rgba(232, 198, 106, 0.15); border-left: 4px solid var(--accent); }
-        .slotRed { background: rgba(239, 68, 68, 0.15); border-left: 4px solid var(--bad); }
-        .slotBlue { background: rgba(74, 144, 226, 0.15); border-left: 4px solid var(--info); }
+        .slotBox {
+            border-radius: 10px;
+            padding: 10px;
+            height: 100%;
+        }
+
+        .slotGreen {
+            background: rgba(44, 122, 90, 0.15);
+            border-left: 4px solid var(--primary);
+        }
+
+        .slotAmber {
+            background: rgba(232, 198, 106, 0.15);
+            border-left: 4px solid var(--accent);
+        }
+
+        .slotRed {
+            background: rgba(239, 68, 68, 0.15);
+            border-left: 4px solid var(--bad);
+        }
+
+        .slotBlue {
+            background: rgba(74, 144, 226, 0.15);
+            border-left: 4px solid var(--info);
+        }
+
+        .iconAlert {
+            font-size: 1.1rem;
+            margin-right: 5px;
+        }
+
+        .weekday-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
 
         .weekday-btn {
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             border: 1px solid var(--line);
             background: rgba(255, 255, 255, 0.06);
             cursor: pointer;
-            margin-right: 5px;
+            font-weight: 600;
         }
 
         .weekday-btn.selected {
             background: var(--primary);
+            border-color: var(--primary);
             color: white;
         }
 
@@ -416,10 +541,12 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            padding: 16px;
         }
 
         .modal-content {
@@ -428,9 +555,10 @@
             border-radius: 20px;
             padding: 24px;
             max-width: 500px;
-            width: 90%;
+            width: 100%;
             max-height: 80vh;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .alert {
@@ -441,13 +569,21 @@
             border-radius: 12px;
             background: var(--card);
             border: 1px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             z-index: 2000;
             animation: slideIn 0.3s ease;
+            max-width: 90%;
         }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .shortcuts-hint {
@@ -458,8 +594,37 @@
             border: 1px solid var(--line);
             border-radius: 40px;
             padding: 10px 18px;
+            font-size: 0.9rem;
             cursor: pointer;
             z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .shortcuts-panel {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 18px;
+            width: 280px;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .shortcut-key {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: monospace;
         }
 
         /* Timeline de Evolução */
@@ -494,60 +659,131 @@
             gap: 8px;
             justify-content: flex-end;
         }
-
-        /* Contador de Sessões */
-        .session-counter {
-            background: rgba(44, 122, 90, 0.1);
-            border-radius: 12px;
-            padding: 15px;
-            margin: 15px 0;
-            border: 1px solid rgba(44, 122, 90, 0.3);
-        }
-
-        .counter-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--primary-light);
-        }
-
-        .counter-numbers {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-        }
-
-        .counter-numbers span:first-child {
-            color: var(--text);
-        }
-
-        .counter-numbers span:last-child {
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .counter-percent {
-            text-align: right;
-            font-size: 0.9rem;
-            color: var(--accent);
-            margin-top: 5px;
-        }
-
-        /* Badge de Pacote */
-        .pack-badge {
-            display: inline-block;
-            background: rgba(44, 122, 90, 0.2);
-            border: 1px solid var(--primary);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 0.85rem;
-            margin-left: 10px;
-        }
     </style>
 </head>
 <body>
     <div id="app"></div>
+
+    <!-- Modal de Notificação -->
+    <div id="notificationModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom:15px;">🔔 Ativar Notificações</h3>
+            <p class="muted">Quer receber lembretes dos próximos atendimentos?</p>
+            <p class="muted" style="margin:10px 0;">Você será avisado 15 minutos antes de cada sessão.</p>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+                <button id="cancelNotification" class="small">Agora não</button>
+                <button id="enableNotifications" class="primary small">🔔 Ativar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Anamnese -->
+    <div id="anamneseModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>📋 Anamnese</h3>
+            <div style="margin:15px 0;">
+                <label>Queixa principal</label>
+                <textarea id="aQueixa" rows="2"></textarea>
+            </div>
+            <div style="margin:15px 0;">
+                <label>Histórico</label>
+                <textarea id="aHistorico" rows="2"></textarea>
+            </div>
+            <div style="margin:15px 0;">
+                <label>Observações</label>
+                <textarea id="aObs" rows="3"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button id="closeAnamnese" class="small">Fechar</button>
+                <button id="saveAnamnese" class="primary small">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Token -->
+    <div id="tokenModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>🎫 Registrar Token Cassems</h3>
+            <p class="muted">Registre o token de autorização enviado pelo paciente</p>
+            
+            <div style="margin:15px 0;">
+                <label>Data da sessão</label>
+                <input type="date" id="tokenDate" readonly />
+            </div>
+            <div style="margin:15px 0;">
+                <label>Paciente</label>
+                <input type="text" id="tokenPatient" readonly />
+            </div>
+            <div style="margin:15px 0;">
+                <label>Token de autorização</label>
+                <input type="text" id="tokenCode" placeholder="Ex: CASS-123456" />
+            </div>
+            <div style="margin:15px 0;">
+                <label>Status do token</label>
+                <select id="tokenStatus">
+                    <option value="enviado">✅ Enviado</option>
+                    <option value="pendente">⏳ Pendente</option>
+                    <option value="problema">❌ Problema no token</option>
+                </select>
+            </div>
+            
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button id="cancelToken" class="small">Cancelar</button>
+                <button id="saveToken" class="primary small">Salvar Token</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pacote -->
+    <div id="packModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>📦 Configurar Pacote de Sessões</h3>
+            <p class="muted" id="packPatientName"></p>
+            
+            <div class="pack-info" id="packCurrentInfo"></div>
+            
+            <div style="margin:20px 0;">
+                <label>Data de início do pacote</label>
+                <input type="date" id="packStartDate" />
+            </div>
+            <div style="margin:20px 0;">
+                <label>Total de sessões</label>
+                <select id="packTotal">
+                    <option value="4">4 sessões</option>
+                    <option value="8">8 sessões</option>
+                </select>
+            </div>
+            <div style="margin:20px 0;">
+                <label>Frequência semanal</label>
+                <select id="packFrequency">
+                    <option value="1">1x por semana</option>
+                    <option value="2">2x por semana</option>
+                </select>
+            </div>
+            <div style="margin:20px 0;" id="weekdaysContainer">
+                <label>Dias da semana (para 2x)</label>
+                <div class="weekday-selector" id="weekdaySelector">
+                    <div class="weekday-btn" data-day="0">S</div>
+                    <div class="weekday-btn" data-day="1">T</div>
+                    <div class="weekday-btn" data-day="2">Q</div>
+                    <div class="weekday-btn" data-day="3">Q</div>
+                    <div class="weekday-btn" data-day="4">S</div>
+                    <div class="weekday-btn" data-day="5">S</div>
+                    <div class="weekday-btn" data-day="6">D</div>
+                </div>
+                <small class="muted">Selecione 2 dias para sessões 2x por semana</small>
+            </div>
+            <div style="margin:20px 0;">
+                <label>Horário das sessões</label>
+                <input type="time" id="packTime" step="600" />
+            </div>
+            
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button id="cancelPack" class="small">Cancelar</button>
+                <button id="savePack" class="primary small">Salvar Configuração</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal de Evolução -->
     <div id="evolucaoModal" class="modal-overlay hidden">
@@ -589,34 +825,50 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
+        const APP_VERSION = '4.0.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
-        const DRIVE_FILE_NAME = "clinica_dados.json";
-        const DRIVE_FOLDER_NAME = "ClinicaFono";
         
+        const KEYS = {
+            PATIENTS: "gabriel_fono_patients_v4",
+            SESSIONS: "gabriel_fono_sessions_v4",
+            SCHEDULE: "gabriel_fono_schedule_v4",
+            TOKENS: "gabriel_fono_tokens_v4",
+            PACKS: "gabriel_fono_packs_v4",
+            BACKUP: "gabriel_fono_backup_v4",
+            THEME: "gabriel_fono_theme_v4",
+            VERSION: "gabriel_fono_version",
+            NOTIFICATIONS: "gabriel_fono_notifications",
+            PHOTOS: "gabriel_fono_photos",
+            EVOLUCOES: "gabriel_fono_evolucoes"
+        };
+
         const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
-        
+        const SERVICE_COLORS = {
+            "cassems": "slotGreen",
+            "particular": "slotAmber",
+            "unimed": "slotBlue",
+            "outros": "slotPurple"
+        };
+
         // ========== VARIÁVEIS GLOBAIS ==========
-        let gapiReady = false;
-        let driveStatus = 'offline';
-        let autoSaveTimer = null;
+        let autoBackup = true;
         let openedPatientId = null;
+        let alertTimeout = null;
         let currentTokenSessionId = null;
         let currentPackPatientId = null;
         let debtFilterActive = false;
+        let notificationsEnabled = false;
+        let notificationInterval = null;
+        let currentPhotoFile = null;
+        let deferredPrompt = null;
         let currentEvolucaoId = null;
-        
-        // Dados
-        let patients = [];
-        let sessions = [];
-        let schedule = { times: defaultTimes(), recurring: {} };
-        let tokens = {};
-        let packs = {};
-        let evolucoes = {}; // { patientId: [ {id, date, text} ] }
 
         // ========== FUNÇÕES UTILITÁRIAS ==========
-        function $(id) { return document.getElementById(id); }
+        function $(id) {
+            return document.getElementById(id);
+        }
 
         function uid() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -624,12 +876,12 @@
 
         function todayISO() {
             const d = new Date();
-            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
         }
 
         function nowTime() {
             const d = new Date();
-            return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+            return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
         }
 
         function parseMoney(val) {
@@ -647,23 +899,42 @@
                 .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
+        function saveData(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                showAlert('❌ Erro ao salvar dados. Verifique o espaço disponível.', 'error');
+                return false;
+            }
+        }
+
+        function loadData(key, defaultValue = null) {
+            try {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : defaultValue;
+            } catch {
+                return defaultValue;
+            }
+        }
+
         function showAlert(message, type = "info") {
+            if (alertTimeout) clearTimeout(alertTimeout);
+            
             const alert = document.createElement("div");
             alert.className = `alert alert-${type}`;
             alert.innerHTML = message;
-            alert.style.background = type === "success" ? "rgba(44,122,90,.2)" : "rgba(44,122,90,.2)";
-            alert.style.borderColor = "#2C7A5A";
+            alert.style.background = type === "success" ? "rgba(44,122,90,.2)" : 
+                                    type === "warning" ? "rgba(232,198,106,.2)" : 
+                                    "rgba(44,122,90,.2)";
+            alert.style.borderColor = type === "success" ? "#2C7A5A" : 
+                                      type === "warning" ? "#E8C66A" : 
+                                      "#2C7A5A";
             document.body.appendChild(alert);
             
-            setTimeout(() => alert.remove(), 3000);
-        }
-
-        function updateDriveStatus(status) {
-            driveStatus = status;
-            const statusEl = $("driveStatus");
-            if (statusEl) {
-                statusEl.className = `drive-status ${status}`;
-            }
+            alertTimeout = setTimeout(() => {
+                if (alert.parentNode) alert.remove();
+            }, 3000);
         }
 
         function recurKey(day, time) { return `${day}|${time}`; }
@@ -672,872 +943,408 @@
             return ["07:00", "07:40", "08:20", "09:00", "09:40", "10:20", "11:00", "13:20", "14:00", "14:40", "15:20", "16:00", "16:40", "17:20"];
         }
 
-        // ========== GOOGLE DRIVE INTEGRAÇÃO ==========
-        
-        function initGoogleDrive() {
-            gapi.load('client:auth2', async () => {
-                await gapi.client.init({
-                    apiKey: 'AIzaSyCgYKpI9u_2JYqXkZnYvYqXkZnYvYqXkZnY',
-                    clientId: '123456789-abc123.apps.googleusercontent.com',
-                    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-                    scope: 'https://www.googleapis.com/auth/drive.file'
-                });
+        // ========== FUNÇÕES DE DADOS ==========
+        function loadPatients() { return loadData(KEYS.PATIENTS, []); }
+        function savePatients(p) { saveData(KEYS.PATIENTS, p); }
 
-                const auth = gapi.auth2.getAuthInstance();
-                if (auth.isSignedIn.get()) {
-                    gapiReady = true;
-                    updateDriveStatus('online');
-                    loadFromDrive();
-                } else {
-                    try {
-                        await auth.signIn();
-                        gapiReady = true;
-                        updateDriveStatus('online');
-                        loadFromDrive();
-                    } catch (e) {
-                        updateDriveStatus('offline');
-                    }
-                }
-            });
+        function loadSessions() { return loadData(KEYS.SESSIONS, []); }
+        function saveSessions(s) { saveData(KEYS.SESSIONS, s); }
+
+        function loadSchedule() {
+            return loadData(KEYS.SCHEDULE, { times: defaultTimes(), recurring: {} });
         }
+        function saveSchedule(s) { saveData(KEYS.SCHEDULE, s); }
 
-        window.loginToDrive = async function() {
-            try {
-                const auth = gapi.auth2.getAuthInstance();
-                await auth.signIn();
-                gapiReady = true;
-                updateDriveStatus('online');
-                showAlert("✅ Conectado ao Google Drive!", "success");
-                loadFromDrive();
-            } catch (e) {
-                showAlert("❌ Erro ao conectar ao Google Drive", "error");
-            }
-        };
+        function loadTokens() { return loadData(KEYS.TOKENS, {}); }
+        function saveTokens(tokens) { saveData(KEYS.TOKENS, tokens); }
 
-        async function saveToDrive() {
-            if (!gapiReady) return;
-            
-            updateDriveStatus('syncing');
-            
-            try {
-                const data = {
-                    patients,
-                    sessions,
-                    schedule,
-                    tokens,
-                    packs,
-                    evolucoes,
-                    lastSync: new Date().toISOString()
-                };
+        function loadPacks() { return loadData(KEYS.PACKS, {}); }
+        function savePacks(packs) { saveData(KEYS.PACKS, packs); }
 
-                let fileId = await findOrCreateFile();
-                
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const reader = new FileReader();
-                
-                reader.onload = async () => {
-                    const base64 = reader.result.split(',')[1];
-                    
-                    await gapi.client.request({
-                        path: `/upload/drive/v3/files/${fileId}`,
-                        method: 'PATCH',
-                        params: { uploadType: 'media' },
-                        headers: { 'Content-Type': 'application/json' },
-                        body: base64
-                    });
-                    
-                    updateDriveStatus('online');
-                    showAlert("✅ Dados salvos no Google Drive!", "success");
-                };
-                
-                reader.readAsDataURL(blob);
-                
-            } catch (e) {
-                console.error('Erro ao salvar no Drive:', e);
-                updateDriveStatus('offline');
-                showAlert("❌ Erro ao salvar no Google Drive", "error");
-            }
-        }
+        function loadPhotos() { return loadData(KEYS.PHOTOS, {}); }
+        function savePhotos(photos) { saveData(KEYS.PHOTOS, photos); }
 
-        async function loadFromDrive() {
-            if (!gapiReady) return;
-            
-            updateDriveStatus('syncing');
-            
-            try {
-                const response = await gapi.client.drive.files.list({
-                    q: `name='${DRIVE_FILE_NAME}' and 'root' in parents and trashed=false`,
-                    fields: 'files(id, name)',
-                    spaces: 'drive'
-                });
+        function loadEvolucoes() { return loadData(KEYS.EVOLUCOES, {}); }
+        function saveEvolucoes(evolucoes) { saveData(KEYS.EVOLUCOES, evolucoes); }
 
-                if (response.result.files.length > 0) {
-                    const fileId = response.result.files[0].id;
-                    
-                    const fileResponse = await gapi.client.drive.files.get({
-                        fileId: fileId,
-                        alt: 'media'
-                    });
-                    
-                    const data = fileResponse.result;
-                    
-                    if (data.patients) patients = data.patients;
-                    if (data.sessions) sessions = data.sessions;
-                    if (data.schedule) schedule = data.schedule;
-                    if (data.tokens) tokens = data.tokens;
-                    if (data.packs) packs = data.packs;
-                    if (data.evolucoes) evolucoes = data.evolucoes;
-                    
-                    showAlert("✅ Dados carregados do Google Drive!", "success");
-                    
-                    renderAll();
-                }
-                
-                updateDriveStatus('online');
-                
-            } catch (e) {
-                console.error('Erro ao carregar do Drive:', e);
-                updateDriveStatus('offline');
-            }
-        }
-
-        async function findOrCreateFile() {
-            const response = await gapi.client.drive.files.list({
-                q: `name='${DRIVE_FILE_NAME}' and 'root' in parents and trashed=false`,
-                fields: 'files(id, name)',
-                spaces: 'drive'
-            });
-
-            if (response.result.files.length > 0) {
-                return response.result.files[0].id;
-            }
-
-            const createResponse = await gapi.client.drive.files.create({
-                resource: {
-                    name: DRIVE_FILE_NAME,
-                    mimeType: 'application/json',
-                    parents: ['root']
-                }
-            });
-
-            return createResponse.result.id;
-        }
-
-        function startAutoSave() {
-            if (autoSaveTimer) clearInterval(autoSaveTimer);
-            autoSaveTimer = setInterval(() => {
-                saveToDrive();
-            }, 30000);
-        }
-
-        // ========== FUNÇÕES DE CRUD ==========
-        
         function getPatientById(id) {
-            return patients.find(p => p.id === id);
+            return loadPatients().find(p => p.id === id);
         }
 
         function getPatientPack(patientId) {
+            const packs = loadPacks();
             return packs[patientId] || null;
         }
 
+        function savePatientPack(patientId, packData) {
+            const packs = loadPacks();
+            packs[patientId] = {
+                ...packData,
+                updatedAt: new Date().toISOString()
+            };
+            savePacks(packs);
+            return packs[patientId];
+        }
+
         function getTokenForSession(sessionId) {
+            const tokens = loadTokens();
             return tokens[sessionId] || null;
         }
 
-        function getPatientEvolucoes(patientId) {
-            return evolucoes[patientId] || [];
+        function registerToken(sessionId, tokenData) {
+            const tokens = loadTokens();
+            tokens[sessionId] = {
+                ...tokenData,
+                registeredAt: new Date().toISOString()
+            };
+            saveTokens(tokens);
+            return tokens[sessionId];
         }
 
         function calculateSessionsProgress(patientId, startDate, totalSessions) {
-            const patientSessions = sessions.filter(s => 
+            const sessions = loadSessions().filter(s => 
                 s.patientId === patientId && 
                 s.did === "realizou" &&
                 s.date >= startDate
             );
             return {
-                completed: patientSessions.length,
-                remaining: Math.max(0, totalSessions - patientSessions.length),
-                percent: totalSessions > 0 ? (patientSessions.length / totalSessions) * 100 : 0
+                completed: sessions.length,
+                remaining: Math.max(0, totalSessions - sessions.length),
+                percent: totalSessions > 0 ? (sessions.length / totalSessions) * 100 : 0
             };
         }
 
-        function calculateTotalSessions(patientId) {
-            const patientSessions = sessions.filter(s => 
-                s.patientId === patientId && 
-                s.did === "realizou"
-            );
-            return patientSessions.length;
+        function generatePackSchedule(patientId, packConfig) {
+            const schedule = loadSchedule();
+            const startDate = new Date(packConfig.startDate);
+            
+            for (let i = 0; i < packConfig.totalSessions; i++) {
+                let sessionDate = new Date(startDate);
+                
+                if (packConfig.frequency === 2 && packConfig.weekdays.length === 2) {
+                    const weekOffset = Math.floor(i / 2);
+                    const dayIndex = i % 2;
+                    const targetDay = packConfig.weekdays[dayIndex];
+                    
+                    let daysToAdd = (targetDay - startDate.getDay() + 7) % 7;
+                    daysToAdd += weekOffset * 7;
+                    sessionDate.setDate(startDate.getDate() + daysToAdd);
+                } else {
+                    sessionDate.setDate(startDate.getDate() + (i * 7));
+                }
+                
+                const dateStr = sessionDate.toISOString().split('T')[0];
+                const key = recurKey(sessionDate.getDay(), packConfig.time);
+                
+                if (!schedule.recurring[key]) {
+                    schedule.recurring[key] = {
+                        patientId: patientId,
+                        serviceType: packConfig.serviceType,
+                        startDate: dateStr,
+                        plannedTotal: packConfig.totalSessions
+                    };
+                }
+            }
+            
+            saveSchedule(schedule);
         }
 
         // ========== FUNÇÕES DE EVOLUÇÃO ==========
         
-        window.openEvolucaoModal = function() {
-            if (!openedPatientId) return;
-            
-            $("evolucaoData").value = todayISO();
-            $("evolucaoTexto").value = "";
-            $("evolucaoModal").classList.remove("hidden");
-        };
+        function getPatientEvolucoes(patientId) {
+            const evolucoes = loadEvolucoes();
+            return evolucoes[patientId] || [];
+        }
 
-        window.saveEvolucao = function() {
-            if (!openedPatientId) return;
-            
-            const data = $("evolucaoData").value;
-            const texto = $("evolucaoTexto").value.trim();
-            
-            if (!texto) {
-                showAlert("❌ Escreva a evolução do paciente", "error");
-                return;
+        function savePatientEvolucao(patientId, evolucaoData) {
+            const evolucoes = loadEvolucoes();
+            if (!evolucoes[patientId]) {
+                evolucoes[patientId] = [];
             }
             
-            if (!evolucoes[openedPatientId]) {
-                evolucoes[openedPatientId] = [];
+            if (evolucaoData.id) {
+                // Editar existente
+                const index = evolucoes[patientId].findIndex(e => e.id === evolucaoData.id);
+                if (index !== -1) {
+                    evolucoes[patientId][index] = {
+                        ...evolucaoData,
+                        updatedAt: new Date().toISOString()
+                    };
+                }
+            } else {
+                // Novo
+                evolucaoData.id = uid();
+                evolucaoData.createdAt = new Date().toISOString();
+                evolucoes[patientId].push(evolucaoData);
             }
-            
-            evolucoes[openedPatientId].push({
-                id: uid(),
-                date: data,
-                text: texto,
-                createdAt: new Date().toISOString()
-            });
             
             // Ordenar por data (mais recente primeiro)
-            evolucoes[openedPatientId].sort((a, b) => b.date.localeCompare(a.date));
+            evolucoes[patientId].sort((a, b) => b.date.localeCompare(a.date));
             
-            $("evolucaoModal").classList.add("hidden");
-            
-            renderEvolucoes();
-            saveToDrive();
-            showAlert("✅ Evolução registrada!", "success");
-        };
-
-        window.editEvolucao = function(evolucaoId) {
-            if (!openedPatientId) return;
-            
-            const evolucao = evolucoes[openedPatientId]?.find(e => e.id === evolucaoId);
-            if (!evolucao) return;
-            
-            currentEvolucaoId = evolucaoId;
-            $("editEvolucaoData").value = evolucao.date;
-            $("editEvolucaoTexto").value = evolucao.text;
-            $("editEvolucaoModal").classList.remove("hidden");
-        };
-
-        window.saveEditEvolucao = function() {
-            if (!openedPatientId || !currentEvolucaoId) return;
-            
-            const data = $("editEvolucaoData").value;
-            const texto = $("editEvolucaoTexto").value.trim();
-            
-            if (!texto) {
-                showAlert("❌ Escreva a evolução do paciente", "error");
-                return;
-            }
-            
-            const index = evolucoes[openedPatientId]?.findIndex(e => e.id === currentEvolucaoId);
-            if (index !== -1) {
-                evolucoes[openedPatientId][index].date = data;
-                evolucoes[openedPatientId][index].text = texto;
-                evolucoes[openedPatientId][index].updatedAt = new Date().toISOString();
-                
-                // Reordenar
-                evolucoes[openedPatientId].sort((a, b) => b.date.localeCompare(a.date));
-            }
-            
-            $("editEvolucaoModal").classList.add("hidden");
-            currentEvolucaoId = null;
-            
-            renderEvolucoes();
-            saveToDrive();
-            showAlert("✅ Evolução atualizada!", "success");
-        };
-
-        window.deleteEvolucao = function(evolucaoId) {
-            if (!openedPatientId) return;
-            
-            if (!confirm("Excluir esta evolução?")) return;
-            
-            evolucoes[openedPatientId] = evolucoes[openedPatientId]?.filter(e => e.id !== evolucaoId);
-            
-            if (evolucoes[openedPatientId]?.length === 0) {
-                delete evolucoes[openedPatientId];
-            }
-            
-            renderEvolucoes();
-            saveToDrive();
-            showAlert("🗑️ Evolução excluída!", "success");
-        };
-
-        function renderEvolucoes() {
-            const container = $("evolucoesList");
-            if (!container || !openedPatientId) return;
-            
-            const patientEvolucoes = getPatientEvolucoes(openedPatientId);
-            
-            if (patientEvolucoes.length === 0) {
-                container.innerHTML = '<div class="muted" style="text-align:center; padding:20px;">Nenhuma evolução registrada</div>';
-                return;
-            }
-            
-            container.innerHTML = patientEvolucoes.map(ev => `
-                <div class="timeline-item">
-                    <div class="timeline-date">📅 ${new Date(ev.date).toLocaleDateString("pt-BR")}</div>
-                    <div class="timeline-content">${escapeHtml(ev.text).replace(/\n/g, '<br>')}</div>
-                    <div class="timeline-actions">
-                        <button class="small" onclick="editEvolucao('${ev.id}')">✏️ Editar</button>
-                        <button class="small danger" onclick="deleteEvolucao('${ev.id}')">🗑️ Excluir</button>
-                    </div>
-                </div>
-            `).join('');
+            saveEvolucoes(evolucoes);
+            return evolucaoData;
         }
 
-        // ========== RENDERIZAÇÃO ==========
-        function renderAll() {
-            renderPatientSelect();
-            renderDaily();
-            renderPatientFolders();
-            renderSchedule();
-            renderDashboard();
-            generateReports();
-            
-            if (openedPatientId) {
-                openPatientFolder(openedPatientId);
-            }
-        }
-
-        function renderPatientSelect() {
-            const sel = $("pPatient");
-            if (!sel) return;
-            
-            sel.innerHTML = patients.length ?
-                patients.map(p => `<option value="${p.id}">${escapeHtml(p.name)}${p.serviceType === 'cassems' ? ' (Cassems)' : ''}</option>`).join("") :
-                `<option value="">(Cadastre pacientes)</option>`;
-        }
-
-        function renderDaily() {
-            const date = $("date")?.value || todayISO();
-            const search = $("search")?.value.toLowerCase() || "";
-            
-            const daySessions = sessions.filter(s => s.date === date);
-            
-            const filtered = daySessions.filter(s => {
-                const p = getPatientById(s.patientId);
-                return !search || (p?.name || "").toLowerCase().includes(search);
-            });
-
-            $("cassemsHoje").textContent = filtered.filter(s => {
-                const p = getPatientById(s.patientId);
-                return p?.serviceType === "cassems";
-            }).length;
-
-            $("tokensEnviadosHoje").textContent = filtered.filter(s => {
-                const token = tokens[s.id];
-                return token?.status === "enviado";
-            }).length;
-
-            $("tokensPendentesHoje").textContent = filtered.filter(s => {
-                const token = tokens[s.id];
-                return !token || token?.status === "pendente";
-            }).length;
-
-            const list = $("dayList");
-            if (!list) return;
-            
-            list.innerHTML = filtered.map(s => {
-                const p = getPatientById(s.patientId);
-                const token = tokens[s.id];
-                
-                let tokenIndicator = '';
-                if (p?.serviceType === 'cassems') {
-                    if (token?.status === 'enviado') {
-                        tokenIndicator = `<span class="pill token">✅ Token: ${token.code || 'Enviado'}</span>`;
-                    } else {
-                        tokenIndicator = `<span class="pill token">⏳ Token pendente</span>`;
-                    }
+        function deletePatientEvolucao(patientId, evolucaoId) {
+            const evolucoes = loadEvolucoes();
+            if (evolucoes[patientId]) {
+                evolucoes[patientId] = evolucoes[patientId].filter(e => e.id !== evolucaoId);
+                if (evolucoes[patientId].length === 0) {
+                    delete evolucoes[patientId];
                 }
-
-                return `
-                <div class="item">
-                    <div style="display:flex; justify-content:space-between;">
-                        <div>
-                            <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
-                            <div class="muted">
-                                ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
-                                ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
-                            </div>
-                            ${tokenIndicator}
-                        </div>
-                        <div>
-                            <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
-                            <span class="pill">${fmtMoney(s.value)}</span>
-                        </div>
-                    </div>
-                    <div class="actions">
-                        <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
-                        <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
-                        ${p?.serviceType === 'cassems' ? `<button class="small" onclick="openTokenModal('${s.id}', '${p.name}', '${s.date}')">🎫 Token</button>` : ''}
-                        <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
-                    </div>
-                </div>
-            `;
-            }).join("") || "<div class='muted'>Nenhuma sessão neste dia</div>";
-
-            $("sumDay").innerHTML = `Total: ${filtered.length}`;
-            $("sumMoney").innerHTML = `Total: ${fmtMoney(filtered.reduce((s, r) => s + (Number(r.value) || 0), 0))}`;
-            $("sumAbsences").innerHTML = filtered.filter(s => s.did === "nao").length.toString();
+                saveEvolucoes(evolucoes);
+            }
         }
 
-        function renderPatientFolders() {
-            const search = $("pSearch")?.value.toLowerCase() || "";
-            let filteredPatients = patients.filter(p => !search || p.name.toLowerCase().includes(search));
-
-            if (debtFilterActive) {
-                filteredPatients = filteredPatients.filter(p => {
-                    const patientSessions = sessions.filter(s => s.patientId === p.id && s.paid !== "pago");
-                    return patientSessions.length > 0;
-                });
+        // ========== NOTIFICAÇÕES ==========
+        window.requestNotificationPermission = async function() {
+            if (!("Notification" in window)) {
+                showAlert("❌ Seu navegador não suporta notificações", "error");
+                return false;
             }
-
-            const container = $("patientFolders");
-            if (!container) return;
-
-            container.innerHTML = filteredPatients.map(p => {
-                const patientSessions = sessions.filter(s => s.patientId === p.id);
-                const debt = patientSessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-                const pack = getPatientPack(p.id);
-                const totalSessoes = patientSessions.filter(s => s.did === "realizou").length;
-                
-                return `
-                <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
-                    <div style="display:flex; justify-content:space-between;">
-                        <div>
-                            <b>📁 ${escapeHtml(p.name)} ${p.serviceType === 'cassems' ? '🎫' : ''} ${pack ? '📦' : ''}</b>
-                            <div class="muted">
-                                ${p.serviceType || "Particular"} • ${totalSessoes} sessões realizadas
-                                ${pack ? ` • Pacote ${pack.totalSessions}` : ''}
-                            </div>
-                        </div>
-                        <div>
-                            ${debt > 0 ? `<span class="pill bad">💰 ${fmtMoney(debt)}</span>` : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-            }).join("") || "<div class='muted'>Nenhum paciente</div>";
-        }
-
-        window.openPatientFolder = function(id) {
-            openedPatientId = id;
-            const p = getPatientById(id);
-            const pack = getPatientPack(id);
-            const totalSessoes = sessions.filter(s => s.patientId === id && s.did === "realizou").length;
             
-            $("foldersPane").classList.add("hidden");
-            $("folderOpenPane").classList.remove("hidden");
-            $("openPatientTitle").textContent = `📁 ${p?.name || "Paciente"}`;
-
-            // Contador de Sessões
-            let contadorHtml = `
-                <div class="session-counter">
-                    <div class="counter-title">📊 Sessões Realizadas</div>
-                    <div class="counter-numbers">
-                        <span>Total:</span>
-                        <span>${totalSessoes} sessões</span>
-                    </div>
-            `;
-
-            if (pack) {
-                const progress = calculateSessionsProgress(id, pack.startDate, pack.totalSessions);
-                contadorHtml += `
-                    <div class="counter-numbers">
-                        <span>Pacote ${pack.totalSessions}:</span>
-                        <span>${progress.completed}/${pack.totalSessions}</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width:${progress.percent}%;"></div>
-                    </div>
-                    <div class="counter-percent">
-                        ${progress.remaining} restantes • ${progress.percent.toFixed(0)}% concluído
-                    </div>
-                `;
-            } else {
-                contadorHtml += `<div class="muted">Sem pacote ativo</div>`;
+            const permission = await Notification.requestPermission();
+            notificationsEnabled = permission === "granted";
+            
+            if (notificationsEnabled) {
+                localStorage.setItem(KEYS.NOTIFICATIONS, "granted");
+                startNotificationChecker();
+                showAlert("✅ Notificações ativadas com sucesso!", "success");
+                $("notificationModal")?.classList.add("hidden");
             }
-
-            contadorHtml += `</div>`;
             
-            $("pacoteProgresso").innerHTML = contadorHtml;
-
-            // Abas da pasta
-            $("folderTabs").innerHTML = `
-                <div style="display:flex; gap:10px; margin:20px 0; border-bottom:1px solid var(--line); padding-bottom:10px;">
-                    <button class="tab active" id="tabHistorico" onclick="showTab('historico')">📋 Histórico</button>
-                    <button class="tab" id="tabEvolucao" onclick="showTab('evolucao')">📈 Evolução</button>
-                </div>
-                <div id="tabHistoricoContent">
-                    <div id="patientHistory" class="list"></div>
-                </div>
-                <div id="tabEvolucaoContent" class="hidden">
-                    <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
-                        <h3 style="margin:0;">📝 Evolução do Caso</h3>
-                        <button class="small primary" onclick="openEvolucaoModal()">➕ Nova Evolução</button>
-                    </div>
-                    <div id="evolucoesList" class="timeline"></div>
-                </div>
-            `;
-
-            // Histórico de sessões
-            const patientSessions = sessions.filter(s => s.patientId === id).sort((a, b) => b.date.localeCompare(a.date));
-            
-            $("patientHistory").innerHTML = patientSessions.map(s => {
-                const token = tokens[s.id];
-                return `
-                <div class="item">
-                    <div style="display:flex; justify-content:space-between;">
-                        <div>
-                            <b>${new Date(s.date).toLocaleDateString("pt-BR")} ${s.time ? "às " + s.time : ""}</b>
-                            <div class="muted">
-                                ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"} • 
-                                ${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"} • 
-                                ${fmtMoney(s.value)}
-                            </div>
-                            ${token ? `<div class="muted">🎫 Token: ${token.code || '—'}</div>` : ''}
-                        </div>
-                    </div>
-                </div>
-            `}).join("") || "<div class='muted'>Nenhum histórico</div>";
-
-            // Renderizar evoluções
-            renderEvolucoes();
+            return notificationsEnabled;
         };
 
-        window.showTab = function(tab) {
-            $("tabHistorico")?.classList.toggle("active", tab === "historico");
-            $("tabEvolucao")?.classList.toggle("active", tab === "evolucao");
-            $("tabHistoricoContent")?.classList.toggle("hidden", tab !== "historico");
-            $("tabEvolucaoContent")?.classList.toggle("hidden", tab !== "evolucao");
-        };
-
-        window.closePatientFolder = function() {
-            openedPatientId = null;
-            $("folderOpenPane")?.classList.add("hidden");
-            $("foldersPane")?.classList.remove("hidden");
-        };
-
-        function renderSchedule() {
-            const times = (schedule.times || []).sort();
-            const table = $("schedTable");
-            if (!table) return;
-
-            let html = "<thead><tr><th class='timeCell'>Horário</th>";
-            DAYS.forEach(day => html += `<th>${day}</th>`);
-            html += "</tr></thead><tbody>";
-
-            for (const time of times) {
-                html += `<tr><td class="timeCell">${escapeHtml(time)}</td>`;
-
-                for (let day = 0; day < 7; day++) {
-                    const key = recurKey(day, time);
-                    const entry = schedule.recurring?.[key];
-
-                    if (entry) {
-                        const patient = getPatientById(entry.patientId);
-                        const colorClass = entry.serviceType === "cassems" ? "slotGreen" : 
-                                          entry.serviceType === "particular" ? "slotAmber" : "slotBlue";
-                        
-                        let progressHtml = "";
-                        if (entry.plannedTotal > 1) {
-                            const sessionsCount = sessions.filter(s =>
-                                s.patientId === entry.patientId &&
-                                s.did === "realizou" &&
-                                s.date >= entry.startDate
-                            ).length;
-                            progressHtml = `<div class="muted" style="font-size:0.8rem;">${sessionsCount}/${entry.plannedTotal}</div>`;
-                        }
-
-                        html += `<td class="${colorClass}">
-                            <div style="font-weight:600;">${escapeHtml(patient?.name || "?")}</div>
-                            <div class="muted">${entry.serviceType}</div>
-                            ${progressHtml}
-                        </td>`;
-                    } else {
-                        html += `<td class="slotRed" style="cursor:pointer;" onclick="scheduleClickHandler(${day}, '${time}')">
-                            <div style="opacity:0.7;">🟥 Vago</div>
-                        </td>`;
-                    }
-                }
-                html += "</tr>";
-            }
-
-            html += "</tbody>";
-            table.innerHTML = html;
+        function startNotificationChecker() {
+            if (notificationInterval) clearInterval(notificationInterval);
+            
+            notificationInterval = setInterval(() => {
+                checkUpcomingSessions();
+            }, 60000);
         }
 
-        window.scheduleClickHandler = function(day, time) {
-            const key = recurKey(day, time);
-            const current = schedule.recurring?.[key];
-
-            if (current) {
-                const patient = getPatientById(current.patientId);
-                if (confirm(`Remover ${patient?.name} deste horário?`)) {
-                    delete schedule.recurring[key];
-                    renderSchedule();
-                    saveToDrive();
-                    showAlert("✅ Horário liberado!", "success");
-                }
-            } else {
-                const patientList = patients.map((p, i) => `${i+1} - ${p.name}`).join("\n");
-                const choice = prompt(
-                    `Agendar em ${DAYS[day]} às ${time}\n\n` +
-                    `Digite o NÚMERO do paciente:\n${patientList}\n\n` +
-                    `Ou 0 para cancelar`
-                );
-
-                if (choice && choice !== "0") {
-                    const idx = parseInt(choice) - 1;
-                    if (idx >= 0 && idx < patients.length) {
-                        const patient = patients[idx];
-                        
-                        if (!schedule.recurring) schedule.recurring = {};
-                        schedule.recurring[key] = {
-                            patientId: patient.id,
-                            serviceType: patient.serviceType || "particular",
-                            startDate: todayISO(),
-                            plannedTotal: patient.billingType === "pack4" ? 4 : 
-                                         patient.billingType === "pack8" ? 8 : 1
-                        };
-
-                        renderSchedule();
-                        saveToDrive();
-                        showAlert(`✅ ${patient.name} agendado!`, "success");
-                    }
-                }
-            }
-        };
-
-        function renderDashboard() {
-            const hoje = todayISO();
-            const hojeSessions = sessions.filter(s => s.date === hoje);
+        function checkUpcomingSessions() {
+            if (!notificationsEnabled) return;
             
-            $("dashHoje").textContent = hojeSessions.length;
+            const agora = nowTime();
+            const hoje = new Date().getDay();
+            const schedule = loadSchedule();
             
-            const realizadasHoje = hojeSessions.filter(s => s.did === "realizou").length;
-            const faltasHoje = hojeSessions.filter(s => s.did === "nao").length;
-            $("dashHojeDetalhe").innerHTML = `✅ ${realizadasHoje} • ❌ ${faltasHoje}`;
-
-            const faturamentoHoje = hojeSessions
-                .filter(s => s.did === "realizou" && s.paid === "pago")
-                .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
-            
-            $("dashFaturamento").textContent = fmtMoney(faturamentoHoje);
-
-            const currentMonth = hoje.slice(0,7);
-            const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
-            const monthFaltas = monthSessions.filter(s => s.did === "nao").length;
-            const taxa = monthSessions.length ? (monthFaltas / monthSessions.length * 100).toFixed(1) : 0;
-            
-            $("dashTaxaFaltas").textContent = `${taxa}%`;
-            $("dashProgresso").style.width = `${taxa}%`;
-        }
-
-        function generateReports() {
-            $("activePatients").innerHTML = patients.length.toString();
-        }
-
-        // ========== AÇÕES DE PACIENTE ==========
-        
-        window.addPatient = async function() {
-            const name = $("cName")?.value.trim();
-            if (!name) return showAlert("❌ Nome é obrigatório", "error");
-
-            const timeSlots = getTimeSlots();
-            if (timeSlots.length === 0) {
-                return showAlert("❌ Adicione pelo menos um horário", "error");
-            }
-
-            const frequency = parseInt($("cFrequency")?.value || "1");
-            
-            const patient = {
-                id: uid(),
-                name,
-                birth: $("cBirth")?.value || "",
-                cpf: $("cCpf")?.value || "",
-                resp: $("cResp")?.value || "",
-                phone: $("cPhone")?.value || "",
-                email: $("cEmail")?.value || "",
-                serviceType: $("cServiceType")?.value || "particular",
-                defaultValue: parseMoney($("cDefaultValue")?.value),
-                billingType: $("cBillingType")?.value || "pack4",
-                frequency: frequency,
-                timeSlots: timeSlots,
-                notes: $("cNotes")?.value || "",
-                anamnese: { queixa: "", historico: "", obs: "" },
-                createdAt: new Date().toISOString()
-            };
-
-            patients.push(patient);
-
-            if (patient.billingType !== "individual") {
-                timeSlots.forEach(slot => {
-                    if (!schedule.times.includes(slot.time)) {
-                        schedule.times.push(slot.time);
-                    }
+            Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
+                const [day, time] = key.split("|");
+                if (parseInt(day) === hoje) {
+                    const [h1, m1] = time.split(":").map(Number);
+                    const [h2, m2] = agora.split(":").map(Number);
+                    const diffMinutes = (h1 * 60 + m1) - (h2 * 60 + m2);
                     
-                    for (let i = 0; i < (patient.billingType === "pack4" ? 4 : 8); i++) {
-                        const startDate = new Date();
-                        let daysToAdd = i * (frequency === 2 ? 3 : 7);
-                        const sessionDate = new Date();
-                        sessionDate.setDate(startDate.getDate() + daysToAdd);
-                        
-                        const key = recurKey(slot.day, slot.time);
-                        
-                        if (!schedule.recurring[key]) {
-                            schedule.recurring[key] = {
-                                patientId: patient.id,
-                                serviceType: patient.serviceType,
-                                startDate: todayISO(),
-                                plannedTotal: patient.billingType === "pack4" ? 4 : 8
-                            };
+                    if (diffMinutes === 15) {
+                        const patient = getPatientById(entry.patientId);
+                        if (patient) {
+                            new Notification("🔔 Próximo atendimento!", {
+                                body: `${patient.name} em 15 minutos (${time})`,
+                                icon: "/icon-192.png",
+                                silent: false
+                            });
                         }
                     }
-                });
-                
-                schedule.times.sort();
-            }
+                }
+            });
+        }
 
-            // Limpar formulário
-            $("cName").value = "";
-            $("cBirth").value = "";
-            $("cCpf").value = "";
-            $("cResp").value = "";
-            $("cPhone").value = "";
-            $("cEmail").value = "";
-            $("cDefaultValue").value = "";
-            $("cNotes").value = "";
+        // ========== FOTO DO PACIENTE ==========
+        window.handlePhotoUpload = function(input) {
+            const file = input.files[0];
+            if (!file) return;
             
-            renderAll();
-            saveToDrive();
-            showAlert("✅ Paciente cadastrado com sucesso!", "success");
-        };
-
-        window.toggleDebtFilter = function() {
-            debtFilterActive = !debtFilterActive;
-            const btn = $("onlyDebtFolders");
-            if (btn) btn.classList.toggle("primary", debtFilterActive);
-            renderPatientFolders();
-        };
-
-        // ========== AÇÕES DE SESSÃO ==========
-        
-        window.addSession = async function() {
-            const date = $("date")?.value;
-            const patientId = $("pPatient")?.value;
-            const time = $("pTime")?.value;
-            const did = $("pDid")?.value;
-            const just = $("pJust")?.value;
-            const paid = $("pPaid")?.value;
-            const manualValue = $("pValue")?.value;
-
-            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
-
-            const p = getPatientById(patientId);
-            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
-            if (p?.serviceType === "cassems") value = 26;
-
-            const session = {
-                id: uid(),
-                date, 
-                patientId, 
-                time,
-                did: did,
-                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
-                paid, 
-                value
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentPhotoFile = e.target.result;
+                const preview = $("photoPreview");
+                const placeholder = $("photoPlaceholder");
+                if (preview) {
+                    preview.src = e.target.result;
+                    preview.classList.remove("hidden");
+                }
+                if (placeholder) {
+                    placeholder.classList.add("hidden");
+                }
             };
-
-            sessions.push(session);
-
-            if (p?.serviceType === "cassems") {
-                tokens[session.id] = {
-                    sessionId: session.id,
-                    date: date,
-                    patientName: p.name,
-                    code: '',
-                    status: 'pendente'
-                };
-            }
-
-            $("pTime").value = "";
-            $("pValue").value = "";
-            
-            renderAll();
-            saveToDrive();
-            showAlert("✅ Sessão adicionada!", "success");
+            reader.readAsDataURL(file);
         };
 
-        window.toggleSessionDid = async function(id) {
-            const session = sessions.find(s => s.id === id);
-            if (!session) return;
+        function savePatientPhoto(patientId, photoData) {
+            const photos = loadPhotos();
+            photos[patientId] = photoData;
+            savePhotos(photos);
+        }
+
+        function getPatientPhoto(patientId) {
+            const photos = loadPhotos();
+            return photos[patientId] || null;
+        }
+
+        // ========== RELATÓRIO PDF ==========
+        window.generatePDFReport = function() {
+            const { jsPDF } = window.jspdf;
             
-            session.did = session.did === "realizou" ? "nao" : "realizou";
-            if (session.did === "nao" && !session.just) {
-                session.just = "nao_justificada";
-            }
+            const doc = new jsPDF();
+            const patients = loadPatients();
+            const sessions = loadSessions();
+            const today = new Date().toLocaleDateString("pt-BR");
             
-            renderAll();
-            saveToDrive();
-            showAlert("✅ Sessão atualizada!", "success");
+            doc.setFontSize(18);
+            doc.text(CLINIC_NAME, 14, 20);
+            doc.setFontSize(12);
+            doc.text(CLINIC_SUBTITLE, 14, 28);
+            doc.setFontSize(10);
+            doc.text(CLINIC_CRFA, 14, 35);
+            
+            doc.setFontSize(11);
+            doc.text(`Relatório gerado em: ${today}`, 14, 45);
+            
+            doc.setFontSize(14);
+            doc.text("📊 Estatísticas Gerais", 14, 60);
+            
+            doc.setFontSize(10);
+            doc.text(`Total de pacientes: ${patients.length}`, 14, 70);
+            doc.text(`Total de sessões: ${sessions.length}`, 14, 77);
+            
+            const realizadas = sessions.filter(s => s.did === "realizou").length;
+            const faltas = sessions.filter(s => s.did === "nao").length;
+            
+            doc.text(`Sessões realizadas: ${realizadas}`, 14, 84);
+            doc.text(`Faltas: ${faltas}`, 14, 91);
+            
+            doc.setFontSize(14);
+            doc.text("📋 Lista de Pacientes", 14, 108);
+            
+            const tableData = patients.map(p => [
+                p.name,
+                p.serviceType || "Particular",
+                p.phone || "-",
+                sessions.filter(s => s.patientId === p.id).length.toString()
+            ]);
+            
+            doc.autoTable({
+                startY: 115,
+                head: [["Nome", "Convênio", "WhatsApp", "Sessões"]],
+                body: tableData,
+                theme: "grid",
+                styles: { fontSize: 8 }
+            });
+            
+            doc.save(`relatorio_${todayISO()}.pdf`);
+            showAlert("✅ PDF gerado com sucesso!", "success");
         };
 
-        window.toggleSessionPaid = async function(id) {
-            const session = sessions.find(s => s.id === id);
-            if (!session) return;
-            
-            session.paid = session.paid === "pago" ? "nao_pago" : "pago";
-            
-            renderAll();
-            saveToDrive();
-            showAlert("💰 Status de pagamento atualizado!", "success");
+        // ========== BACKUP ==========
+        window.downloadBackup = function() {
+            const backup = createBackup();
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `gabriel_fono_backup_${todayISO()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showAlert("✅ Backup baixado com sucesso!", "success");
         };
 
-        window.deleteSession = async function(id) {
-            if (!confirm("Excluir esta sessão?")) return;
+        window.backupToGoogleDrive = function() {
+            const backup = createBackup();
+            const dataStr = JSON.stringify(backup, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
             
-            sessions = sessions.filter(s => s.id !== id);
-            delete tokens[id];
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `backup_${todayISO()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
             
-            renderAll();
-            saveToDrive();
-            showAlert("🗑️ Sessão excluída!", "success");
+            showAlert("✅ Backup baixado! Para salvar no Google Drive, faça upload manualmente.", "success");
         };
 
-        window.openTokenModal = function(sessionId, patientName, sessionDate) {
-            currentTokenSessionId = sessionId;
-            const token = tokens[sessionId];
-            
-            $("tokenDate").value = sessionDate;
-            $("tokenPatient").value = patientName;
-            $("tokenCode").value = token?.code || '';
-            $("tokenStatus").value = token?.status || 'pendente';
-            
-            $("tokenModal").classList.remove("hidden");
-        };
+        window.restoreFromFile = function(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    if (backup.version && backup.data) {
+                        saveData(KEYS.PATIENTS, backup.data.patients || []);
+                        saveData(KEYS.SESSIONS, backup.data.sessions || []);
+                        saveData(KEYS.SCHEDULE, backup.data.schedule || { times: defaultTimes(), recurring: {} });
+                        saveData(KEYS.TOKENS, backup.data.tokens || {});
+                        saveData(KEYS.PACKS, backup.data.packs || {});
+                        if (backup.data.photos) saveData(KEYS.PHOTOS, backup.data.photos);
+                        if (backup.data.evolucoes) saveData(KEYS.EVOLUCOES, backup.data.evolucoes);
 
-        window.saveToken = function() {
-            if (!currentTokenSessionId) return;
-            
-            tokens[currentTokenSessionId] = {
-                sessionId: currentTokenSessionId,
-                date: $("tokenDate")?.value,
-                patientName: $("tokenPatient")?.value,
-                code: $("tokenCode")?.value,
-                status: $("tokenStatus")?.value
+                        showAlert("✅ Backup restaurado com sucesso!", "success");
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showAlert("❌ Arquivo de backup inválido", "error");
+                    }
+                } catch (err) {
+                    showAlert("❌ Erro ao ler o arquivo", "error");
+                }
             };
+            reader.readAsText(file);
+        };
+
+        function createBackup() {
+            return {
+                version: "1.0",
+                clinic: CLINIC_NAME,
+                crfa: CLINIC_CRFA,
+                date: new Date().toISOString(),
+                data: {
+                    patients: loadPatients(),
+                    sessions: loadSessions(),
+                    schedule: loadSchedule(),
+                    tokens: loadTokens(),
+                    packs: loadPacks(),
+                    photos: loadPhotos(),
+                    evolucoes: loadEvolucoes()
+                }
+            };
+        }
+
+        function createAutoBackup() {
+            const backups = loadData(KEYS.BACKUP, []);
+            const newBackup = createBackup();
+            backups.unshift(newBackup);
+            if (backups.length > 10) backups.pop();
+            saveData(KEYS.BACKUP, backups);
+        }
+
+        // ========== TEMA ==========
+        window.toggleTheme = function() {
+            document.body.classList.toggle("light-mode");
+            const isLight = document.body.classList.contains("light-mode");
+            localStorage.setItem(KEYS.THEME, isLight ? "light" : "dark");
+            const themeBtn = $("themeToggle");
+            if (themeBtn) themeBtn.innerHTML = isLight ? "🌙 Tema" : "☀️ Tema";
+        };
+
+        // ========== NAVEGAÇÃO ==========
+        window.setTab = function(tab) {
+            $("viewDashboard")?.classList.toggle("hidden", tab !== "dashboard");
+            $("viewDaily")?.classList.toggle("hidden", tab !== "daily");
+            $("viewPatients")?.classList.toggle("hidden", tab !== "patients");
+            $("viewSchedule")?.classList.toggle("hidden", tab !== "schedule");
+            $("viewReports")?.classList.toggle("hidden", tab !== "reports");
+
+            [$("tabDashboard"), $("tabDaily"), $("tabPatients"), $("tabSchedule"), $("tabReports")].forEach(t => {
+                if (t) t.classList.remove("active");
+            });
             
-            $("tokenModal").classList.add("hidden");
-            renderAll();
-            saveToDrive();
-            showAlert("✅ Token registrado!", "success");
+            const activeTab = $(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+            if (activeTab) activeTab.classList.add("active");
+
+            if (tab === "dashboard") renderDashboard();
+            if (tab === "schedule") renderSchedule();
+            if (tab === "reports") generateReports();
         };
 
         // ========== GERENCIAMENTO DE HORÁRIOS ==========
@@ -1580,42 +1387,1378 @@
             return slots;
         }
 
-        // ========== INICIALIZAÇÃO ==========
-        function init() {
-            renderApp();
+        // ========== FUNÇÕES DO DIÁRIO ==========
+        function renderPatientSelect() {
+            const pats = loadPatients();
+            const sel = $("pPatient");
+            if (!sel) return;
             
-            $("date").value = todayISO();
-            $("schedRef").value = todayISO();
-            $("today").innerHTML = new Date().toLocaleDateString("pt-BR", {
-                weekday: "long", year: "numeric", month: "long", day: "numeric"
-            });
-
-            // Configurar modais
-            $("cancelEvolucao")?.addEventListener("click", () => {
-                $("evolucaoModal").classList.add("hidden");
-            });
-
-            $("saveEvolucao")?.addEventListener("click", saveEvolucao);
-
-            $("cancelEditEvolucao")?.addEventListener("click", () => {
-                $("editEvolucaoModal").classList.add("hidden");
-                currentEvolucaoId = null;
-            });
-
-            $("saveEditEvolucao")?.addEventListener("click", saveEditEvolucao);
-
-            $("cancelToken")?.addEventListener("click", () => {
-                $("tokenModal").classList.add("hidden");
-                currentTokenSessionId = null;
-            });
-
-            $("saveToken")?.addEventListener("click", saveToken);
-
-            // Iniciar Google Drive
-            initGoogleDrive();
-            startAutoSave();
+            sel.innerHTML = pats.length ?
+                pats.map(p => `<option value="${p.id}">${escapeHtml(p.name)}${p.serviceType === 'cassems' ? ' (Cassems)' : ''}</option>`).join("") :
+                `<option value="">(Cadastre pacientes)</option>`;
+            
+            updateDefaultHint();
         }
 
+        function updateDefaultHint() {
+            const pid = $("pPatient")?.value;
+            const p = getPatientById(pid);
+            const hint = $("hintDefault");
+            if (!hint) return;
+            if (!p) {
+                hint.textContent = "";
+                return;
+            }
+            hint.textContent = `${p.serviceType || "Particular"} • Valor: ${fmtMoney(p.defaultValue || 0)}`;
+        }
+
+        function renderDaily() {
+            const date = $("date")?.value || todayISO();
+            const search = $("search")?.value.toLowerCase() || "";
+            const sessions = loadSessions().filter(s => s.date === date);
+            const tokens = loadTokens();
+
+            const filtered = sessions.filter(s => {
+                const p = getPatientById(s.patientId);
+                return !search || (p?.name || "").toLowerCase().includes(search);
+            });
+
+            const cassemsHoje = filtered.filter(s => {
+                const p = getPatientById(s.patientId);
+                return p?.serviceType === "cassems";
+            });
+
+            const tokensHojeEnviados = cassemsHoje.filter(s => tokens[s.id]?.status === "enviado").length;
+            const tokensHojePendentes = cassemsHoje.length - tokensHojeEnviados;
+
+            const cassemsEl = $("cassemsHoje");
+            if (cassemsEl) cassemsEl.textContent = cassemsHoje.length;
+            
+            const tokensEnviadosEl = $("tokensEnviadosHoje");
+            if (tokensEnviadosEl) tokensEnviadosEl.textContent = tokensHojeEnviados;
+            
+            const tokensPendentesEl = $("tokensPendentesHoje");
+            if (tokensPendentesEl) tokensPendentesEl.textContent = tokensHojePendentes;
+
+            const list = $("dayList");
+            if (!list) return;
+            
+            list.innerHTML = filtered.map(s => {
+                const p = getPatientById(s.patientId);
+                const token = tokens[s.id];
+                const photo = getPatientPhoto(s.patientId);
+                
+                let tokenIndicator = '';
+                if (p?.serviceType === 'cassems') {
+                    if (token?.status === 'enviado') {
+                        tokenIndicator = `<span class="pill token" style="background:rgba(44,122,90,.15);">✅ Token: ${token.code || 'Enviado'}</span>`;
+                    } else if (token?.status === 'problema') {
+                        tokenIndicator = `<span class="pill token" style="background:rgba(239,68,68,.15);">❌ Problema no token</span>`;
+                    } else {
+                        tokenIndicator = `<span class="pill token" style="background:rgba(232,198,106,.15);">⏳ Token pendente</span>`;
+                    }
+                }
+
+                return `
+                <div class="item" id="session-${s.id}">
+                    <div style="display:flex; gap:10px;">
+                        ${photo ? `<img src="${photo}" class="photo-preview small" style="width:40px; height:40px;" />` : ''}
+                        <div style="flex:1;">
+                            <div style="display:flex; justify-content:space-between;">
+                                <div>
+                                    <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
+                                    <div class="muted">
+                                        ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
+                                        ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
+                                    </div>
+                                    <div style="margin-top:5px;">
+                                        ${tokenIndicator}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
+                                    <span class="pill">${fmtMoney(s.value)}</span>
+                                </div>
+                            </div>
+                            <div class="actions" style="margin-top:10px;">
+                                <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
+                                <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
+                                <button class="small" onclick="editSessionValue('${s.id}')">✏️ Editar valor</button>
+                                ${p?.serviceType === 'cassems' ? `<button class="small token-btn" onclick="openTokenModal('${s.id}', '${p.name}', '${s.date}')">🎫 Token</button>` : ''}
+                                <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join("") || "<div class='muted'>Nenhuma sessão neste dia</div>";
+
+            const sumDay = $("sumDay");
+            if (sumDay) sumDay.innerHTML = `Total: ${filtered.length}`;
+            
+            const sumMoney = $("sumMoney");
+            if (sumMoney) sumMoney.innerHTML = `Total: ${fmtMoney(filtered.reduce((s, r) => s + (Number(r.value) || 0), 0))}`;
+            
+            const sumAbsences = $("sumAbsences");
+            if (sumAbsences) sumAbsences.innerHTML = filtered.filter(s => s.did === "nao").length.toString();
+        }
+
+        // ========== AÇÕES DE SESSÃO (GLOBAIS) ==========
+        window.toggleSessionDid = function(id) {
+            const sessions = loadSessions();
+            const idx = sessions.findIndex(s => s.id === id);
+            if (idx >= 0) {
+                sessions[idx].did = sessions[idx].did === "realizou" ? "nao" : "realizou";
+                if (sessions[idx].did === "nao" && !sessions[idx].just) {
+                    sessions[idx].just = "nao_justificada";
+                }
+                saveSessions(sessions);
+                renderDaily();
+                renderDashboard();
+                if (openedPatientId) openPatientFolder(openedPatientId);
+                showAlert("✅ Sessão atualizada!", "success");
+            }
+        };
+
+        window.toggleSessionPaid = function(id) {
+            const sessions = loadSessions();
+            const idx = sessions.findIndex(s => s.id === id);
+            if (idx >= 0) {
+                sessions[idx].paid = sessions[idx].paid === "pago" ? "nao_pago" : "pago";
+                saveSessions(sessions);
+                renderDaily();
+                renderDashboard();
+                if (openedPatientId) openPatientFolder(openedPatientId);
+                showAlert("💰 Status de pagamento atualizado!", "success");
+            }
+        };
+
+        window.editSessionValue = function(id) {
+            const sessions = loadSessions();
+            const idx = sessions.findIndex(s => s.id === id);
+            if (idx >= 0) {
+                const newValue = prompt("Novo valor (R$):", sessions[idx].value);
+                if (newValue !== null) {
+                    sessions[idx].value = parseMoney(newValue);
+                    saveSessions(sessions);
+                    renderDaily();
+                    showAlert("✅ Valor atualizado!", "success");
+                }
+            }
+        };
+
+        window.deleteSession = function(id) {
+            if (confirm("Excluir esta sessão?")) {
+                const sessions = loadSessions().filter(s => s.id !== id);
+                saveSessions(sessions);
+                
+                const tokens = loadTokens();
+                delete tokens[id];
+                saveTokens(tokens);
+                
+                renderDaily();
+                if (openedPatientId) openPatientFolder(openedPatientId);
+                showAlert("🗑️ Sessão excluída!", "success");
+            }
+        };
+
+        window.sendBirthdayMessage = function(patientId) {
+            const p = getPatientById(patientId);
+            if (p?.phone) {
+                const msg = encodeURIComponent(`🎂 Feliz aniversário! Desejo um dia maravilhoso e muitas realizações!`);
+                window.open(`https://wa.me/55${p.phone}?text=${msg}`, "_blank");
+            }
+        };
+
+        window.openTokenModal = function(sessionId, patientName, sessionDate) {
+            currentTokenSessionId = sessionId;
+            const token = getTokenForSession(sessionId);
+            
+            const tokenDate = $("tokenDate");
+            const tokenPatient = $("tokenPatient");
+            const tokenCode = $("tokenCode");
+            const tokenStatus = $("tokenStatus");
+            
+            if (tokenDate) tokenDate.value = sessionDate;
+            if (tokenPatient) tokenPatient.value = patientName;
+            if (tokenCode) tokenCode.value = token?.code || '';
+            if (tokenStatus) tokenStatus.value = token?.status || 'pendente';
+            
+            $("tokenModal")?.classList.remove("hidden");
+        };
+
+        window.openPackModal = function(patientId) {
+            currentPackPatientId = patientId;
+            const patient = getPatientById(patientId);
+            const existingPack = getPatientPack(patientId);
+            
+            const packPatientName = $("packPatientName");
+            const packStartDate = $("packStartDate");
+            const packTotal = $("packTotal");
+            const packFrequency = $("packFrequency");
+            const packTime = $("packTime");
+            const packCurrentInfo = $("packCurrentInfo");
+            
+            if (packPatientName) packPatientName.textContent = `Configurando pacote para: ${patient?.name}`;
+            
+            if (existingPack) {
+                if (packStartDate) packStartDate.value = existingPack.startDate;
+                if (packTotal) packTotal.value = existingPack.totalSessions;
+                if (packFrequency) packFrequency.value = existingPack.frequency;
+                if (packTime) packTime.value = existingPack.time;
+                
+                document.querySelectorAll('.weekday-btn').forEach(btn => {
+                    const day = parseInt(btn.dataset.day);
+                    if (existingPack.weekdays?.includes(day)) {
+                        btn.classList.add('selected');
+                    } else {
+                        btn.classList.remove('selected');
+                    }
+                });
+                
+                const progress = calculateSessionsProgress(patientId, existingPack.startDate, existingPack.totalSessions);
+                if (packCurrentInfo) {
+                    packCurrentInfo.innerHTML = `
+                        <div style="margin-bottom:10px;">
+                            <strong>Progresso atual:</strong> ${progress.completed}/${existingPack.totalSessions} sessões realizadas (${progress.remaining} restantes)
+                        </div>
+                    `;
+                }
+            } else {
+                if (packStartDate) packStartDate.value = todayISO();
+                if (packTotal) packTotal.value = "4";
+                if (packFrequency) packFrequency.value = "1";
+                if (packTime) packTime.value = "08:00";
+                document.querySelectorAll('.weekday-btn').forEach(btn => btn.classList.remove('selected'));
+                if (packCurrentInfo) packCurrentInfo.innerHTML = '';
+            }
+            
+            toggleWeekdaySelector();
+            $("packModal")?.classList.remove("hidden");
+        };
+
+        function toggleWeekdaySelector() {
+            const freq = $("packFrequency")?.value;
+            const container = $("weekdaysContainer");
+            if (container) {
+                container.style.display = freq === "2" ? "block" : "none";
+            }
+        }
+
+        // ========== FUNÇÕES DE AGENDAMENTO ==========
+        function renderSchedule() {
+            const sch = loadSchedule();
+            const patients = loadPatients();
+            const times = (sch.times || []).sort();
+            const refDate = $("schedRef")?.value || todayISO();
+            const table = $("schedTable");
+            
+            if (!table) return;
+
+            let html = "<thead><tr><th class='timeCell'>Horário</th>";
+            DAYS.forEach(day => html += `<th>${day}</th>`);
+            html += "</tr></thead><tbody>";
+
+            for (const time of times) {
+                html += `<tr><td class="timeCell">${escapeHtml(time)}</td>`;
+
+                for (let day = 0; day < 7; day++) {
+                    const key = recurKey(day, time);
+                    const entry = sch.recurring?.[key];
+
+                    if (entry) {
+                        const patient = getPatientById(entry.patientId);
+                        const colorClass = SERVICE_COLORS[entry.serviceType] || "slotAmber";
+                        const serviceLabel = entry.serviceType === "cassems" ? "Cassems" :
+                            entry.serviceType === "unimed" ? "Unimed" :
+                                entry.serviceType === "outros" ? "Outros" : "Particular";
+
+                        const tokenIcon = entry.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
+
+                        let progressHtml = "";
+                        let warningIcon = "";
+                        if (entry.plannedTotal > 1) {
+                            const sessions = loadSessions().filter(s =>
+                                s.patientId === entry.patientId &&
+                                s.did === "realizou" &&
+                                s.date >= entry.startDate
+                            ).length;
+                            const remaining = Math.max(0, entry.plannedTotal - sessions);
+
+                            const percent = (sessions / entry.plannedTotal) * 100;
+                            progressHtml = `
+                                <div style="margin-top:8px;">
+                                    <div class="progress-bar" style="height:4px;">
+                                        <div class="progress-fill" style="width:${percent}%; background:#2C7A5A;"></div>
+                                    </div>
+                                    <div style="font-size:0.8rem; display:flex; justify-content:space-between; margin-top:4px;">
+                                        <span>${sessions}/${entry.plannedTotal}</span>
+                                        <span>${remaining} restam</span>
+                                    </div>
+                                </div>
+                            `;
+
+                            if (remaining === 1) warningIcon = `<span class="iconAlert">⚠️</span>`;
+                            if (remaining === 0) warningIcon = `<span class="iconAlert">🏁</span>`;
+                        }
+
+                        html += `<td data-day="${day}" data-time="${time}" class="slotBox ${colorClass}">
+                            <div style="font-weight:600;">${warningIcon} ${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
+                            <div class="muted" style="font-size:0.85rem;">${serviceLabel}</div>
+                            ${progressHtml}
+                        </td>`;
+                    } else {
+                        html += `<td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor:pointer;">
+                            <div style="opacity:0.7;">🟥 Vago</div>
+                            <div class="muted" style="font-size:0.8rem;">Clique para agendar</div>
+                        </td>`;
+                    }
+                }
+                html += "</tr>";
+            }
+
+            html += "</tbody>";
+            table.innerHTML = html;
+
+            document.querySelectorAll("td[data-day]").forEach(td => {
+                td.addEventListener("click", (e) => {
+                    const day = td.dataset.day;
+                    const time = td.dataset.time;
+                    scheduleClickHandler(parseInt(day), time);
+                });
+            });
+        }
+
+        function scheduleClickHandler(day, time) {
+            const sch = loadSchedule();
+            const key = recurKey(day, time);
+            const current = sch.recurring?.[key];
+            const patients = loadPatients();
+
+            if (current) {
+                const patient = getPatientById(current.patientId);
+                if (confirm(`Remover ${patient?.name} deste horário?`)) {
+                    delete sch.recurring[key];
+                    saveSchedule(sch);
+                    renderSchedule();
+                    renderDashboard();
+                    showAlert("✅ Horário liberado!", "success");
+                }
+            } else {
+                const patientList = patients.map((p, i) => `${i + 1} - ${p.name}`).join("\n");
+                const choice = prompt(
+                    `Agendar em ${DAYS[day]} às ${time}\n\n` +
+                    `Digite o NÚMERO do paciente:\n${patientList}\n\n` +
+                    `Ou 0 para cancelar`
+                );
+
+                if (choice && choice !== "0") {
+                    const idx = parseInt(choice) - 1;
+                    if (idx >= 0 && idx < patients.length) {
+                        const patient = patients[idx];
+                        const finalService = patient.serviceType || "particular";
+                        
+                        let plannedTotal = 1;
+                        if (patient.billingType === "pack4") plannedTotal = 4;
+                        else if (patient.billingType === "pack8") plannedTotal = 8;
+
+                        sch.recurring = sch.recurring || {};
+                        sch.recurring[key] = {
+                            patientId: patient.id,
+                            serviceType: finalService,
+                            startDate: todayISO(),
+                            plannedTotal: plannedTotal
+                        };
+
+                        saveSchedule(sch);
+                        renderSchedule();
+                        renderDashboard();
+                        showAlert(`✅ ${patient.name} agendado!`, "success");
+                    }
+                }
+            }
+        }
+
+        // ========== FILTROS DA AGENDA ==========
+        window.filterHoje = function() {
+            const hoje = new Date().getDay();
+            const rows = document.querySelectorAll("#schedTable tbody tr");
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td:not(.timeCell)");
+                cells.forEach((cell, idx) => {
+                    if (idx === hoje) {
+                        cell.style.background = "rgba(44,122,90,.2)";
+                    }
+                });
+            });
+        };
+
+        // ========== DASHBOARD ==========
+        function renderDashboard() {
+            const hoje = todayISO();
+            const agora = nowTime();
+            const sessions = loadSessions();
+            const patients = loadPatients();
+            const schedule = loadSchedule();
+            const tokens = loadTokens();
+            
+            const hojeSessions = sessions.filter(s => s.date === hoje);
+            const dashHoje = $("dashHoje");
+            if (dashHoje) dashHoje.textContent = hojeSessions.length;
+            
+            const realizadasHoje = hojeSessions.filter(s => s.did === "realizou").length;
+            const faltasHoje = hojeSessions.filter(s => s.did === "nao").length;
+            const dashHojeDetalhe = $("dashHojeDetalhe");
+            if (dashHojeDetalhe) dashHojeDetalhe.innerHTML = `✅ ${realizadasHoje} realizadas • ❌ ${faltasHoje} faltas`;
+            
+            const hojeDay = new Date().getDay();
+            const proximos = [];
+            
+            Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
+                const [day, time] = key.split("|");
+                if (parseInt(day) === hojeDay) {
+                    const [h1, m1] = time.split(":").map(Number);
+                    const [h2, m2] = agora.split(":").map(Number);
+                    const diffMinutes = (h1 * 60 + m1) - (h2 * 60 + m2);
+                    
+                    if (diffMinutes > 0 && diffMinutes <= 15) {
+                        const patient = getPatientById(entry.patientId);
+                        proximos.push({ name: patient?.name || "?", time });
+                    }
+                }
+            });
+            
+            const dashProximos = $("dashProximos");
+            if (dashProximos) dashProximos.textContent = proximos.length;
+            
+            const dashProximosNomes = $("dashProximosNomes");
+            if (dashProximosNomes) {
+                dashProximosNomes.innerHTML = proximos.map(p => `${p.time} - ${p.name}`).join("<br>") || "Nenhum";
+            }
+            
+            const faturamentoHoje = hojeSessions
+                .filter(s => s.did === "realizou" && s.paid === "pago")
+                .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+            const aReceberHoje = hojeSessions
+                .filter(s => s.did === "realizou" && s.paid !== "pago")
+                .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+            
+            const dashFaturamento = $("dashFaturamento");
+            if (dashFaturamento) dashFaturamento.textContent = fmtMoney(faturamentoHoje);
+            
+            const dashFaturamentoDetalhe = $("dashFaturamentoDetalhe");
+            if (dashFaturamentoDetalhe) {
+                dashFaturamentoDetalhe.innerHTML = `💰 Recebido: ${fmtMoney(faturamentoHoje)}<br>💸 A receber: ${fmtMoney(aReceberHoje)}`;
+            }
+            
+            const currentMonth = hoje.slice(0, 7);
+            const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
+            const monthFaltas = monthSessions.filter(s => s.did === "nao").length;
+            const taxa = monthSessions.length ? (monthFaltas / monthSessions.length * 100).toFixed(1) : 0;
+            
+            const dashTaxaFaltas = $("dashTaxaFaltas");
+            if (dashTaxaFaltas) dashTaxaFaltas.textContent = `${taxa}%`;
+            
+            const dashProgresso = $("dashProgresso");
+            if (dashProgresso) dashProgresso.style.width = `${taxa}%`;
+
+            const cassemsHoje = hojeSessions.filter(s => {
+                const p = getPatientById(s.patientId);
+                return p?.serviceType === "cassems";
+            });
+
+            const tokensHoje = cassemsHoje.map(s => ({
+                session: s,
+                token: tokens[s.id]
+            }));
+
+            const tokensEnviados = tokensHoje.filter(t => t.token?.status === "enviado").length;
+            const tokensPendentes = cassemsHoje.length - tokensEnviados;
+
+            const tokensHojeEl = $("tokensHoje");
+            if (tokensHojeEl) tokensHojeEl.textContent = cassemsHoje.length;
+            
+            const tokensHojeDetalhe = $("tokensHojeDetalhe");
+            if (tokensHojeDetalhe) tokensHojeDetalhe.innerHTML = `${cassemsHoje.length} pacientes Cassems hoje`;
+            
+            const tokensEnviadosEl = $("tokensEnviados");
+            if (tokensEnviadosEl) tokensEnviadosEl.textContent = tokensEnviados;
+            
+            const tokensEnviadosDetalhe = $("tokensEnviadosDetalhe");
+            if (tokensEnviadosDetalhe) tokensEnviadosDetalhe.innerHTML = `${tokensEnviados} tokens registrados`;
+            
+            const tokensPendentesEl = $("tokensPendentes");
+            if (tokensPendentesEl) tokensPendentesEl.textContent = tokensPendentes;
+            
+            const tokensPendentesDetalhe = $("tokensPendentesDetalhe");
+            if (tokensPendentesDetalhe) tokensPendentesDetalhe.innerHTML = `${tokensPendentes} aguardando token`;
+            
+            const currentMonthNum = new Date().getMonth() + 1;
+            const aniversariantes = patients.filter(p => {
+                if (!p.birth) return false;
+                const month = parseInt(p.birth.split("-")[1]);
+                return month === currentMonthNum;
+            });
+            
+            const aniversariantesEl = $("aniversariantes");
+            if (aniversariantesEl) {
+                aniversariantesEl.innerHTML = aniversariantes.length ? 
+                    aniversariantes.map(p => {
+                        const photo = getPatientPhoto(p.id);
+                        return `
+                        <div class="item">
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                ${photo ? `<img src="${photo}" class="photo-preview small" style="width:40px; height:40px;" />` : ''}
+                                <div>
+                                    <b>🎂 ${escapeHtml(p.name)}</b>
+                                    <div class="muted">${new Date(p.birth).toLocaleDateString("pt-BR")}</div>
+                                    <button class="small" onclick="sendBirthdayMessage('${p.id}')">📱 Enviar mensagem</button>
+                                </div>
+                            </div>
+                        </div>
+                    `}).join("") : 
+                    "<div class='muted'>Nenhum aniversariante este mês</div>";
+            }
+            
+            const proximosAtendimentos = [];
+            const refDay = new Date().getDay();
+            
+            Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
+                const [day, time] = key.split("|");
+                const dayNum = parseInt(day);
+                
+                let daysToAdd = dayNum - refDay;
+                if (daysToAdd < 0) daysToAdd += 7;
+                if (daysToAdd === 0 && time < agora) daysToAdd += 7;
+                
+                const nextDate = new Date();
+                nextDate.setDate(nextDate.getDate() + daysToAdd);
+                
+                const patient = getPatientById(entry.patientId);
+                proximosAtendimentos.push({
+                    date: nextDate,
+                    time,
+                    patient: patient?.name || "?",
+                    days: daysToAdd
+                });
+            });
+            
+            proximosAtendimentos.sort((a, b) => a.days - b.days);
+            
+            const proximosAtendimentosEl = $("proximosAtendimentos");
+            if (proximosAtendimentosEl) {
+                proximosAtendimentosEl.innerHTML = proximosAtendimentos.slice(0, 5).map(p => `
+                    <div class="item">
+                        <b>${escapeHtml(p.patient)}</b>
+                        <div class="muted">${p.time} - ${p.days === 0 ? "Hoje" : p.days === 1 ? "Amanhã" : `Em ${p.days} dias`}</div>
+                    </div>
+                `).join("") || "<div class='muted'>Nenhum agendamento</div>";
+            }
+        }
+
+        // ========== FUNÇÕES DE PACIENTES ==========
+        function renderPatientFolders() {
+            const search = $("pSearch")?.value.toLowerCase() || "";
+            let pats = loadPatients().filter(p => !search || p.name.toLowerCase().includes(search));
+
+            if (debtFilterActive) {
+                const sessions = loadSessions();
+                pats = pats.filter(p => {
+                    const patientSessions = sessions.filter(s => s.patientId === p.id && s.paid !== "pago");
+                    return patientSessions.length > 0;
+                });
+            }
+
+            const container = $("patientFolders");
+            if (!container) return;
+
+            container.innerHTML = pats.map(p => {
+                const sessions = loadSessions().filter(s => s.patientId === p.id);
+                const debt = sessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+                const totalSessoes = sessions.length;
+                const realizadas = sessions.filter(s => s.did === "realizou").length;
+                const cassemsIcon = p.serviceType === 'cassems' ? '🎫' : '';
+                const pack = getPatientPack(p.id);
+                const packIcon = pack ? '📦' : '';
+                const timeSlots = p.timeSlots || [];
+                const photo = getPatientPhoto(p.id);
+                const evolucoes = getPatientEvolucoes(p.id);
+                const evolucoesCount = evolucoes.length;
+
+                return `
+                <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
+                    <div style="display:flex; gap:10px;">
+                        ${photo ? `<img src="${photo}" class="photo-preview small" style="width:50px; height:50px;" />` : ''}
+                        <div style="flex:1;">
+                            <div style="display:flex; justify-content:space-between;">
+                                <div>
+                                    <b>📁 ${escapeHtml(p.name)} ${cassemsIcon} ${packIcon}</b>
+                                    <div class="muted">
+                                        ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
+                                        ${pack ? ` • ${pack.totalSessions} sessões no pacote` : ''}
+                                        ${timeSlots.length ? ` • ${timeSlots.length} horários` : ''}
+                                        ${evolucoesCount > 0 ? ` • 📝 ${evolucoesCount} evoluções` : ''}
+                                    </div>
+                                </div>
+                                <div>
+                                    ${debt > 0 ? `<span class="pill bad">💰 ${fmtMoney(debt)}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join("") || "<div class='muted'>Nenhum paciente</div>";
+        }
+
+        window.openPatientFolder = function(id) {
+            openedPatientId = id;
+            const p = getPatientById(id);
+            const pack = getPatientPack(id);
+            const photo = getPatientPhoto(id);
+            const evolucoes = getPatientEvolucoes(id);
+            
+            const foldersPane = $("foldersPane");
+            const folderOpenPane = $("folderOpenPane");
+            const openPatientTitle = $("openPatientTitle");
+            const folderPatientPhoto = $("folderPatientPhoto");
+            const openPatientMeta = $("openPatientMeta");
+            const pacoteProgresso = $("pacoteProgresso");
+            const packControl = $("packControl");
+            
+            if (foldersPane) foldersPane.classList.add("hidden");
+            if (folderOpenPane) folderOpenPane.classList.remove("hidden");
+            if (openPatientTitle) openPatientTitle.textContent = `📁 ${p?.name || "Paciente"}`;
+            
+            if (folderPatientPhoto) {
+                if (photo) {
+                    folderPatientPhoto.src = photo;
+                    folderPatientPhoto.classList.remove("hidden");
+                } else {
+                    folderPatientPhoto.classList.add("hidden");
+                }
+            }
+
+            let pacoteInfo = "Nenhum pacote configurado";
+            if (pack) {
+                const progress = calculateSessionsProgress(id, pack.startDate, pack.totalSessions);
+                const frequencyText = pack.frequency === 2 ? `2x por semana (${pack.weekdays.map(d => DAYS[d]).join(' e ')})` : '1x por semana';
+                
+                pacoteInfo = `
+                    <div style="margin:10px 0;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <b>📦 Pacote de ${pack.totalSessions} sessões</b>
+                                <div class="muted">Início: ${new Date(pack.startDate).toLocaleDateString("pt-BR")}</div>
+                                <div class="muted">${frequencyText} às ${pack.time}</div>
+                            </div>
+                            <button class="small token-btn" onclick="openPackModal('${id}')">⚙️ Configurar</button>
+                        </div>
+                        <div class="progress-bar" style="margin:10px 0;">
+                            <div class="progress-fill" style="width:${progress.percent}%; background:#2C7A5A;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span>✅ ${progress.completed} realizadas</span>
+                            <span>⏳ ${progress.remaining} restantes</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                pacoteInfo = `
+                    <div style="text-align:center; padding:10px;">
+                        <button class="small primary" onclick="openPackModal('${id}')">📦 Configurar Pacote de Sessões</button>
+                    </div>
+                `;
+            }
+            
+            if (pacoteProgresso) pacoteProgresso.innerHTML = pacoteInfo;
+
+            if (pack && packControl) {
+                packControl.innerHTML = `
+                    <div style="display:flex; gap:10px; justify-content:center; margin:10px 0;">
+                        <button class="small" onclick="showPackSchedule('${id}')">📅 Ver agenda do pacote</button>
+                        <button class="small" onclick="exportPackProgress('${id}')">📊 Exportar progresso</button>
+                    </div>
+                `;
+            } else if (packControl) {
+                packControl.innerHTML = '';
+            }
+
+            // Histórico de sessões
+            const patientSessions = loadSessions().filter(s => s.patientId === id).sort((a, b) => b.date.localeCompare(a.date));
+            const tokens = loadTokens();
+
+            const patientHistory = $("patientHistory");
+            if (patientHistory) {
+                patientHistory.innerHTML = patientSessions.map(s => {
+                    const token = tokens[s.id];
+                    const tokenInfo = token ? 
+                        `<div class="muted" style="font-size:0.85rem;">🎫 Token: ${token.code || '—'} (${token.status})</div>` : 
+                        (p?.serviceType === 'cassems' ? '<div class="muted" style="font-size:0.85rem; color:#E8C66A;">⏳ Token pendente</div>' : '');
+                    
+                    return `
+                    <div class="item">
+                        <div style="display:flex; justify-content:space-between;">
+                            <div>
+                                <b>${s.date} ${s.time ? "às " + s.time : ""}</b>
+                                <div class="muted">
+                                    ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"} • 
+                                    ${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"} • 
+                                    ${fmtMoney(s.value)}
+                                </div>
+                                ${tokenInfo}
+                            </div>
+                            <div>
+                                <button class="small" onclick="event.stopPropagation(); toggleSessionPaid('${s.id}')">💰</button>
+                            </div>
+                        </div>
+                    </div>
+                `}).join("") || "<div class='muted'>Nenhum histórico</div>";
+            }
+
+            // Seção de Evolução
+            const evolucoesSection = $("evolucoesSection");
+            if (evolucoesSection) {
+                if (evolucoes.length === 0) {
+                    evolucoesSection.innerHTML = `
+                        <div style="text-align:center; padding:20px;">
+                            <p class="muted">Nenhuma evolução registrada</p>
+                            <button class="small primary" onclick="openEvolucaoModal()">➕ Registrar Primeira Evolução</button>
+                        </div>
+                    `;
+                } else {
+                    evolucoesSection.innerHTML = `
+                        <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="margin:0;">📝 Evoluções do Caso</h3>
+                            <button class="small primary" onclick="openEvolucaoModal()">➕ Nova Evolução</button>
+                        </div>
+                        <div id="evolucoesList" class="timeline"></div>
+                    `;
+                    renderEvolucoes();
+                }
+            }
+
+            if (openPatientMeta) {
+                openPatientMeta.innerHTML = `
+                    ${p?.serviceType || "Particular"} • 
+                    ${p?.phone ? `📱 ${p.phone}` : ""} • 
+                    ${p?.email ? `📧 ${p.email}` : ""}
+                `;
+            }
+        };
+
+        window.showPackSchedule = function(patientId) {
+            const pack = getPatientPack(patientId);
+            if (!pack) return;
+            
+            const schedule = loadSchedule();
+            const sessions = [];
+            
+            Object.entries(schedule.recurring).forEach(([key, entry]) => {
+                if (entry.patientId === patientId) {
+                    const [day, time] = key.split("|");
+                    sessions.push({ day: parseInt(day), time });
+                }
+            });
+            
+            const scheduleList = sessions.map(s => `${DAYS[s.day]} às ${s.time}`).join('\n');
+            alert(`Agenda do pacote:\n\n${scheduleList}`);
+        };
+
+        window.exportPackProgress = function(patientId) {
+            const pack = getPatientPack(patientId);
+            const patient = getPatientById(patientId);
+            const progress = calculateSessionsProgress(patientId, pack.startDate, pack.totalSessions);
+            
+            const data = {
+                paciente: patient.name,
+                pacote: `${pack.totalSessions} sessões`,
+                inicio: pack.startDate,
+                frequencia: pack.frequency === 2 ? '2x por semana' : '1x por semana',
+                realizadas: progress.completed,
+                restantes: progress.remaining,
+                percentual: `${progress.percent.toFixed(1)}%`
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `progresso_${patient.name}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showAlert("✅ Progresso exportado!", "success");
+        };
+
+        // ========== FUNÇÕES DE EVOLUÇÃO (INTERFACE) ==========
+        window.openEvolucaoModal = function() {
+            if (!openedPatientId) return;
+            
+            $("evolucaoData").value = todayISO();
+            $("evolucaoTexto").value = "";
+            $("evolucaoModal").classList.remove("hidden");
+        };
+
+        window.saveEvolucao = function() {
+            if (!openedPatientId) return;
+            
+            const data = $("evolucaoData").value;
+            const texto = $("evolucaoTexto").value.trim();
+            
+            if (!texto) {
+                showAlert("❌ Escreva a evolução do paciente", "error");
+                return;
+            }
+            
+            savePatientEvolucao(openedPatientId, {
+                date: data,
+                text: texto
+            });
+            
+            $("evolucaoModal").classList.add("hidden");
+            
+            // Reabrir a pasta para atualizar
+            openPatientFolder(openedPatientId);
+            showAlert("✅ Evolução registrada!", "success");
+        };
+
+        window.editEvolucao = function(evolucaoId) {
+            if (!openedPatientId) return;
+            
+            const evolucoes = getPatientEvolucoes(openedPatientId);
+            const evolucao = evolucoes.find(e => e.id === evolucaoId);
+            if (!evolucao) return;
+            
+            currentEvolucaoId = evolucaoId;
+            $("editEvolucaoData").value = evolucao.date;
+            $("editEvolucaoTexto").value = evolucao.text;
+            $("editEvolucaoModal").classList.remove("hidden");
+        };
+
+        window.saveEditEvolucao = function() {
+            if (!openedPatientId || !currentEvolucaoId) return;
+            
+            const data = $("editEvolucaoData").value;
+            const texto = $("editEvolucaoTexto").value.trim();
+            
+            if (!texto) {
+                showAlert("❌ Escreva a evolução do paciente", "error");
+                return;
+            }
+            
+            savePatientEvolucao(openedPatientId, {
+                id: currentEvolucaoId,
+                date: data,
+                text: texto
+            });
+            
+            $("editEvolucaoModal").classList.add("hidden");
+            currentEvolucaoId = null;
+            
+            openPatientFolder(openedPatientId);
+            showAlert("✅ Evolução atualizada!", "success");
+        };
+
+        window.deleteEvolucao = function(evolucaoId) {
+            if (!openedPatientId) return;
+            
+            if (!confirm("Excluir esta evolução?")) return;
+            
+            deletePatientEvolucao(openedPatientId, evolucaoId);
+            openPatientFolder(openedPatientId);
+            showAlert("🗑️ Evolução excluída!", "success");
+        };
+
+        function renderEvolucoes() {
+            const container = $("evolucoesList");
+            if (!container || !openedPatientId) return;
+            
+            const evolucoes = getPatientEvolucoes(openedPatientId);
+            
+            if (evolucoes.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = evolucoes.map(ev => `
+                <div class="timeline-item">
+                    <div class="timeline-date">📅 ${new Date(ev.date).toLocaleDateString("pt-BR")}</div>
+                    <div class="timeline-content">${escapeHtml(ev.text).replace(/\n/g, '<br>')}</div>
+                    <div class="timeline-actions">
+                        <button class="small" onclick="editEvolucao('${ev.id}')">✏️ Editar</button>
+                        <button class="small danger" onclick="deleteEvolucao('${ev.id}')">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ========== RELATÓRIOS ==========
+        function generateReports() {
+            const sessions = loadSessions();
+            const patients = loadPatients();
+            const tokens = loadTokens();
+            const packs = loadPacks();
+            const evolucoes = loadEvolucoes();
+            const currentMonth = todayISO().slice(0, 7);
+
+            const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
+            const realizacoes = monthSessions.filter(s => s.did === "realizou");
+            const faltas = monthSessions.filter(s => s.did === "nao");
+            const faturamento = realizacoes.reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+            const aReceber = monthSessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+
+            const monthSummary = $("monthSummary");
+            if (monthSummary) {
+                monthSummary.innerHTML = `
+                    Sessões: ${monthSessions.length}<br>
+                    Realizadas: ${realizacoes.length}<br>
+                    Faltas: ${faltas.length}
+                `;
+            }
+
+            const absenceRate = $("absenceRate");
+            if (absenceRate) {
+                absenceRate.innerHTML = monthSessions.length ?
+                    `${((faltas.length / monthSessions.length) * 100).toFixed(1)}%` : "0%";
+            }
+
+            const revenueStats = $("revenueStats");
+            if (revenueStats) {
+                revenueStats.innerHTML = `
+                    Faturado: ${fmtMoney(faturamento)}<br>
+                    A receber: ${fmtMoney(aReceber)}
+                `;
+            }
+
+            const activePatients = $("activePatients");
+            if (activePatients) activePatients.innerHTML = patients.length.toString();
+
+            const sessoesCassems = sessions.filter(s => {
+                const p = getPatientById(s.patientId);
+                return p?.serviceType === "cassems";
+            });
+
+            const tokensEnviados = Object.values(tokens).filter(t => t.status === "enviado").length;
+            const tokensPendentes = sessoesCassems.length - tokensEnviados;
+
+            const totalSessoesCassems = $("totalSessoesCassems");
+            if (totalSessoesCassems) totalSessoesCassems.textContent = sessoesCassems.length;
+            
+            const totalTokensEnviados = $("totalTokensEnviados");
+            if (totalTokensEnviados) totalTokensEnviados.textContent = tokensEnviados;
+            
+            const totalTokensPendentes = $("totalTokensPendentes");
+            if (totalTokensPendentes) totalTokensPendentes.textContent = Math.max(0, tokensPendentes);
+
+            const packStatus = [];
+            Object.entries(packs).forEach(([patientId, pack]) => {
+                const patient = getPatientById(patientId);
+                if (patient) {
+                    const progress = calculateSessionsProgress(patientId, pack.startDate, pack.totalSessions);
+                    packStatus.push({
+                        patient: patient.name,
+                        total: pack.totalSessions,
+                        completed: progress.completed,
+                        remaining: progress.remaining,
+                        percent: progress.percent
+                    });
+                }
+            });
+
+            const packStatusEl = $("packStatus");
+            if (packStatusEl) {
+                packStatusEl.innerHTML = packStatus.length ? 
+                    packStatus.map(p => `
+                        <div class="cardMini">
+                            <b>${escapeHtml(p.patient)}</b>
+                            <div class="progress-bar" style="margin:10px 0;">
+                                <div class="progress-fill" style="width:${p.percent}%; background:#2C7A5A;"></div>
+                            </div>
+                            <div class="muted">${p.completed}/${p.total} concluídas • ${p.remaining} restantes</div>
+                        </div>
+                    `).join("") : 
+                    "<div class='muted'>Nenhum pacote ativo</div>";
+            }
+
+            const debtors = patients.map(p => {
+                const patientSessions = sessions.filter(s => s.patientId === p.id && s.paid !== "pago");
+                const debt = patientSessions.reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+                return { name: p.name, debt };
+            }).filter(d => d.debt > 0).sort((a, b) => b.debt - a.debt).slice(0, 5);
+
+            const topDebtors = $("topDebtors");
+            if (topDebtors) {
+                topDebtors.innerHTML = debtors.length ? debtors.map(d => `
+                    <div class="item">
+                        <b>${escapeHtml(d.name)}</b>
+                        <div class="muted">Débito: ${fmtMoney(d.debt)}</div>
+                    </div>
+                `).join("") : "<div class='muted'>Nenhum devedor</div>";
+            }
+        }
+
+        // ========== AÇÕES DE PACIENTE ==========
+        window.addPatient = function() {
+            const name = $("cName")?.value.trim();
+            if (!name) return showAlert("❌ Nome é obrigatório", "error");
+
+            const timeSlots = getTimeSlots();
+            if (timeSlots.length === 0) {
+                return showAlert("❌ Adicione pelo menos um horário", "error");
+            }
+
+            const frequency = parseInt($("cFrequency")?.value || "1");
+            
+            const patient = {
+                id: uid(),
+                name,
+                birth: $("cBirth")?.value || "",
+                cpf: $("cCpf")?.value || "",
+                resp: $("cResp")?.value || "",
+                phone: $("cPhone")?.value || "",
+                email: $("cEmail")?.value || "",
+                serviceType: $("cServiceType")?.value || "particular",
+                defaultValue: parseMoney($("cDefaultValue")?.value),
+                billingType: $("cBillingType")?.value || "pack4",
+                frequency: frequency,
+                timeSlots: timeSlots,
+                notes: $("cNotes")?.value || "",
+                anamnese: { queixa: "", historico: "", obs: "" },
+                createdAt: new Date().toISOString()
+            };
+
+            const patients = loadPatients();
+            patients.push(patient);
+            savePatients(patients);
+
+            if (currentPhotoFile) {
+                savePatientPhoto(patient.id, currentPhotoFile);
+            }
+
+            if (patient.billingType !== "individual") {
+                const sch = loadSchedule();
+                sch.recurring = sch.recurring || {};
+                
+                timeSlots.forEach(slot => {
+                    if (!sch.times.includes(slot.time)) {
+                        sch.times.push(slot.time);
+                    }
+                    
+                    for (let i = 0; i < (patient.billingType === "pack4" ? 4 : 8); i++) {
+                        const startDate = new Date();
+                        let daysToAdd = i * (frequency === 2 ? 3 : 7);
+                        const sessionDate = new Date();
+                        sessionDate.setDate(startDate.getDate() + daysToAdd);
+                        
+                        const key = recurKey(slot.day, slot.time);
+                        
+                        if (!sch.recurring[key]) {
+                            sch.recurring[key] = {
+                                patientId: patient.id,
+                                serviceType: patient.serviceType,
+                                startDate: todayISO(),
+                                plannedTotal: patient.billingType === "pack4" ? 4 : 8
+                            };
+                        }
+                    }
+                });
+                
+                sch.times.sort();
+                saveSchedule(sch);
+                
+                showAlert(`✅ Pacote configurado com ${timeSlots.length} horário(s)!`, "success");
+            }
+
+            // Limpar formulário
+            const cName = $("cName");
+            const cBirth = $("cBirth");
+            const cCpf = $("cCpf");
+            const cResp = $("cResp");
+            const cPhone = $("cPhone");
+            const cEmail = $("cEmail");
+            const cDefaultValue = $("cDefaultValue");
+            const cNotes = $("cNotes");
+            const photoPreview = $("photoPreview");
+            const photoPlaceholder = $("photoPlaceholder");
+            
+            if (cName) cName.value = "";
+            if (cBirth) cBirth.value = "";
+            if (cCpf) cCpf.value = "";
+            if (cResp) cResp.value = "";
+            if (cPhone) cPhone.value = "";
+            if (cEmail) cEmail.value = "";
+            if (cDefaultValue) cDefaultValue.value = "";
+            if (cNotes) cNotes.value = "";
+            
+            currentPhotoFile = null;
+            if (photoPreview) photoPreview.classList.add("hidden");
+            if (photoPlaceholder) photoPlaceholder.classList.remove("hidden");
+            
+            const container = $("timeSlotsContainer");
+            if (container) {
+                container.innerHTML = `
+                    <div class="time-item">
+                        <select class="time-slot-day" style="flex:1;">
+                            <option value="">Dia</option>
+                            <option value="0">Seg</option>
+                            <option value="1">Ter</option>
+                            <option value="2">Qua</option>
+                            <option value="3">Qui</option>
+                            <option value="4">Sex</option>
+                            <option value="5">Sáb</option>
+                            <option value="6">Dom</option>
+                        </select>
+                        <input type="time" class="time-slot-hour" placeholder="07:40" step="600" style="flex:1;" />
+                    </div>
+                `;
+            }
+
+            renderPatientSelect();
+            renderPatientFolders();
+            renderSchedule();
+            renderDashboard();
+            showAlert("✅ Paciente cadastrado com sucesso!", "success");
+        };
+
+        window.openAnamnese = function() {
+            const p = getPatientById(openedPatientId);
+            if (p) {
+                const aQueixa = $("aQueixa");
+                const aHistorico = $("aHistorico");
+                const aObs = $("aObs");
+                const anamneseModal = $("anamneseModal");
+                
+                if (aQueixa) aQueixa.value = p.anamnese?.queixa || "";
+                if (aHistorico) aHistorico.value = p.anamnese?.historico || "";
+                if (aObs) aObs.value = p.anamnese?.obs || "";
+                if (anamneseModal) anamneseModal.classList.remove("hidden");
+            }
+        };
+
+        window.saveAnamnese = function() {
+            const patients = loadPatients();
+            const idx = patients.findIndex(p => p.id === openedPatientId);
+            if (idx >= 0) {
+                patients[idx].anamnese = {
+                    queixa: $("aQueixa")?.value || "",
+                    historico: $("aHistorico")?.value || "",
+                    obs: $("aObs")?.value || ""
+                };
+                savePatients(patients);
+                
+                const anamneseModal = $("anamneseModal");
+                if (anamneseModal) anamneseModal.classList.add("hidden");
+                showAlert("✅ Anamnese salva!", "success");
+            }
+        };
+
+        window.openWhatsApp = function() {
+            const p = getPatientById(openedPatientId);
+            if (p?.phone) {
+                window.open(`https://wa.me/55${p.phone}`, "_blank");
+            } else {
+                showAlert("❌ Paciente sem WhatsApp cadastrado", "error");
+            }
+        };
+
+        window.renamePatient = function() {
+            const patients = loadPatients();
+            const idx = patients.findIndex(p => p.id === openedPatientId);
+            if (idx >= 0) {
+                const newName = prompt("Novo nome:", patients[idx].name);
+                if (newName) {
+                    patients[idx].name = newName.trim();
+                    savePatients(patients);
+                    openPatientFolder(openedPatientId);
+                    renderPatientFolders();
+                    renderPatientSelect();
+                    showAlert("✅ Nome atualizado!", "success");
+                }
+            }
+        };
+
+        window.deletePatient = function() {
+            if (confirm("Excluir paciente e todo seu histórico?")) {
+                const patients = loadPatients().filter(p => p.id !== openedPatientId);
+                const sessions = loadSessions().filter(s => s.patientId !== openedPatientId);
+
+                const sch = loadSchedule();
+                if (sch.recurring) {
+                    Object.keys(sch.recurring).forEach(key => {
+                        if (sch.recurring[key].patientId === openedPatientId) {
+                            delete sch.recurring[key];
+                        }
+                    });
+                }
+
+                const packs = loadPacks();
+                delete packs[openedPatientId];
+                savePacks(packs);
+
+                const photos = loadPhotos();
+                delete photos[openedPatientId];
+                savePhotos(photos);
+
+                // Remover evoluções
+                const evolucoes = loadEvolucoes();
+                delete evolucoes[openedPatientId];
+                saveEvolucoes(evolucoes);
+
+                savePatients(patients);
+                saveSessions(sessions);
+                saveSchedule(sch);
+
+                const foldersPane = $("foldersPane");
+                const folderOpenPane = $("folderOpenPane");
+                
+                if (foldersPane) foldersPane.classList.remove("hidden");
+                if (folderOpenPane) folderOpenPane.classList.add("hidden");
+                
+                openedPatientId = null;
+                renderPatientFolders();
+                renderPatientSelect();
+                renderSchedule();
+                renderDashboard();
+                showAlert("🗑️ Paciente excluído!", "success");
+            }
+        };
+
+        window.toggleDebtFilter = function() {
+            debtFilterActive = !debtFilterActive;
+            const btn = $("onlyDebtFolders");
+            if (btn) btn.classList.toggle("primary", debtFilterActive);
+            renderPatientFolders();
+        };
+
+        // ========== AÇÕES DE SESSÃO ==========
+        window.addSession = function() {
+            const date = $("date")?.value;
+            const patientId = $("pPatient")?.value;
+            const time = $("pTime")?.value;
+            const did = $("pDid")?.value;
+            const just = $("pJust")?.value;
+            const paid = $("pPaid")?.value;
+            const manualValue = $("pValue")?.value;
+
+            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
+
+            const p = getPatientById(patientId);
+            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
+            if (p?.serviceType === "cassems") value = 26;
+
+            const session = {
+                id: uid(),
+                date, patientId, time,
+                did: did,
+                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
+                paid, value
+            };
+
+            const sessions = loadSessions();
+            sessions.push(session);
+            saveSessions(sessions);
+
+            if (p?.serviceType === "cassems") {
+                registerToken(session.id, {
+                    sessionId: session.id,
+                    date: date,
+                    patientName: p.name,
+                    code: '',
+                    status: 'pendente'
+                });
+            }
+
+            const pTime = $("pTime");
+            const pValue = $("pValue");
+            
+            if (pTime) pTime.value = "";
+            if (pValue) pValue.value = "";
+            
+            renderDaily();
+            renderDashboard();
+            if (openedPatientId) openPatientFolder(openedPatientId);
+            showAlert("✅ Sessão adicionada!", "success");
+        };
+
+        window.findInDay = function() {
+            const term = $("search")?.value.toLowerCase() || "";
+            const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
+            if (patient) {
+                const pPatient = $("pPatient");
+                if (pPatient) pPatient.value = patient.id;
+                updateDefaultHint();
+                showAlert(`🔍 Paciente ${patient.name} selecionado`, "success");
+            }
+            renderDaily();
+        };
+
+        window.clearDay = function() {
+            const date = $("date")?.value;
+            if (!date) return;
+            
+            if (confirm(`Limpar todas as sessões de ${date}?`)) {
+                const sessions = loadSessions().filter(s => s.date !== date);
+                saveSessions(sessions);
+                
+                const tokens = loadTokens();
+                const sessionsToRemove = loadSessions().filter(s => s.date === date);
+                sessionsToRemove.forEach(s => {
+                    delete tokens[s.id];
+                });
+                saveTokens(tokens);
+                
+                renderDaily();
+                renderDashboard();
+                showAlert("🗑️ Dia limpo!", "success");
+            }
+        };
+
+        window.resetAll = function() {
+            if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
+                localStorage.removeItem(KEYS.PATIENTS);
+                localStorage.removeItem(KEYS.SESSIONS);
+                localStorage.removeItem(KEYS.SCHEDULE);
+                localStorage.removeItem(KEYS.TOKENS);
+                localStorage.removeItem(KEYS.PACKS);
+                localStorage.removeItem(KEYS.PHOTOS);
+                localStorage.removeItem(KEYS.EVOLUCOES);
+                location.reload();
+            }
+        };
+
+        // ========== AÇÕES DE AGENDA ==========
+        window.addTime = function() {
+            const time = $("newTime")?.value.trim();
+            if (!time) return;
+            if (!/^\d{1,2}:\d{2}$/.test(time)) {
+                return showAlert("❌ Formato inválido. Use HH:MM", "error");
+            }
+
+            const sch = loadSchedule();
+            if (!sch.times.includes(time)) {
+                sch.times.push(time);
+                sch.times.sort();
+                saveSchedule(sch);
+                renderSchedule();
+                showAlert(`✅ Horário ${time} adicionado!`, "success");
+            }
+            
+            const newTime = $("newTime");
+            if (newTime) newTime.value = "";
+        };
+
+        window.resetTimes = function() {
+            if (confirm("Restaurar horários padrão?")) {
+                const sch = loadSchedule();
+                sch.times = defaultTimes();
+                saveSchedule(sch);
+                renderSchedule();
+                showAlert("✅ Horários restaurados!", "success");
+            }
+        };
+
+        // ========== RENDERIZAÇÃO DO HTML ==========
         function renderApp() {
             const app = document.getElementById('app');
             
@@ -1633,14 +2776,17 @@
 
                         <div style="display:flex; align-items:center; gap:10px;">
                             <div id="today" class="muted"></div>
-                            <button id="loginDrive" class="small" onclick="loginToDrive()">🔌 Conectar Drive</button>
+                            <button id="themeToggle" class="small" style="border-radius:30px;" onclick="toggleTheme()">🌓 Tema</button>
+                            <button id="installPWA" class="small primary" style="display:none;" onclick="installPWA()">📱 Instalar App</button>
                         </div>
 
                         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
                             <div class="backup-bar">
-                                <span class="muted">💾 Drive:</span>
-                                <span id="driveStatus" class="drive-status offline"></span>
-                                <button class="small" onclick="saveToDrive()">💾 Salvar agora</button>
+                                <span class="muted">💾 Backup:</span>
+                                <button id="backupNow" class="small" onclick="downloadBackup()">⬇️ Baixar</button>
+                                <button id="backupDrive" class="small" onclick="backupToGoogleDrive()">☁️ Drive</button>
+                                <button id="restoreBackup" class="small" onclick="document.getElementById('backupModal').classList.remove('hidden')">📂 Restaurar</button>
+                                <button id="autoBackupToggle" class="small pri" onclick="toggleAutoBackup()">🔵 Auto: ON</button>
                             </div>
 
                             <div class="tabs">
@@ -1648,6 +2794,7 @@
                                 <button class="tab" id="tabDaily" onclick="setTab('daily')">📅 Diário</button>
                                 <button class="tab" id="tabPatients" onclick="setTab('patients')">👥 Pacientes</button>
                                 <button class="tab" id="tabSchedule" onclick="setTab('schedule')">📆 Agendamento</button>
+                                <button class="tab" id="tabReports" onclick="setTab('reports')">📈 Relatórios</button>
                             </div>
                         </div>
                     </header>
@@ -1663,6 +2810,11 @@
                                     <div class="muted" id="dashHojeDetalhe"></div>
                                 </div>
                                 <div class="stat-card">
+                                    <div>Próximos 15min</div>
+                                    <div class="stat-value" id="dashProximos">0</div>
+                                    <div class="muted" id="dashProximosNomes"></div>
+                                </div>
+                                <div class="stat-card">
                                     <div>Faturamento Hoje</div>
                                     <div class="stat-value" id="dashFaturamento">R$ 0</div>
                                     <div class="muted" id="dashFaturamentoDetalhe"></div>
@@ -1674,10 +2826,38 @@
                                         <div class="progress-fill" id="dashProgresso" style="width:0%"></div>
                                     </div>
                                 </div>
-                                <div class="stat-card">
-                                    <div>Pacientes Ativos</div>
-                                    <div class="stat-value" id="activePatients">0</div>
+                            </div>
+
+                            <div class="grid3" style="margin-top:20px;">
+                                <div class="cardMini">
+                                    <b>🎫 Tokens Cassems Hoje</b>
+                                    <div class="stat-value" id="tokensHoje">0</div>
+                                    <div class="muted" id="tokensHojeDetalhe"></div>
                                 </div>
+                                <div class="cardMini">
+                                    <b>✅ Enviados</b>
+                                    <div class="stat-value" id="tokensEnviados">0</div>
+                                    <div class="muted" id="tokensEnviadosDetalhe"></div>
+                                </div>
+                                <div class="cardMini">
+                                    <b>⏳ Pendentes</b>
+                                    <div class="stat-value" id="tokensPendentes">0</div>
+                                    <div class="muted" id="tokensPendentesDetalhe"></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:20px;">
+                                <h3>🎂 Aniversariantes do Mês</h3>
+                                <div id="aniversariantes" class="list"></div>
+                            </div>
+
+                            <div style="margin-top:20px;">
+                                <h3>⏰ Próximos Atendimentos</h3>
+                                <div id="proximosAtendimentos" class="list"></div>
+                            </div>
+
+                            <div style="margin-top:20px;">
+                                <button id="generatePDF" class="small primary" onclick="generatePDFReport()">📄 Gerar Relatório PDF</button>
                             </div>
                         </section>
 
@@ -1691,6 +2871,25 @@
                                 <div>
                                     <label>Buscar paciente</label>
                                     <input id="search" placeholder="Nome..." oninput="renderDaily()" />
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <button id="findInDay" class="small primary" onclick="findInDay()">🔍 Procurar</button>
+                                    <button id="clearDay" class="small danger" onclick="clearDay()">🗑️ Limpar dia</button>
+                                </div>
+                            </div>
+
+                            <div class="sum">
+                                <div class="cardMini">
+                                    <b>Resumo do dia</b>
+                                    <div class="muted" id="sumDay">—</div>
+                                </div>
+                                <div class="cardMini">
+                                    <b>Financeiro</b>
+                                    <div class="muted" id="sumMoney">—</div>
+                                </div>
+                                <div class="cardMini">
+                                    <b>Faltas hoje</b>
+                                    <div class="muted" id="sumAbsences">—</div>
                                 </div>
                             </div>
 
@@ -1715,7 +2914,7 @@
                             <div class="grid2">
                                 <div>
                                     <label>Paciente</label>
-                                    <select id="pPatient"></select>
+                                    <select id="pPatient" onchange="updateDefaultHint()"></select>
                                 </div>
                                 <div>
                                     <label>Horário</label>
@@ -1746,11 +2945,13 @@
                                 <div>
                                     <label>Valor (R$)</label>
                                     <input id="pValue" placeholder="80,00" />
+                                    <small id="hintDefault" class="muted"></small>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <button id="addSession" class="primary" onclick="addSession()">➕ Adicionar</button>
+                                <button id="resetAll" class="danger" onclick="resetAll()">⚠️ Zerar tudo</button>
                             </div>
 
                             <div class="list" id="dayList"></div>
@@ -1762,6 +2963,13 @@
                                 <div class="card">
                                     <b>👤 Cadastro de Paciente</b>
                                     
+                                    <div class="photo-upload">
+                                        <img id="photoPreview" class="photo-preview hidden" src="" alt="Foto do paciente" />
+                                        <div id="photoPlaceholder" class="photo-placeholder">📷</div>
+                                        <input type="file" id="patientPhoto" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this)" />
+                                        <button class="small" onclick="document.getElementById('patientPhoto').click()">📸 Escolher foto</button>
+                                    </div>
+
                                     <div class="grid2" style="margin-top:15px;">
                                         <div>
                                             <label>Nome completo *</label>
@@ -1820,7 +3028,7 @@
                                     <div style="margin-top:20px;">
                                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                                             <label>Horários de atendimento</label>
-                                            <button type="button" class="small primary" onclick="addTimeSlot()">➕ Adicionar horário</button>
+                                            <button type="button" class="small primary icon-btn" onclick="addTimeSlot()" style="width:auto; padding:8px 16px;">➕ Adicionar horário</button>
                                         </div>
                                         <div id="timeSlotsContainer" class="time-list">
                                             <div class="time-item">
@@ -1837,6 +3045,7 @@
                                                 <input type="time" class="time-slot-hour" placeholder="07:40" step="600" style="flex:1;" />
                                             </div>
                                         </div>
+                                        <small class="muted">Adicione quantos horários precisar</small>
                                     </div>
 
                                     <label style="margin-top:20px;">Observações iniciais</label>
@@ -1860,16 +3069,32 @@
                                     </div>
 
                                     <div id="folderOpenPane" class="hidden">
-                                        <div style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
+                                        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:15px;">
                                             <button id="backToFolders" class="small" onclick="closePatientFolder()">← Voltar</button>
+                                            <img id="folderPatientPhoto" class="photo-preview small hidden" src="" alt="" />
                                             <div style="flex:1;">
                                                 <b id="openPatientTitle">Paciente</b>
                                                 <div class="muted" id="openPatientMeta"></div>
                                             </div>
+                                            <div style="display:flex; gap:8px;">
+                                                <button id="btnAnamnese" class="small info" onclick="openAnamnese()">📋 Anamnese</button>
+                                                <button id="openWhats" class="small" onclick="openWhatsApp()">📱 WhatsApp</button>
+                                                <button id="renamePatient" class="small" onclick="renamePatient()">✏️ Renomear</button>
+                                                <button id="deletePatient" class="small danger" onclick="deletePatient()">🗑️ Excluir</button>
+                                            </div>
                                         </div>
 
-                                        <div id="pacoteProgresso"></div>
-                                        <div id="folderTabs"></div>
+                                        <div id="pacoteProgresso" style="margin:10px 0; padding:10px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
+                                        <div id="packControl" class="pack-control"></div>
+                                        
+                                        <!-- Histórico de Sessões -->
+                                        <div style="margin-top:20px;">
+                                            <h3>📋 Histórico de Sessões</h3>
+                                            <div id="patientHistory" class="list"></div>
+                                        </div>
+
+                                        <!-- Seção de Evolução (NOVA) -->
+                                        <div style="margin-top:30px;" id="evolucoesSection"></div>
                                     </div>
                                 </div>
                             </div>
@@ -1889,79 +3114,385 @@
                                         <button id="addTime" class="small primary" onclick="addTime()">➕</button>
                                     </div>
                                 </div>
+                                <div>
+                                    <label>Filtro</label>
+                                    <div style="display:flex; gap:5px;">
+                                        <button id="filterHoje" class="small" onclick="filterHoje()">Hoje</button>
+                                        <button id="filterAmanha" class="small" onclick="filterAmanha()">Amanhã</button>
+                                        <button id="filterSemana" class="small" onclick="filterSemana()">Semana</button>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="schedWrap">
                                 <table class="sched" id="schedTable"></table>
                             </div>
+
+                            <div class="muted" style="margin-top:15px; padding:10px; background:rgba(255,255,255,.03); border-radius:12px;">
+                                <span class="pill ok">🟢 Cassems</span>
+                                <span class="pill warn">🟡 Particular</span>
+                                <span class="pill info">🔵 Unimed/Outros</span>
+                                <span class="pill bad">🔴 Vago</span>
+                                <span class="pill">⚠️ Falta 1</span>
+                                <span class="pill">🏁 Última</span>
+                                <span class="pill token">🎫 Token</span>
+                            </div>
+                        </section>
+
+                        <!-- Relatórios -->
+                        <section id="viewReports" class="card hidden">
+                            <h2 style="margin-bottom:20px;">📈 Relatórios</h2>
+
+                            <div class="grid2">
+                                <div class="cardMini">
+                                    <b>Resumo do Mês</b>
+                                    <div id="monthSummary" class="muted" style="margin-top:10px;">Carregando...</div>
+                                </div>
+                                <div class="cardMini">
+                                    <b>Taxa de Faltas</b>
+                                    <div id="absenceRate" class="muted" style="margin-top:10px;">Carregando...</div>
+                                </div>
+                                <div class="cardMini">
+                                    <b>Faturamento</b>
+                                    <div id="revenueStats" class="muted" style="margin-top:10px;">Carregando...</div>
+                                </div>
+                                <div class="cardMini">
+                                    <b>Pacientes Ativos</b>
+                                    <div id="activePatients" class="muted" style="margin-top:10px;">Carregando...</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:20px;">
+                                <b>🎫 Controle de Tokens Cassems</b>
+                                <div class="grid3" style="margin-top:10px;">
+                                    <div class="cardMini">
+                                        <b>Total de sessões Cassems</b>
+                                        <div id="totalSessoesCassems" class="stat-value" style="font-size:1.5rem;">0</div>
+                                    </div>
+                                    <div class="cardMini">
+                                        <b>Tokens Enviados</b>
+                                        <div id="totalTokensEnviados" class="stat-value" style="font-size:1.5rem; color:#2C7A5A;">0</div>
+                                    </div>
+                                    <div class="cardMini">
+                                        <b>Tokens Pendentes</b>
+                                        <div id="totalTokensPendentes" class="stat-value" style="font-size:1.5rem; color:#E8C66A;">0</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:20px;">
+                                <b>📊 Status dos Pacotes</b>
+                                <div id="packStatus" class="grid2" style="margin-top:10px;"></div>
+                            </div>
+
+                            <div style="margin-top:20px;">
+                                <b>Pacientes com maior débito</b>
+                                <div id="topDebtors" class="list" style="margin-top:10px;"></div>
+                            </div>
+
+                            <div style="margin-top:20px; display:flex; gap:10px;">
+                                <button id="generatePDF" class="primary" onclick="generatePDFReport()">📄 Gerar PDF</button>
+                                <button id="backupDrive" class="primary" onclick="backupToGoogleDrive()">☁️ Backup Drive</button>
+                            </div>
                         </section>
                     </main>
+
+                    <div class="shortcuts-hint" id="shortcutsHint" onclick="toggleShortcuts()">⌨️ Atalhos</div>
+                    <div class="shortcuts-panel hidden" id="shortcutsPanel">
+                        <h4 style="margin-bottom:10px;">Atalhos de Teclado</h4>
+                        <div class="shortcut-item"><span>Novo paciente</span> <span class="shortcut-key">Ctrl+N</span></div>
+                        <div class="shortcut-item"><span>Buscar</span> <span class="shortcut-key">Ctrl+F</span></div>
+                        <div class="shortcut-item"><span>Dashboard</span> <span class="shortcut-key">Ctrl+1</span></div>
+                        <div class="shortcut-item"><span>Diário</span> <span class="shortcut-key">Ctrl+2</span></div>
+                        <div class="shortcut-item"><span>Pacientes</span> <span class="shortcut-key">Ctrl+3</span></div>
+                        <div class="shortcut-item"><span>Agenda</span> <span class="shortcut-key">Ctrl+4</span></div>
+                        <div class="shortcut-item"><span>Relatórios</span> <span class="shortcut-key">Ctrl+5</span></div>
+                    </div>
                 </section>
 
                 <!-- Modais -->
-                <div id="tokenModal" class="modal-overlay hidden">
+                <div id="backupModal" class="modal-overlay hidden">
                     <div class="modal-content">
-                        <h3>🎫 Registrar Token Cassems</h3>
-                        
-                        <div style="margin:15px 0;">
-                            <label>Data da sessão</label>
-                            <input type="date" id="tokenDate" readonly />
-                        </div>
-                        <div style="margin:15px 0;">
-                            <label>Paciente</label>
-                            <input type="text" id="tokenPatient" readonly />
-                        </div>
-                        <div style="margin:15px 0;">
-                            <label>Token de autorização</label>
-                            <input type="text" id="tokenCode" placeholder="Ex: CASS-123456" />
-                        </div>
-                        <div style="margin:15px 0;">
-                            <label>Status do token</label>
-                            <select id="tokenStatus">
-                                <option value="enviado">✅ Enviado</option>
-                                <option value="pendente">⏳ Pendente</option>
-                                <option value="problema">❌ Problema no token</option>
-                            </select>
-                        </div>
-                        
+                        <h3 style="margin-bottom:15px;">💾 Restaurar Backup</h3>
+                        <p class="muted">Selecione um arquivo de backup (.json) para restaurar.</p>
+                        <input type="file" id="backupFile" accept=".json" style="margin:15px 0;" />
                         <div style="display:flex; gap:10px; justify-content:flex-end;">
-                            <button id="cancelToken" class="small">Cancelar</button>
-                            <button id="saveToken" class="primary small">Salvar Token</button>
+                            <button id="cancelBackup" class="small" onclick="document.getElementById('backupModal').classList.add('hidden')">Cancelar</button>
+                            <button id="confirmRestore" class="danger small" onclick="confirmRestore()">Restaurar</button>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        window.setTab = function(tab) {
-            $("viewDashboard").classList.toggle("hidden", tab !== "dashboard");
-            $("viewDaily").classList.toggle("hidden", tab !== "daily");
-            $("viewPatients").classList.toggle("hidden", tab !== "patients");
-            $("viewSchedule").classList.toggle("hidden", tab !== "schedule");
-
-            [$("tabDashboard"), $("tabDaily"), $("tabPatients"), $("tabSchedule")].forEach(t => {
-                if (t) t.classList.remove("active");
-            });
-            
-            const activeTab = $(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
-            if (activeTab) activeTab.classList.add("active");
+        // ========== FUNÇÕES ADICIONAIS ==========
+        window.toggleAutoBackup = function() {
+            autoBackup = !autoBackup;
+            localStorage.setItem("autoBackup", autoBackup);
+            const btn = $("autoBackupToggle");
+            if (btn) btn.innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
+            showAlert(autoBackup ? "✅ Backup automático ativado" : "⚪ Backup automático desativado");
         };
 
-        window.addTime = function() {
-            const time = $("newTime")?.value.trim();
-            if (!time) return;
-            if (!/^\d{1,2}:\d{2}$/.test(time)) {
-                return showAlert("❌ Formato inválido. Use HH:MM", "error");
+        window.installPWA = function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showAlert("✅ App instalado com sucesso!", "success");
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        };
+
+        window.confirmRestore = function() {
+            const file = $("backupFile")?.files[0];
+            if (file) {
+                restoreFromFile(file);
+                $("backupModal")?.classList.add("hidden");
+            }
+        };
+
+        window.closePatientFolder = function() {
+            openedPatientId = null;
+            $("folderOpenPane")?.classList.add("hidden");
+            $("foldersPane")?.classList.remove("hidden");
+        };
+
+        window.toggleShortcuts = function() {
+            $("shortcutsPanel")?.classList.toggle("hidden");
+        };
+
+        window.filterAmanha = function() {
+            const amanha = (new Date().getDay() + 1) % 7;
+            const rows = document.querySelectorAll("#schedTable tbody tr");
+            rows.forEach(row => {
+                const cells = row.querySelectorAll("td:not(.timeCell)");
+                cells.forEach((cell, idx) => {
+                    if (idx === amanha) {
+                        cell.style.background = "rgba(44,122,90,.2)";
+                    }
+                });
+            });
+        };
+
+        window.filterSemana = function() {
+            document.querySelectorAll("#schedTable tbody tr td:not(.timeCell)").forEach(cell => {
+                cell.style.background = "";
+            });
+        };
+
+        // ========== INICIALIZAÇÃO ==========
+        function init() {
+            const lastVersion = localStorage.getItem(KEYS.VERSION);
+            if (lastVersion !== APP_VERSION) {
+                localStorage.setItem(KEYS.VERSION, APP_VERSION);
             }
 
-            if (!schedule.times.includes(time)) {
-                schedule.times.push(time);
-                schedule.times.sort();
-                renderSchedule();
-                saveToDrive();
-                showAlert(`✅ Horário ${time} adicionado!`, "success");
+            renderApp();
+            
+            const savedTheme = localStorage.getItem(KEYS.THEME);
+            if (savedTheme === "light") {
+                document.body.classList.add("light-mode");
+                const themeBtn = $("themeToggle");
+                if (themeBtn) themeBtn.innerHTML = "🌙 Tema";
             }
-            $("newTime").value = "";
+
+            const dateInput = $("date");
+            if (dateInput) dateInput.value = todayISO();
+            
+            const schedRef = $("schedRef");
+            if (schedRef) schedRef.value = todayISO();
+            
+            const todayEl = $("today");
+            if (todayEl) {
+                todayEl.innerHTML = new Date().toLocaleDateString("pt-BR", {
+                    weekday: "long", year: "numeric", month: "long", day: "numeric"
+                });
+            }
+
+            autoBackup = localStorage.getItem("autoBackup") !== "false";
+            const autoBackupBtn = $("autoBackupToggle");
+            if (autoBackupBtn) autoBackupBtn.innerHTML = autoBackup ? "🔵 Auto: ON" : "⚪ Auto: OFF";
+
+            // Verificar permissão de notificações
+            const notificationStatus = localStorage.getItem(KEYS.NOTIFICATIONS);
+            if (notificationStatus === "granted") {
+                notificationsEnabled = true;
+                startNotificationChecker();
+            } else if (window.Notification && Notification.permission === "granted") {
+                notificationsEnabled = true;
+                localStorage.setItem(KEYS.NOTIFICATIONS, "granted");
+                startNotificationChecker();
+            } else if (window.Notification && Notification.permission !== "denied") {
+                setTimeout(() => {
+                    $("notificationModal")?.classList.remove("hidden");
+                }, 30000);
+            }
+
+            // Configurar seletores de dia
+            document.querySelectorAll('.weekday-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const freq = $("packFrequency")?.value;
+                    if (freq !== "2") return;
+                    
+                    const selected = document.querySelectorAll('.weekday-btn.selected').length;
+                    if (btn.classList.contains('selected')) {
+                        btn.classList.remove('selected');
+                    } else if (selected < 2) {
+                        btn.classList.add('selected');
+                    } else {
+                        showAlert("Selecione apenas 2 dias para 2x por semana", "warning");
+                    }
+                });
+            });
+
+            // PWA Installation
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                const installBtn = $("installPWA");
+                if (installBtn) installBtn.style.display = "inline-block";
+            });
+
+            // Atalhos de teclado
+            document.addEventListener("keydown", (e) => {
+                if (e.ctrlKey) {
+                    switch (e.key) {
+                        case "n": e.preventDefault(); setTab("patients"); $("cName")?.focus(); break;
+                        case "f": e.preventDefault(); 
+                            if ($("viewDaily")?.classList.contains("hidden")) setTab("daily");
+                            $("search")?.focus(); 
+                            break;
+                        case "1": e.preventDefault(); setTab("dashboard"); break;
+                        case "2": e.preventDefault(); setTab("daily"); break;
+                        case "3": e.preventDefault(); setTab("patients"); break;
+                        case "4": e.preventDefault(); setTab("schedule"); renderSchedule(); break;
+                        case "5": e.preventDefault(); setTab("reports"); generateReports(); break;
+                    }
+                }
+            });
+
+            // Modais
+            $("cancelNotification")?.addEventListener("click", () => {
+                $("notificationModal")?.classList.add("hidden");
+            });
+
+            $("enableNotifications")?.addEventListener("click", () => {
+                requestNotificationPermission();
+            });
+
+            $("closeAnamnese")?.addEventListener("click", () => {
+                $("anamneseModal")?.classList.add("hidden");
+            });
+
+            $("saveAnamnese")?.addEventListener("click", saveAnamnese);
+
+            $("cancelToken")?.addEventListener("click", () => {
+                $("tokenModal")?.classList.add("hidden");
+                currentTokenSessionId = null;
+            });
+
+            $("saveToken")?.addEventListener("click", saveToken);
+
+            $("cancelPack")?.addEventListener("click", () => {
+                $("packModal")?.classList.add("hidden");
+                currentPackPatientId = null;
+            });
+
+            $("savePack")?.addEventListener("click", savePack);
+
+            $("cancelEvolucao")?.addEventListener("click", () => {
+                $("evolucaoModal")?.classList.add("hidden");
+            });
+
+            $("saveEvolucao")?.addEventListener("click", saveEvolucao);
+
+            $("cancelEditEvolucao")?.addEventListener("click", () => {
+                $("editEvolucaoModal")?.classList.add("hidden");
+                currentEvolucaoId = null;
+            });
+
+            $("saveEditEvolucao")?.addEventListener("click", saveEditEvolucao);
+
+            renderPatientSelect();
+            renderDaily();
+            renderPatientFolders();
+            renderSchedule();
+            renderDashboard();
+            generateReports();
+
+            if (autoBackup) {
+                setInterval(createAutoBackup, 5 * 60 * 1000);
+            }
+        }
+
+        window.savePack = function() {
+            if (!currentPackPatientId) return;
+            
+            const patient = getPatientById(currentPackPatientId);
+            const startDate = $("packStartDate")?.value;
+            const totalSessions = parseInt($("packTotal")?.value || "4");
+            const frequency = parseInt($("packFrequency")?.value || "1");
+            const time = $("packTime")?.value;
+            
+            let weekdays = [];
+            if (frequency === 2) {
+                weekdays = Array.from(document.querySelectorAll('.weekday-btn.selected'))
+                    .map(btn => parseInt(btn.dataset.day));
+                if (weekdays.length !== 2) {
+                    showAlert("Selecione exatamente 2 dias para 2x por semana", "warning");
+                    return;
+                }
+            } else {
+                weekdays = [new Date(startDate).getDay()];
+            }
+            
+            const packConfig = {
+                patientId: currentPackPatientId,
+                patientName: patient.name,
+                serviceType: patient.serviceType,
+                startDate: startDate,
+                totalSessions: totalSessions,
+                frequency: frequency,
+                weekdays: weekdays,
+                time: time,
+                createdAt: new Date().toISOString()
+            };
+            
+            savePatientPack(currentPackPatientId, packConfig);
+            generatePackSchedule(currentPackPatientId, packConfig);
+            
+            $("packModal")?.classList.add("hidden");
+            
+            if (openedPatientId === currentPackPatientId) {
+                openPatientFolder(currentPackPatientId);
+            }
+            
+            renderSchedule();
+            renderDashboard();
+            generateReports();
+            showAlert("✅ Configuração do pacote salva com sucesso!", "success");
+            currentPackPatientId = null;
+        };
+
+        window.saveToken = function() {
+            if (!currentTokenSessionId) return;
+            
+            registerToken(currentTokenSessionId, {
+                sessionId: currentTokenSessionId,
+                date: $("tokenDate")?.value,
+                patientName: $("tokenPatient")?.value,
+                code: $("tokenCode")?.value,
+                status: $("tokenStatus")?.value
+            });
+            
+            $("tokenModal")?.classList.add("hidden");
+            renderDaily();
+            renderDashboard();
+            generateReports();
+            showAlert("✅ Token registrado com sucesso!", "success");
         };
 
         if (document.readyState === 'loading') {
