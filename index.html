@@ -144,6 +144,12 @@
             font-weight: 500;
         }
 
+        hr {
+            border: none;
+            border-top: 1px solid var(--line);
+            margin: 16px 0;
+        }
+
         header {
             display: flex;
             justify-content: space-between;
@@ -156,6 +162,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .logo-container {
@@ -192,6 +199,7 @@
         .backup-bar {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
             align-items: center;
             background: rgba(44, 122, 90, 0.1);
             border: 1px solid rgba(44, 122, 90, 0.3);
@@ -366,6 +374,10 @@
             border-bottom: none;
         }
 
+        .time-item input, .time-item select {
+            min-height: 36px;
+        }
+
         .stat-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--line);
@@ -474,22 +486,40 @@
             border-left: 4px solid #8b5cf6;
         }
 
+        .iconAlert {
+            font-size: 1.1rem;
+            margin-right: 5px;
+        }
+
+        .weekday-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+
         .weekday-btn {
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             border: 1px solid var(--line);
             background: rgba(255, 255, 255, 0.06);
             cursor: pointer;
-            margin-right: 5px;
+            font-weight: 600;
+            transition: all 0.2s;
         }
 
         .weekday-btn.selected {
             background: var(--primary);
+            border-color: var(--primary);
             color: white;
+        }
+
+        .weekday-btn:active {
+            transform: scale(0.95);
         }
 
         .modal-overlay {
@@ -769,64 +799,6 @@
         </div>
     </div>
 
-    <div id="packModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3>📦 Configurar Pacote de Sessões</h3>
-            <p class="muted" id="packPatientName"></p>
-            
-            <div class="info-box" id="packSummary"></div>
-            
-            <div style="margin:20px 0;">
-                <label>📅 Data de início</label>
-                <input type="date" id="packStartDate" />
-            </div>
-            
-            <div style="margin:20px 0;">
-                <label>📅 Data de término</label>
-                <input type="date" id="packEndDate" />
-            </div>
-            
-            <div style="margin:20px 0;">
-                <label>🔄 Frequência semanal</label>
-                <select id="packFrequency">
-                    <option value="1">1x por semana</option>
-                    <option value="2">2x por semana</option>
-                </select>
-            </div>
-            
-            <div style="margin:20px 0;" id="weekdaysContainer">
-                <label>📆 Dias da semana</label>
-                <div class="weekday-selector" id="weekdaySelector">
-                    <div class="weekday-btn" data-day="0">S</div>
-                    <div class="weekday-btn" data-day="1">T</div>
-                    <div class="weekday-btn" data-day="2">Q</div>
-                    <div class="weekday-btn" data-day="3">Q</div>
-                    <div class="weekday-btn" data-day="4">S</div>
-                    <div class="weekday-btn" data-day="5">S</div>
-                    <div class="weekday-btn" data-day="6">D</div>
-                </div>
-                <small class="muted">Selecione 1 dia para 1x/semana ou 2 dias para 2x/semana</small>
-            </div>
-            
-            <div style="margin:20px 0;">
-                <label>⏰ Horário das sessões</label>
-                <input type="time" id="packTime" step="600" />
-            </div>
-            
-            <div style="margin:20px 0; padding:15px; background:rgba(44,122,90,0.1); border-radius:8px;">
-                <div style="display:flex; justify-content:space-between;">
-                    <span>📊 Total de sessões previstas:</span>
-                    <span id="totalSessionsPreview" style="font-weight:bold; color:var(--primary);">0</span>
-                </div>
-            </div>
-            
-            <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button id="cancelPack" class="small">Cancelar</button>
-                <button id="savePack" class="primary small">Salvar Configuração</button>
-            </div>
-        </div>
-    </div>
-
     <div id="evolucaoModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3 style="margin-bottom:15px;">📝 Registrar Evolução</h3>
@@ -865,19 +837,19 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '5.2.0';
+        const APP_VERSION = '6.0.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
         
         const KEYS = {
-            PATIENTS: "gabriel_fono_patients_v5",
-            SESSIONS: "gabriel_fono_sessions_v5",
-            SCHEDULE: "gabriel_fono_schedule_v5",
-            TOKENS: "gabriel_fono_tokens_v5",
-            PACKS: "gabriel_fono_packs_v5",
-            BACKUP: "gabriel_fono_backup_v5",
-            THEME: "gabriel_fono_theme_v5",
+            PATIENTS: "gabriel_fono_patients_v6",
+            SESSIONS: "gabriel_fono_sessions_v6",
+            SCHEDULE: "gabriel_fono_schedule_v6",
+            TOKENS: "gabriel_fono_tokens_v6",
+            PACKS: "gabriel_fono_packs_v6",
+            BACKUP: "gabriel_fono_backup_v6",
+            THEME: "gabriel_fono_theme_v6",
             VERSION: "gabriel_fono_version",
             NOTIFICATIONS: "gabriel_fono_notifications",
             PHOTOS: "gabriel_fono_photos",
@@ -1005,6 +977,13 @@
             return addDays(dateStr, daysToAdd);
         }
 
+        function daysBetween(startDate, endDate) {
+            const start = new Date(startDate + 'T12:00:00');
+            const end = new Date(endDate + 'T12:00:00');
+            const diffTime = Math.abs(end - start);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
         // ========== FUNÇÕES DE DADOS ==========
         function loadPatients() { return loadData(KEYS.PATIENTS, []); }
         function savePatients(p) { saveData(KEYS.PATIENTS, p); }
@@ -1090,13 +1069,13 @@
                 missed,
                 pending,
                 total: packSessions.length,
-                percent: (completed / packSessions.length) * 100
+                percent: packSessions.length > 0 ? (completed / packSessions.length) * 100 : 0
             };
         }
 
-        // ========== FUNÇÕES DE CRONOGRAMA DO PACOTE ==========
+        // ========== FUNÇÕES DE CRONOGRAMA ==========
         
-        function generatePackSchedule(startDate, endDate, frequency, weekdays, time) {
+        function gerarCronograma(startDate, endDate, frequency, weekdays, time) {
             const sessions = [];
             let currentDate = startDate;
             let sessionCount = 0;
@@ -1104,7 +1083,7 @@
             
             while (currentDate <= endDate && sessionCount < maxIterations) {
                 if (frequency === 1) {
-                    // 1x por semana - usar o dia selecionado
+                    // 1x por semana
                     const targetDay = weekdays[0];
                     const nextDate = getNextWeekday(currentDate, targetDay);
                     
@@ -1122,10 +1101,9 @@
                     sessionCount++;
                     
                 } else if (frequency === 2 && weekdays.length === 2) {
-                    // 2x por semana - alternar entre os dois dias
+                    // 2x por semana
                     const [day1, day2] = weekdays.sort((a, b) => a - b);
                     
-                    // Primeiro dia da semana
                     const nextDate1 = getNextWeekday(currentDate, day1);
                     if (nextDate1 <= endDate) {
                         sessions.push({
@@ -1137,7 +1115,6 @@
                         });
                     }
                     
-                    // Segundo dia da semana
                     const nextDate2 = getNextWeekday(addDays(nextDate1, 1), day2);
                     if (nextDate2 <= endDate) {
                         sessions.push({
@@ -1159,28 +1136,25 @@
             return sessions;
         }
 
-        function updatePackScheduleWithSessions(patientId, packSessions) {
-            const sessions = loadSessions();
-            const updatedPackSessions = packSessions.map(packSession => {
-                const existingSession = sessions.find(s => 
-                    s.patientId === patientId && 
-                    s.date === packSession.date &&
-                    s.time === packSession.time
-                );
-                
-                if (existingSession) {
+        function atualizarStatusCronograma(patientId) {
+            const packSessions = getPackSessions(patientId);
+            const sessions = loadSessions().filter(s => s.patientId === patientId);
+            
+            const updatedSessions = packSessions.map(ps => {
+                const session = sessions.find(s => s.date === ps.date && s.time === ps.time);
+                if (session) {
                     return {
-                        ...packSession,
-                        status: existingSession.did === 'realizou' ? 'completed' : 
-                                existingSession.did === 'nao' ? 'missed' : 'pending',
-                        sessionId: existingSession.id
+                        ...ps,
+                        status: session.did === 'realizou' ? 'completed' : 
+                                session.did === 'nao' ? 'missed' : 'pending',
+                        sessionId: session.id
                     };
                 }
-                return packSession;
+                return ps;
             });
             
-            savePackSessionsForPatient(patientId, updatedPackSessions);
-            return updatedPackSessions;
+            savePackSessionsForPatient(patientId, updatedSessions);
+            return updatedSessions;
         }
 
         // ========== NOTIFICAÇÕES ==========
@@ -1271,8 +1245,7 @@
             return photos[patientId] || null;
         }
 
-        // ========== EXPORTAR/IMPORTAR DADOS ==========
-        
+        // ========== EXPORTAR/IMPORTAR ==========
         window.exportarDados = function() {
             try {
                 const dados = {
@@ -1537,10 +1510,7 @@
                 
                 // Atualizar cronograma do paciente
                 if (sessions[idx].patientId) {
-                    const packSessions = getPackSessions(sessions[idx].patientId);
-                    if (packSessions.length > 0) {
-                        updatePackScheduleWithSessions(sessions[idx].patientId, packSessions);
-                    }
+                    atualizarStatusCronograma(sessions[idx].patientId);
                 }
                 
                 renderDaily();
@@ -1634,168 +1604,6 @@
             generateReports();
             showAlert("✅ Token registrado com sucesso!", "success");
         };
-
-        // ========== FUNÇÕES DE PACOTE ==========
-        
-        window.openPackModal = function(patientId) {
-            currentPackPatientId = patientId;
-            const patient = getPatientById(patientId);
-            const existingPack = getPatientPack(patientId);
-            
-            const packPatientName = $("packPatientName");
-            const packStartDate = $("packStartDate");
-            const packEndDate = $("packEndDate");
-            const packFrequency = $("packFrequency");
-            const packTime = $("packTime");
-            const packSummary = $("packSummary");
-            
-            if (packPatientName) packPatientName.textContent = `Configurando pacote para: ${patient?.name}`;
-            
-            if (existingPack) {
-                if (packStartDate) packStartDate.value = existingPack.startDate;
-                if (packEndDate) packEndDate.value = existingPack.endDate;
-                if (packFrequency) packFrequency.value = existingPack.frequency;
-                if (packTime) packTime.value = existingPack.time;
-                
-                document.querySelectorAll('.weekday-btn').forEach(btn => {
-                    const day = parseInt(btn.dataset.day);
-                    if (existingPack.weekdays?.includes(day)) {
-                        btn.classList.add('selected');
-                    } else {
-                        btn.classList.remove('selected');
-                    }
-                });
-                
-                // Mostrar resumo
-                if (packSummary) {
-                    const progress = calculateSessionsProgress(patientId);
-                    packSummary.innerHTML = `
-                        <strong>📊 Status atual:</strong><br>
-                        Sessões previstas: ${progress.total}<br>
-                        Realizadas: ${progress.completed}<br>
-                        Pendentes: ${progress.pending}<br>
-                        Faltas: ${progress.missed}
-                    `;
-                }
-                
-            } else {
-                if (packStartDate) packStartDate.value = todayISO();
-                if (packEndDate) packEndDate.value = addDays(todayISO(), 30);
-                if (packFrequency) packFrequency.value = "1";
-                if (packTime) packTime.value = "08:00";
-                document.querySelectorAll('.weekday-btn').forEach(btn => btn.classList.remove('selected'));
-                if (packSummary) packSummary.innerHTML = 'Configure as datas para ver o resumo';
-            }
-            
-            updateTotalSessionsPreview();
-            $("packModal")?.classList.remove("hidden");
-        };
-
-        window.savePack = function() {
-            if (!currentPackPatientId) return;
-            
-            const patient = getPatientById(currentPackPatientId);
-            const startDate = $("packStartDate")?.value;
-            const endDate = $("packEndDate")?.value;
-            const frequency = parseInt($("packFrequency")?.value || "1");
-            const time = $("packTime")?.value;
-            
-            if (!startDate || !endDate || !time) {
-                showAlert("❌ Preencha todas as datas e horário", "error");
-                return;
-            }
-            
-            if (endDate < startDate) {
-                showAlert("❌ Data de término deve ser após a data de início", "error");
-                return;
-            }
-            
-            let weekdays = [];
-            if (frequency === 2) {
-                weekdays = Array.from(document.querySelectorAll('.weekday-btn.selected'))
-                    .map(btn => parseInt(btn.dataset.day));
-                if (weekdays.length !== 2) {
-                    showAlert("Selecione exatamente 2 dias para 2x por semana", "warning");
-                    return;
-                }
-            } else {
-                const selected = document.querySelectorAll('.weekday-btn.selected');
-                if (selected.length === 0) {
-                    showAlert("Selecione o dia da semana para as sessões", "warning");
-                    return;
-                }
-                weekdays = [parseInt(selected[0].dataset.day)];
-            }
-            
-            // Gerar cronograma
-            const packSessions = generatePackSchedule(startDate, endDate, frequency, weekdays, time);
-            
-            if (packSessions.length === 0) {
-                showAlert("❌ Nenhuma sessão possível no período selecionado", "error");
-                return;
-            }
-            
-            // Salvar configuração do pacote
-            const packConfig = {
-                patientId: currentPackPatientId,
-                patientName: patient.name,
-                serviceType: patient.serviceType,
-                startDate: startDate,
-                endDate: endDate,
-                frequency: frequency,
-                weekdays: weekdays,
-                time: time,
-                totalSessions: packSessions.length,
-                createdAt: new Date().toISOString()
-            };
-            
-            savePatientPack(currentPackPatientId, packConfig);
-            savePackSessionsForPatient(currentPackPatientId, packSessions);
-            
-            $("packModal")?.classList.add("hidden");
-            
-            if (openedPatientId === currentPackPatientId) {
-                openPatientFolder(currentPackPatientId);
-            }
-            
-            renderSchedule();
-            renderDashboard();
-            generateReports();
-            showAlert(`✅ Pacote configurado com ${packSessions.length} sessões!`, "success");
-            currentPackPatientId = null;
-        };
-
-        function updateTotalSessionsPreview() {
-            const startDate = $("packStartDate")?.value;
-            const endDate = $("packEndDate")?.value;
-            const frequency = parseInt($("packFrequency")?.value || "1");
-            const time = $("packTime")?.value;
-            
-            if (!startDate || !endDate || !time) {
-                $("totalSessionsPreview").textContent = '0';
-                return;
-            }
-            
-            let weekdays = [];
-            if (frequency === 2) {
-                weekdays = Array.from(document.querySelectorAll('.weekday-btn.selected'))
-                    .map(btn => parseInt(btn.dataset.day));
-                if (weekdays.length !== 2) {
-                    $("totalSessionsPreview").textContent = '0';
-                    return;
-                }
-            } else {
-                const selected = document.querySelectorAll('.weekday-btn.selected');
-                if (selected.length === 0) {
-                    $("totalSessionsPreview").textContent = '0';
-                    return;
-                }
-                weekdays = [parseInt(selected[0].dataset.day)];
-            }
-            
-            const sessions = generatePackSchedule(startDate, endDate, frequency, weekdays, time);
-            $("totalSessionsPreview").textContent = sessions.length;
-        }
 
         // ========== FUNÇÕES DE AGENDAMENTO ==========
         function renderSchedule() {
@@ -2122,7 +1930,9 @@
                 const photo = getPatientPhoto(p.id);
                 const evolucoes = getPatientEvolucoes(p.id);
                 const evolucoesCount = evolucoes.length;
-                const progress = pack ? calculateSessionsProgress(p.id) : null;
+                const packSessions = getPackSessions(p.id);
+                const progress = packSessions.length > 0 ? 
+                    Math.round((packSessions.filter(s => s.status === 'completed').length / packSessions.length) * 100) : 0;
 
                 return `
                 <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
@@ -2134,7 +1944,7 @@
                                     <b>📁 ${escapeHtml(p.name)} ${cassemsIcon} ${packIcon}</b>
                                     <div class="muted">
                                         ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
-                                        ${pack ? ` • ${progress.completed}/${progress.total} sessões (${Math.round(progress.percent)}%)` : ''}
+                                        ${pack ? ` • ${pack.totalSessoes || 0} sessões (${progress}%)` : ''}
                                         ${timeSlots.length ? ` • ${timeSlots.length} horários` : ''}
                                         ${evolucoesCount > 0 ? ` • 📝 ${evolucoesCount} evoluções` : ''}
                                     </div>
@@ -2153,7 +1963,6 @@
         window.openPatientFolder = function(id) {
             openedPatientId = id;
             const p = getPatientById(id);
-            const pack = getPatientPack(id);
             const photo = getPatientPhoto(id);
             const evolucoes = getPatientEvolucoes(id);
             const packSessions = getPackSessions(id);
@@ -2178,48 +1987,55 @@
                 }
             }
 
-            // Mostrar cronograma do pacote
+            // Atualizar status do cronograma
+            const cronogramaAtualizado = atualizarStatusCronograma(id);
+            
+            // Calcular progresso
+            const completed = cronogramaAtualizado.filter(s => s.status === 'completed').length;
+            const missed = cronogramaAtualizado.filter(s => s.status === 'missed').length;
+            const pending = cronogramaAtualizado.filter(s => s.status === 'pending').length;
+            const total = cronogramaAtualizado.length;
+
+            // Mostrar cronograma
             let pacoteHtml = '';
             
-            if (pack) {
-                const progress = calculateSessionsProgress(id);
+            if (total > 0) {
+                const percent = total > 0 ? (completed / total) * 100 : 0;
                 
                 pacoteHtml = `
                     <div style="margin:10px 0;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                             <div>
-                                <b>📦 Pacote de ${pack.totalSessions} sessões</b>
-                                <div class="muted">Período: ${new Date(pack.startDate).toLocaleDateString("pt-BR")} a ${new Date(pack.endDate).toLocaleDateString("pt-BR")}</div>
-                                <div class="muted">${pack.frequency === 2 ? '2x por semana' : '1x por semana'} às ${pack.time}</div>
+                                <b>📦 Pacote de ${total} sessões</b>
+                                <div class="muted">${p?.startDate && p?.endDate ? `Período: ${new Date(p.startDate).toLocaleDateString()} a ${new Date(p.endDate).toLocaleDateString()}` : ''}</div>
                             </div>
-                            <button class="small token-btn" onclick="openPackModal('${id}')">⚙️ Configurar</button>
                         </div>
                         
                         <div class="progress-bar" style="margin:10px 0;">
-                            <div class="progress-fill" style="width:${progress.percent}%; background:#2C7A5A;"></div>
+                            <div class="progress-fill" style="width:${percent}%; background:#2C7A5A;"></div>
                         </div>
                         
                         <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                            <span>✅ ${progress.completed} realizadas</span>
-                            <span>❌ ${progress.missed} faltas</span>
-                            <span>⏳ ${progress.pending} pendentes</span>
+                            <span>✅ ${completed} realizadas</span>
+                            <span>❌ ${missed} faltas</span>
+                            <span>⏳ ${pending} pendentes</span>
                         </div>
                         
                         <div class="schedule-timeline">
                             <div class="schedule-header">
-                                <span><b>📅 Cronograma do Pacote</b></span>
-                                <span class="muted">${packSessions.length} sessões</span>
+                                <span><b>📅 Cronograma</b></span>
+                                <span class="muted">${total} sessões</span>
                             </div>
                             <div class="schedule-dates">
-                                ${packSessions.map((s, index) => {
+                                ${cronogramaAtualizado.map((s, index) => {
                                     const statusClass = s.status === 'completed' ? 'completed' : 
                                                        s.status === 'missed' ? 'missed' : 'pending';
-                                    const statusText = s.status === 'completed' ? '✅ Realizada' : 
-                                                      s.status === 'missed' ? '❌ Falta' : '⏳ Pendente';
+                                    const statusText = s.status === 'completed' ? '✅' : 
+                                                      s.status === 'missed' ? '❌' : '⏳';
                                     return `
                                         <div class="schedule-row ${statusClass}">
                                             <span class="schedule-index">#${index + 1}</span>
-                                            <span class="schedule-date">${new Date(s.date).toLocaleDateString("pt-BR")} às ${s.time}</span>
+                                            <span class="schedule-date">${new Date(s.date).toLocaleDateString()} às ${s.time}</span>
                                             <span class="schedule-status status-${s.status}">${statusText}</span>
                                         </div>
                                     `;
@@ -2231,7 +2047,7 @@
             } else {
                 pacoteHtml = `
                     <div style="text-align:center; padding:10px;">
-                        <button class="small primary" onclick="openPackModal('${id}')">📦 Configurar Pacote de Sessões</button>
+                        <p class="muted">Nenhum pacote configurado</p>
                     </div>
                 `;
             }
@@ -2254,7 +2070,7 @@
                     <div class="item">
                         <div style="display:flex; justify-content:space-between;">
                             <div>
-                                <b>${new Date(s.date).toLocaleDateString("pt-BR")} ${s.time ? "às " + s.time : ""}</b>
+                                <b>${new Date(s.date).toLocaleDateString()} ${s.time ? "às " + s.time : ""}</b>
                                 <div class="muted">
                                     ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"} • 
                                     ${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"} • 
@@ -2307,28 +2123,14 @@
             $("foldersPane")?.classList.remove("hidden");
         };
 
-        window.showPackSchedule = function(patientId) {
-            const pack = getPatientPack(patientId);
-            if (!pack) return;
-            
-            const packSessions = getPackSessions(patientId);
-            const scheduleList = packSessions.map((s, i) => 
-                `${i+1}. ${new Date(s.date).toLocaleDateString("pt-BR")} às ${s.time}`
-            ).join('\n');
-            
-            alert(`Agenda do pacote:\n\n${scheduleList}`);
-        };
-
         window.exportPackProgress = function(patientId) {
-            const pack = getPatientPack(patientId);
-            const patient = getPatientById(patientId);
+            const p = getPatientById(patientId);
             const packSessions = getPackSessions(patientId);
             const progress = calculateSessionsProgress(patientId);
             
             const data = {
-                paciente: patient.name,
-                periodo: `${pack.startDate} a ${pack.endDate}`,
-                totalSessoes: pack.totalSessions,
+                paciente: p.name,
+                totalSessoes: progress.total,
                 realizadas: progress.completed,
                 faltas: progress.missed,
                 pendentes: progress.pending,
@@ -2344,7 +2146,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `pacote_${patient.name}.json`;
+            a.download = `pacote_${p.name}.json`;
             a.click();
             URL.revokeObjectURL(url);
             
@@ -2483,7 +2285,7 @@
             
             container.innerHTML = evolucoes.map(ev => `
                 <div class="timeline-item">
-                    <div class="timeline-date">📅 ${new Date(ev.date).toLocaleDateString("pt-BR")}</div>
+                    <div class="timeline-date">📅 ${new Date(ev.date).toLocaleDateString()}</div>
                     <div class="timeline-content">${escapeHtml(ev.text).replace(/\n/g, '<br>')}</div>
                     <div class="timeline-actions">
                         <button class="small" onclick="editEvolucao('${ev.id}')">✏️ Editar</button>
@@ -2559,10 +2361,10 @@
                     const completed = sessionsList.filter(s => s.status === 'completed').length;
                     packStatus.push({
                         patient: patient.name,
-                        total: pack.totalSessions,
+                        total: pack.totalSessoes || sessionsList.length,
                         completed: completed,
-                        remaining: pack.totalSessions - completed,
-                        percent: pack.totalSessions > 0 ? (completed / pack.totalSessions) * 100 : 0
+                        remaining: (pack.totalSessoes || sessionsList.length) - completed,
+                        percent: pack.totalSessoes > 0 ? (completed / pack.totalSessoes) * 100 : 0
                     });
                 }
             });
@@ -2599,31 +2401,68 @@
             }
         }
 
-        // ========== AÇÕES DE PACIENTE ==========
+        // ========== AÇÕES DE PACIENTE (NOVO CADASTRO COM CALENDÁRIO) ==========
         window.addPatient = function() {
             const name = $("cName")?.value.trim();
             if (!name) return showAlert("❌ Nome é obrigatório", "error");
 
-            const timeSlots = getTimeSlots();
-            if (timeSlots.length === 0) {
-                return showAlert("❌ Adicione pelo menos um horário", "error");
+            const phone = $("cPhone")?.value || "";
+            const serviceType = $("cServiceType")?.value || "particular";
+            const value = parseMoney($("cValue")?.value);
+            const billingType = $("cBillingType")?.value || "pack4";
+            
+            // Dados do calendário
+            const startDate = $("cStartDate")?.value;
+            const endDate = $("cEndDate")?.value;
+            const time = $("cTime")?.value;
+            
+            if (!startDate || !endDate || !time) {
+                return showAlert("❌ Preencha as datas e horário do pacote", "error");
+            }
+            
+            if (endDate < startDate) {
+                return showAlert("❌ Data de término deve ser após a data de início", "error");
             }
 
-            const frequency = parseInt($("cFrequency")?.value || "1");
+            // Dias da semana selecionados
+            const selectedDays = Array.from(document.querySelectorAll('.weekday-btn.selected')).map(btn => parseInt(btn.dataset.day));
             
+            // Validar conforme o tipo de pacote
+            if (billingType === "pack4" && selectedDays.length !== 1) {
+                return showAlert("❌ Para pacote de 4 sessões, selecione 1 dia da semana", "error");
+            }
+            if (billingType === "pack8" && selectedDays.length !== 2) {
+                return showAlert("❌ Para pacote de 8 sessões, selecione 2 dias da semana", "error");
+            }
+            if (billingType === "individual" && selectedDays.length === 0) {
+                return showAlert("❌ Selecione pelo menos 1 dia da semana", "error");
+            }
+
+            // Frequência
+            const frequency = billingType === "pack8" ? 2 : 1;
+
+            // Gerar cronograma
+            const cronograma = gerarCronograma(startDate, endDate, frequency, selectedDays, time);
+            
+            if (cronograma.length === 0) {
+                return showAlert("❌ Nenhuma sessão possível no período selecionado", "error");
+            }
+
+            // Criar paciente
             const patient = {
                 id: uid(),
                 name,
-                birth: $("cBirth")?.value || "",
-                cpf: $("cCpf")?.value || "",
-                resp: $("cResp")?.value || "",
-                phone: $("cPhone")?.value || "",
-                email: $("cEmail")?.value || "",
-                serviceType: $("cServiceType")?.value || "particular",
-                defaultValue: parseMoney($("cDefaultValue")?.value),
-                billingType: $("cBillingType")?.value || "pack4",
-                frequency: frequency,
-                timeSlots: timeSlots,
+                phone,
+                serviceType,
+                defaultValue: value,
+                billingType,
+                frequency,
+                timeSlots: [{ day: selectedDays[0], time }], // Manter compatibilidade
+                startDate,
+                endDate,
+                time,
+                weekdays: selectedDays,
+                totalSessoes: cronograma.length,
                 notes: $("cNotes")?.value || "",
                 anamnese: { queixa: "", historico: "", obs: "" },
                 createdAt: new Date().toISOString()
@@ -2633,59 +2472,34 @@
             patients.push(patient);
             savePatients(patients);
 
+            // Salvar cronograma
+            savePackSessionsForPatient(patient.id, cronograma);
+
             if (currentPhotoFile) {
                 savePatientPhoto(patient.id, currentPhotoFile);
             }
 
             // Limpar formulário
-            const cName = $("cName");
-            const cBirth = $("cBirth");
-            const cCpf = $("cCpf");
-            const cResp = $("cResp");
-            const cPhone = $("cPhone");
-            const cEmail = $("cEmail");
-            const cDefaultValue = $("cDefaultValue");
-            const cNotes = $("cNotes");
-            const photoPreview = $("photoPreview");
-            const photoPlaceholder = $("photoPlaceholder");
-            
-            if (cName) cName.value = "";
-            if (cBirth) cBirth.value = "";
-            if (cCpf) cCpf.value = "";
-            if (cResp) cResp.value = "";
-            if (cPhone) cPhone.value = "";
-            if (cEmail) cEmail.value = "";
-            if (cDefaultValue) cDefaultValue.value = "";
-            if (cNotes) cNotes.value = "";
+            $("cName").value = "";
+            $("cPhone").value = "";
+            $("cValue").value = "";
+            $("cNotes").value = "";
+            $("cStartDate").value = todayISO();
+            $("cEndDate").value = addDays(todayISO(), 30);
+            $("cTime").value = "08:00";
+            document.querySelectorAll('.weekday-btn').forEach(btn => btn.classList.remove('selected'));
             
             currentPhotoFile = null;
+            const photoPreview = $("photoPreview");
+            const photoPlaceholder = $("photoPlaceholder");
             if (photoPreview) photoPreview.classList.add("hidden");
             if (photoPlaceholder) photoPlaceholder.classList.remove("hidden");
-            
-            const container = $("timeSlotsContainer");
-            if (container) {
-                container.innerHTML = `
-                    <div class="time-item">
-                        <select class="time-slot-day" style="flex:1;">
-                            <option value="">Dia</option>
-                            <option value="0">Seg</option>
-                            <option value="1">Ter</option>
-                            <option value="2">Qua</option>
-                            <option value="3">Qui</option>
-                            <option value="4">Sex</option>
-                            <option value="5">Sáb</option>
-                            <option value="6">Dom</option>
-                        </select>
-                        <input type="time" class="time-slot-hour" placeholder="07:40" step="600" style="flex:1;" />
-                    </div>
-                `;
-            }
 
             renderPatientSelect();
             renderPatientFolders();
-            renderSchedule();
             renderDashboard();
-            showAlert("✅ Paciente cadastrado com sucesso!", "success");
+            
+            showAlert(`✅ Paciente cadastrado! ${cronograma.length} sessões previstas.`, "success");
         };
 
         window.openAnamnese = function() {
@@ -2840,10 +2654,7 @@
             }
 
             // Atualizar cronograma do paciente
-            const packSessions = getPackSessions(patientId);
-            if (packSessions.length > 0) {
-                updatePackScheduleWithSessions(patientId, packSessions);
-            }
+            atualizarStatusCronograma(patientId);
 
             const pTime = $("pTime");
             const pValue = $("pValue");
@@ -2935,46 +2746,86 @@
             }
         };
 
-        // ========== ATALHOS ==========
-        window.toggleShortcuts = function() {
-            $("shortcutsPanel")?.classList.toggle("hidden");
-        };
+        // ========== FUNÇÕES DO CALENDÁRIO NO CADASTRO ==========
+        window.calcularTotalSessoesPreview = function() {
+            const start = $("cStartDate")?.value;
+            const end = $("cEndDate")?.value;
+            const tipo = $("cBillingType")?.value;
+            const time = $("cTime")?.value;
+            
+            if (!start || !end || !time) {
+                const preview = $("totalSessoesPreview");
+                if (preview) preview.innerHTML = '<span class="muted">Preencha as datas</span>';
+                return;
+            }
 
-        window.installPWA = function() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        showAlert("✅ App instalado com sucesso!", "success");
-                    }
-                    deferredPrompt = null;
-                });
+            const selected = Array.from(document.querySelectorAll('.weekday-btn.selected')).map(btn => parseInt(btn.dataset.day));
+            
+            if (tipo === "pack4" && selected.length !== 1) {
+                const preview = $("totalSessoesPreview");
+                if (preview) preview.innerHTML = '<span class="muted" style="color:#ef4444;">Selecione 1 dia</span>';
+                return;
+            }
+            if (tipo === "pack8" && selected.length !== 2) {
+                const preview = $("totalSessoesPreview");
+                if (preview) preview.innerHTML = '<span class="muted" style="color:#ef4444;">Selecione 2 dias</span>';
+                return;
+            }
+            if (tipo === "individual" && selected.length === 0) {
+                const preview = $("totalSessoesPreview");
+                if (preview) preview.innerHTML = '<span class="muted" style="color:#ef4444;">Selecione os dias</span>';
+                return;
+            }
+
+            const frequency = tipo === "pack8" ? 2 : 1;
+            const sessions = gerarCronograma(start, end, frequency, selected, time);
+            
+            const preview = $("totalSessoesPreview");
+            if (preview) {
+                preview.innerHTML = `
+                    <span style="font-weight:bold; color:var(--primary);">${sessions.length} sessões</span>
+                    <span class="muted"> (${new Date(start).toLocaleDateString()} a ${new Date(end).toLocaleDateString()})</span>
+                `;
             }
         };
 
-        // ========== EVENT LISTENERS PARA O MODAL DE PACOTE ==========
-        function setupPackModalListeners() {
-            const inputs = [
-                $("packStartDate"),
-                $("packEndDate"),
-                $("packFrequency"),
-                $("packTime")
-            ];
-            
-            inputs.forEach(input => {
-                if (input) {
-                    input.addEventListener('change', updateTotalSessionsPreview);
-                    input.addEventListener('input', updateTotalSessionsPreview);
+        // Configurar seleção de dias
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('weekday-btn')) {
+                const tipo = $("cBillingType")?.value;
+                const max = tipo === "pack8" ? 2 : (tipo === "pack4" ? 1 : 7);
+                
+                if (e.target.classList.contains('selected')) {
+                    e.target.classList.remove('selected');
+                } else {
+                    const selected = document.querySelectorAll('.weekday-btn.selected').length;
+                    if (selected < max) {
+                        e.target.classList.add('selected');
+                    } else {
+                        showAlert(`Selecione no máximo ${max} dia(s)`, 'warning');
+                    }
                 }
-            });
-            
-            // Monitorar seleção de dias
-            document.querySelectorAll('.weekday-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    setTimeout(updateTotalSessionsPreview, 10);
-                });
-            });
-        }
+                calcularTotalSessoesPreview();
+            }
+        });
+
+        // Atualizar quando mudar selects/datas
+        window.atualizarDiasSemana = function() {
+            const tipo = $("cBillingType")?.value;
+            const hint = $("weekdayHint");
+            if (hint) {
+                if (tipo === "pack4") {
+                    hint.innerHTML = "Selecione 1 dia para 4 sessões";
+                } else if (tipo === "pack8") {
+                    hint.innerHTML = "Selecione 2 dias para 8 sessões";
+                } else {
+                    hint.innerHTML = "Individual - selecione os dias desejados";
+                }
+            }
+            // Limpar seleção ao mudar tipo
+            document.querySelectorAll('.weekday-btn.selected').forEach(btn => btn.classList.remove('selected'));
+            calcularTotalSessoesPreview();
+        };
 
         // ========== RENDERIZAÇÃO DO HTML ==========
         function renderApp() {
@@ -3169,11 +3020,11 @@
                             <div class="list" id="dayList"></div>
                         </section>
 
-                        <!-- Pacientes -->
+                        <!-- Pacientes (COM CALENDÁRIO NOVO) -->
                         <section id="viewPatients" class="card hidden">
                             <div class="split">
                                 <div class="card">
-                                    <b>👤 Cadastro de Paciente</b>
+                                    <h3 style="margin-top:0;">👤 Cadastro de Paciente</h3>
                                     
                                     <div class="photo-upload">
                                         <img id="photoPreview" class="photo-preview hidden" src="" alt="Foto do paciente" />
@@ -3182,31 +3033,18 @@
                                         <button class="small" onclick="document.getElementById('patientPhoto').click()">📸 Escolher foto</button>
                                     </div>
 
-                                    <div class="grid2" style="margin-top:15px;">
+                                    <div class="grid2">
                                         <div>
                                             <label>Nome completo *</label>
                                             <input id="cName" placeholder="João Silva" />
                                         </div>
                                         <div>
-                                            <label>Data nascimento</label>
-                                            <input id="cBirth" type="date" />
-                                        </div>
-                                        <div>
-                                            <label>CPF</label>
-                                            <input id="cCpf" placeholder="000.000.000-00" />
-                                        </div>
-                                        <div>
-                                            <label>Responsável</label>
-                                            <input id="cResp" placeholder="Nome do responsável" />
-                                        </div>
-                                        <div>
                                             <label>WhatsApp</label>
                                             <input id="cPhone" placeholder="67999999999" />
                                         </div>
-                                        <div>
-                                            <label>E-mail</label>
-                                            <input id="cEmail" type="email" placeholder="paciente@email.com" />
-                                        </div>
+                                    </div>
+
+                                    <div class="grid2">
                                         <div>
                                             <label>Convênio</label>
                                             <select id="cServiceType">
@@ -3218,62 +3056,74 @@
                                         </div>
                                         <div>
                                             <label>Valor padrão (R$)</label>
-                                            <input id="cDefaultValue" placeholder="80,00" />
-                                        </div>
-                                        <div>
-                                            <label>Tipo de cobrança</label>
-                                            <select id="cBillingType">
-                                                <option value="pack4">📦 Pacote 4 sessões</option>
-                                                <option value="pack8">📦 Pacote 8 sessões</option>
-                                                <option value="individual">💳 Individual</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label>Frequência semanal</label>
-                                            <select id="cFrequency">
-                                                <option value="1">1x por semana</option>
-                                                <option value="2">2x por semana</option>
-                                            </select>
+                                            <input id="cValue" placeholder="80,00" />
                                         </div>
                                     </div>
 
-                                    <div style="margin-top:20px;">
-                                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                                            <label>Horários de atendimento</label>
-                                            <button type="button" class="small primary icon-btn" onclick="addTimeSlot()" style="width:auto; padding:8px 16px;">➕ Adicionar horário</button>
+                                    <div class="grid2">
+                                        <div>
+                                            <label>Pacote</label>
+                                            <select id="cBillingType" onchange="atualizarDiasSemana()">
+                                                <option value="pack4">4 sessões (1x/semana)</option>
+                                                <option value="pack8">8 sessões (2x/semana)</option>
+                                                <option value="individual">Individual</option>
+                                            </select>
                                         </div>
-                                        <div id="timeSlotsContainer" class="time-list">
-                                            <div class="time-item">
-                                                <select class="time-slot-day" style="flex:1;">
-                                                    <option value="">Dia</option>
-                                                    <option value="0">Seg</option>
-                                                    <option value="1">Ter</option>
-                                                    <option value="2">Qua</option>
-                                                    <option value="3">Qui</option>
-                                                    <option value="4">Sex</option>
-                                                    <option value="5">Sáb</option>
-                                                    <option value="6">Dom</option>
-                                                </select>
-                                                <input type="time" class="time-slot-hour" placeholder="07:40" step="600" style="flex:1;" />
+                                        <div>
+                                            <label>Horário das sessões</label>
+                                            <input type="time" id="cTime" value="08:00" step="600" />
+                                        </div>
+                                    </div>
+
+                                    <!-- Calendário do pacote -->
+                                    <div style="margin:15px 0;">
+                                        <label>📅 Período do pacote</label>
+                                        <div class="grid2">
+                                            <div>
+                                                <input type="date" id="cStartDate" onchange="calcularTotalSessoesPreview()" />
+                                                <small class="muted">Data de início</small>
+                                            </div>
+                                            <div>
+                                                <input type="date" id="cEndDate" onchange="calcularTotalSessoesPreview()" />
+                                                <small class="muted">Data de término</small>
                                             </div>
                                         </div>
-                                        <small class="muted">Adicione quantos horários precisar</small>
                                     </div>
 
-                                    <label style="margin-top:20px;">Observações iniciais</label>
+                                    <!-- Dias da semana -->
+                                    <div style="margin:15px 0;">
+                                        <label>📆 Dias da semana</label>
+                                        <div class="weekday-selector" id="weekdaySelector">
+                                            <div class="weekday-btn" data-day="0">S</div>
+                                            <div class="weekday-btn" data-day="1">T</div>
+                                            <div class="weekday-btn" data-day="2">Q</div>
+                                            <div class="weekday-btn" data-day="3">Q</div>
+                                            <div class="weekday-btn" data-day="4">S</div>
+                                            <div class="weekday-btn" data-day="5">S</div>
+                                            <div class="weekday-btn" data-day="6">D</div>
+                                        </div>
+                                        <small class="muted" id="weekdayHint">Selecione 1 dia para 4 sessões ou 2 dias para 8 sessões</small>
+                                    </div>
+
+                                    <!-- Preview da contagem -->
+                                    <div class="info-box" id="totalSessoesPreview" style="text-align:center;">
+                                        <span class="muted">Preencha as datas e selecione os dias</span>
+                                    </div>
+
+                                    <label style="margin-top:15px;">Observações</label>
                                     <textarea id="cNotes" rows="2" placeholder="Observações relevantes..."></textarea>
 
-                                    <div class="row" style="margin-top:15px;">
-                                        <button id="addPatient" class="primary" onclick="addPatient()">💾 Salvar paciente</button>
+                                    <div style="margin-top:15px;">
+                                        <button class="primary" onclick="addPatient()" style="width:100%;">💾 Salvar Paciente</button>
                                     </div>
                                 </div>
 
                                 <div class="card">
                                     <div id="foldersPane">
                                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                                            <b>📁 Pastas</b>
+                                            <b>📁 Pastas de Pacientes</b>
                                             <div style="display:flex; gap:8px;">
-                                                <input id="pSearch" placeholder="Buscar paciente..." style="width:200px;" oninput="renderPatientFolders()" />
+                                                <input id="pSearch" placeholder="Buscar..." style="width:200px;" oninput="renderPatientFolders()" />
                                                 <button id="onlyDebtFolders" class="small" onclick="toggleDebtFilter()">💸 Com débito</button>
                                             </div>
                                         </div>
@@ -3293,10 +3143,11 @@
                                                 <button id="openWhats" class="small" onclick="openWhatsApp()">📱 WhatsApp</button>
                                                 <button id="renamePatient" class="small" onclick="renamePatient()">✏️ Renomear</button>
                                                 <button id="deletePatient" class="small danger" onclick="deletePatient()">🗑️ Excluir</button>
+                                                <button class="small" onclick="exportPackProgress(openedPatientId)">📤 Exportar</button>
                                             </div>
                                         </div>
 
-                                        <div id="pacoteProgresso" style="margin:10px 0; padding:10px; background:rgba(255,255,255,.03); border-radius:10px;"></div>
+                                        <div id="pacoteProgresso" style="margin:10px 0;"></div>
                                         
                                         <!-- Histórico de Sessões -->
                                         <div style="margin-top:20px;">
@@ -3418,6 +3269,18 @@
             `;
         }
 
+        // ========== EVENT LISTENERS ==========
+        function setupEventListeners() {
+            // Configurar inputs do calendário
+            const inputs = [$("cStartDate"), $("cEndDate"), $("cTime"), $("cBillingType")];
+            inputs.forEach(input => {
+                if (input) {
+                    input.addEventListener('change', calcularTotalSessoesPreview);
+                    input.addEventListener('input', calcularTotalSessoesPreview);
+                }
+            });
+        }
+
         // ========== INICIALIZAÇÃO ==========
         function init() {
             const lastVersion = localStorage.getItem(KEYS.VERSION);
@@ -3439,6 +3302,12 @@
             
             const schedRef = $("schedRef");
             if (schedRef) schedRef.value = todayISO();
+            
+            const cStartDate = $("cStartDate");
+            if (cStartDate) cStartDate.value = todayISO();
+            
+            const cEndDate = $("cEndDate");
+            if (cEndDate) cEndDate.value = addDays(todayISO(), 30);
             
             const todayEl = $("today");
             if (todayEl) {
@@ -3470,8 +3339,8 @@
                 importFile.addEventListener('change', carregarArquivo);
             }
 
-            // Configurar listeners do modal de pacote
-            setupPackModalListeners();
+            // Configurar listeners
+            setupEventListeners();
 
             // PWA Installation
             window.addEventListener('beforeinstallprompt', (e) => {
@@ -3521,13 +3390,6 @@
 
             $("saveToken")?.addEventListener("click", saveToken);
 
-            $("cancelPack")?.addEventListener("click", () => {
-                $("packModal")?.classList.add("hidden");
-                currentPackPatientId = null;
-            });
-
-            $("savePack")?.addEventListener("click", savePack);
-
             $("cancelEvolucao")?.addEventListener("click", () => {
                 $("evolucaoModal")?.classList.add("hidden");
             });
@@ -3547,6 +3409,9 @@
             renderSchedule();
             renderDashboard();
             generateReports();
+
+            // Preview inicial do calendário
+            setTimeout(calcularTotalSessoesPreview, 100);
         }
 
         if (document.readyState === 'loading') {
