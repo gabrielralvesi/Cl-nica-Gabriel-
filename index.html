@@ -76,6 +76,11 @@
             background: rgba(232, 198, 106, 0.15);
         }
 
+        .pill.warn {
+            border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.15);
+        }
+
         button {
             padding: 12px 16px;
             border-radius: 12px;
@@ -464,6 +469,11 @@
             border-left: 4px solid var(--info);
         }
 
+        .slotPurple {
+            background: rgba(139, 92, 246, 0.15);
+            border-left: 4px solid #8b5cf6;
+        }
+
         .weekday-btn {
             width: 44px;
             height: 44px;
@@ -502,7 +512,7 @@
             border: 1px solid var(--line);
             border-radius: 20px;
             padding: 24px;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
@@ -595,6 +605,94 @@
             justify-content: flex-end;
             margin-top: 10px;
         }
+
+        /* Cronograma do Pacote */
+        .schedule-timeline {
+            margin-top: 20px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .schedule-dates {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .schedule-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .schedule-row.completed {
+            opacity: 0.8;
+            border-left: 3px solid var(--primary);
+        }
+
+        .schedule-row.missed {
+            border-left: 3px solid var(--bad);
+        }
+
+        .schedule-row.pending {
+            border-left: 3px solid var(--accent);
+        }
+
+        .schedule-index {
+            width: 30px;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .schedule-date {
+            flex: 1;
+        }
+
+        .schedule-status {
+            font-size: 0.85rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .status-completed {
+            background: rgba(44, 122, 90, 0.2);
+            color: #4ade80;
+        }
+
+        .status-missed {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .info-box {
+            background: rgba(44, 122, 90, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -676,28 +774,28 @@
             <h3>📦 Configurar Pacote de Sessões</h3>
             <p class="muted" id="packPatientName"></p>
             
-            <div class="pack-info" id="packCurrentInfo"></div>
+            <div class="info-box" id="packSummary"></div>
             
             <div style="margin:20px 0;">
-                <label>Data de início do pacote</label>
+                <label>📅 Data de início</label>
                 <input type="date" id="packStartDate" />
             </div>
+            
             <div style="margin:20px 0;">
-                <label>Total de sessões</label>
-                <select id="packTotal">
-                    <option value="4">4 sessões</option>
-                    <option value="8">8 sessões</option>
-                </select>
+                <label>📅 Data de término</label>
+                <input type="date" id="packEndDate" />
             </div>
+            
             <div style="margin:20px 0;">
-                <label>Frequência semanal</label>
+                <label>🔄 Frequência semanal</label>
                 <select id="packFrequency">
                     <option value="1">1x por semana</option>
                     <option value="2">2x por semana</option>
                 </select>
             </div>
+            
             <div style="margin:20px 0;" id="weekdaysContainer">
-                <label>Dias da semana (para 2x)</label>
+                <label>📆 Dias da semana (para 2x)</label>
                 <div class="weekday-selector" id="weekdaySelector">
                     <div class="weekday-btn" data-day="0">S</div>
                     <div class="weekday-btn" data-day="1">T</div>
@@ -707,11 +805,19 @@
                     <div class="weekday-btn" data-day="5">S</div>
                     <div class="weekday-btn" data-day="6">D</div>
                 </div>
-                <small class="muted">Selecione 2 dias para sessões 2x por semana</small>
+                <small class="muted">Selecione os dias das sessões</small>
             </div>
+            
             <div style="margin:20px 0;">
-                <label>Horário das sessões</label>
+                <label>⏰ Horário das sessões</label>
                 <input type="time" id="packTime" step="600" />
+            </div>
+            
+            <div style="margin:20px 0; padding:15px; background:rgba(44,122,90,0.1); border-radius:8px;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span>📊 Total de sessões previstas:</span>
+                    <span id="totalSessionsPreview" style="font-weight:bold; color:var(--primary);">0</span>
+                </div>
             </div>
             
             <div style="display:flex; gap:10px; justify-content:flex-end;">
@@ -759,26 +865,28 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '4.0.0';
+        const APP_VERSION = '5.1.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
         
         const KEYS = {
-            PATIENTS: "gabriel_fono_patients_v4",
-            SESSIONS: "gabriel_fono_sessions_v4",
-            SCHEDULE: "gabriel_fono_schedule_v4",
-            TOKENS: "gabriel_fono_tokens_v4",
-            PACKS: "gabriel_fono_packs_v4",
-            BACKUP: "gabriel_fono_backup_v4",
-            THEME: "gabriel_fono_theme_v4",
+            PATIENTS: "gabriel_fono_patients_v5",
+            SESSIONS: "gabriel_fono_sessions_v5",
+            SCHEDULE: "gabriel_fono_schedule_v5",
+            TOKENS: "gabriel_fono_tokens_v5",
+            PACKS: "gabriel_fono_packs_v5",
+            BACKUP: "gabriel_fono_backup_v5",
+            THEME: "gabriel_fono_theme_v5",
             VERSION: "gabriel_fono_version",
             NOTIFICATIONS: "gabriel_fono_notifications",
             PHOTOS: "gabriel_fono_photos",
-            EVOLUCOES: "gabriel_fono_evolucoes"
+            EVOLUCOES: "gabriel_fono_evolucoes",
+            PACK_SESSIONS: "gabriel_fono_pack_sessions"
         };
 
         const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+        const DAYS_FULL = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
         const SERVICE_COLORS = {
             "cassems": "slotGreen",
             "particular": "slotAmber",
@@ -877,6 +985,33 @@
             return ["07:00", "07:40", "08:20", "09:00", "09:40", "10:20", "11:00", "13:20", "14:00", "14:40", "15:20", "16:00", "16:40", "17:20"];
         }
 
+        // ========== FUNÇÕES DE DATA ==========
+        function addDays(dateStr, days) {
+            const date = new Date(dateStr + 'T12:00:00');
+            date.setDate(date.getDate() + days);
+            return date.toISOString().split('T')[0];
+        }
+
+        function daysBetween(startDate, endDate) {
+            const start = new Date(startDate + 'T12:00:00');
+            const end = new Date(endDate + 'T12:00:00');
+            const diffTime = Math.abs(end - start);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function getNextWeekday(dateStr, targetDay) {
+            const date = new Date(dateStr + 'T12:00:00');
+            const currentDay = date.getDay(); // 0 = Dom, 1 = Seg, ..., 6 = Sáb
+            
+            // Converter para nosso formato (0=Seg, 1=Ter, ..., 6=Dom)
+            let currentDayIndex = currentDay === 0 ? 6 : currentDay - 1;
+            
+            let daysToAdd = targetDay - currentDayIndex;
+            if (daysToAdd < 0) daysToAdd += 7;
+            
+            return addDays(dateStr, daysToAdd);
+        }
+
         // ========== FUNÇÕES DE DADOS ==========
         function loadPatients() { return loadData(KEYS.PATIENTS, []); }
         function savePatients(p) { saveData(KEYS.PATIENTS, p); }
@@ -901,6 +1036,9 @@
         function loadEvolucoes() { return loadData(KEYS.EVOLUCOES, {}); }
         function saveEvolucoes(evolucoes) { saveData(KEYS.EVOLUCOES, evolucoes); }
 
+        function loadPackSessions() { return loadData(KEYS.PACK_SESSIONS, {}); }
+        function savePackSessions(packSessions) { saveData(KEYS.PACK_SESSIONS, packSessions); }
+
         function getPatientById(id) {
             return loadPatients().find(p => p.id === id);
         }
@@ -920,6 +1058,17 @@
             return packs[patientId];
         }
 
+        function getPackSessions(patientId) {
+            const packSessions = loadPackSessions();
+            return packSessions[patientId] || [];
+        }
+
+        function savePackSessionsForPatient(patientId, sessions) {
+            const packSessions = loadPackSessions();
+            packSessions[patientId] = sessions;
+            savePackSessions(packSessions);
+        }
+
         function getTokenForSession(sessionId) {
             const tokens = loadTokens();
             return tokens[sessionId] || null;
@@ -935,93 +1084,113 @@
             return tokens[sessionId];
         }
 
-        function calculateSessionsProgress(patientId, startDate, totalSessions) {
+        function calculateSessionsProgress(patientId, packConfig) {
             const sessions = loadSessions().filter(s => 
                 s.patientId === patientId && 
                 s.did === "realizou" &&
-                s.date >= startDate
+                s.date >= packConfig.startDate &&
+                s.date <= packConfig.endDate
             );
+            
+            const packSessions = getPackSessions(patientId);
+            const total = packSessions.length;
+            
             return {
                 completed: sessions.length,
-                remaining: Math.max(0, totalSessions - sessions.length),
-                percent: totalSessions > 0 ? (sessions.length / totalSessions) * 100 : 0
+                remaining: Math.max(0, total - sessions.length),
+                percent: total > 0 ? (sessions.length / total) * 100 : 0,
+                total: total
             };
         }
 
-        function generatePackSchedule(patientId, packConfig) {
-            const schedule = loadSchedule();
-            const startDate = new Date(packConfig.startDate);
+        // ========== FUNÇÕES DE CRONOGRAMA DO PACOTE ==========
+        
+        function generatePackSchedule(startDate, endDate, frequency, weekdays, time) {
+            const sessions = [];
+            let currentDate = startDate;
+            let sessionCount = 0;
+            let maxIterations = 100; // Segurança para evitar loop infinito
             
-            for (let i = 0; i < packConfig.totalSessions; i++) {
-                let sessionDate = new Date(startDate);
-                
-                if (packConfig.frequency === 2 && packConfig.weekdays.length === 2) {
-                    const weekOffset = Math.floor(i / 2);
-                    const dayIndex = i % 2;
-                    const targetDay = packConfig.weekdays[dayIndex];
+            while (currentDate <= endDate && sessionCount < maxIterations) {
+                if (frequency === 1) {
+                    // 1x por semana - usar o primeiro dia da semana selecionado
+                    const targetDay = weekdays[0];
+                    const nextDate = getNextWeekday(currentDate, targetDay);
                     
-                    let daysToAdd = (targetDay - startDate.getDay() + 7) % 7;
-                    daysToAdd += weekOffset * 7;
-                    sessionDate.setDate(startDate.getDate() + daysToAdd);
-                } else {
-                    sessionDate.setDate(startDate.getDate() + (i * 7));
+                    if (nextDate > endDate) break;
+                    
+                    sessions.push({
+                        id: uid(),
+                        date: nextDate,
+                        time: time,
+                        status: 'pending',
+                        originalDate: nextDate
+                    });
+                    
+                    // Avançar 7 dias
+                    currentDate = addDays(nextDate, 7);
+                    sessionCount++;
+                    
+                } else if (frequency === 2 && weekdays.length === 2) {
+                    // 2x por semana - alternar entre os dois dias
+                    const [day1, day2] = weekdays.sort((a, b) => a - b);
+                    
+                    // Primeiro dia da semana
+                    const nextDate1 = getNextWeekday(currentDate, day1);
+                    if (nextDate1 <= endDate) {
+                        sessions.push({
+                            id: uid(),
+                            date: nextDate1,
+                            time: time,
+                            status: 'pending',
+                            originalDate: nextDate1
+                        });
+                    }
+                    
+                    // Segundo dia da semana
+                    const nextDate2 = getNextWeekday(addDays(nextDate1, 1), day2);
+                    if (nextDate2 <= endDate) {
+                        sessions.push({
+                            id: uid(),
+                            date: nextDate2,
+                            time: time,
+                            status: 'pending',
+                            originalDate: nextDate2
+                        });
+                    }
+                    
+                    // Avançar para próxima semana
+                    currentDate = addDays(nextDate1, 7);
+                    sessionCount += 2;
                 }
+            }
+            
+            return sessions;
+        }
+
+        function updatePackScheduleWithSessions(patientId, packSessions) {
+            const sessions = loadSessions();
+            const updatedPackSessions = packSessions.map(packSession => {
+                // Verificar se já existe uma sessão nesta data
+                const existingSession = sessions.find(s => 
+                    s.patientId === patientId && 
+                    s.date === packSession.date &&
+                    s.time === packSession.time
+                );
                 
-                const dateStr = sessionDate.toISOString().split('T')[0];
-                const key = recurKey(sessionDate.getDay(), packConfig.time);
-                
-                if (!schedule.recurring[key]) {
-                    schedule.recurring[key] = {
-                        patientId: patientId,
-                        serviceType: packConfig.serviceType,
-                        startDate: dateStr,
-                        plannedTotal: packConfig.totalSessions
+                if (existingSession) {
+                    return {
+                        ...packSession,
+                        status: existingSession.did === 'realizou' ? 'completed' : 
+                                existingSession.did === 'nao' ? 'missed' : 'pending',
+                        sessionId: existingSession.id
                     };
                 }
-            }
+                return packSession;
+            });
             
-            saveSchedule(schedule);
-        }
-
-        function getPatientEvolucoes(patientId) {
-            const evolucoes = loadEvolucoes();
-            return evolucoes[patientId] || [];
-        }
-
-        function savePatientEvolucao(patientId, evolucaoData) {
-            const evolucoes = loadEvolucoes();
-            if (!evolucoes[patientId]) {
-                evolucoes[patientId] = [];
-            }
-            
-            if (evolucaoData.id) {
-                const index = evolucoes[patientId].findIndex(e => e.id === evolucaoData.id);
-                if (index !== -1) {
-                    evolucoes[patientId][index] = {
-                        ...evolucaoData,
-                        updatedAt: new Date().toISOString()
-                    };
-                }
-            } else {
-                evolucaoData.id = uid();
-                evolucaoData.createdAt = new Date().toISOString();
-                evolucoes[patientId].push(evolucaoData);
-            }
-            
-            evolucoes[patientId].sort((a, b) => b.date.localeCompare(a.date));
-            saveEvolucoes(evolucoes);
-            return evolucaoData;
-        }
-
-        function deletePatientEvolucao(patientId, evolucaoId) {
-            const evolucoes = loadEvolucoes();
-            if (evolucoes[patientId]) {
-                evolucoes[patientId] = evolucoes[patientId].filter(e => e.id !== evolucaoId);
-                if (evolucoes[patientId].length === 0) {
-                    delete evolucoes[patientId];
-                }
-                saveEvolucoes(evolucoes);
-            }
+            savePackSessionsForPatient(patientId, updatedPackSessions);
+            return updatedPackSessions;
         }
 
         // ========== NOTIFICAÇÕES ==========
@@ -1112,11 +1281,10 @@
             return photos[patientId] || null;
         }
 
-        // ========== EXPORTAR/IMPORTAR DADOS (NOVA FUNÇÃO) ==========
+        // ========== EXPORTAR/IMPORTAR DADOS ==========
         
         window.exportarDados = function() {
             try {
-                // Coletar todos os dados
                 const dados = {
                     pacientes: loadPatients(),
                     sessoes: loadSessions(),
@@ -1125,11 +1293,11 @@
                     pacotes: loadPacks(),
                     fotos: loadPhotos(),
                     evolucoes: loadEvolucoes(),
+                    cronogramas: loadPackSessions(),
                     dataExport: new Date().toISOString(),
                     versao: APP_VERSION
                 };
                 
-                // Criar arquivo JSON
                 const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -1158,7 +1326,6 @@
                 try {
                     const dados = JSON.parse(e.target.result);
                     
-                    // Restaurar dados
                     if (dados.pacientes) savePatients(dados.pacientes);
                     if (dados.sessoes) saveSessions(dados.sessoes);
                     if (dados.agenda) saveSchedule(dados.agenda);
@@ -1166,10 +1333,10 @@
                     if (dados.pacotes) savePacks(dados.pacotes);
                     if (dados.fotos) savePhotos(dados.fotos);
                     if (dados.evolucoes) saveEvolucoes(dados.evolucoes);
+                    if (dados.cronogramas) savePackSessions(dados.cronogramas);
                     
                     showAlert('✅ Dados importados com sucesso!', 'success');
                     
-                    // Recarregar a página para mostrar os novos dados
                     setTimeout(() => location.reload(), 1500);
                     
                 } catch (erro) {
@@ -1179,7 +1346,6 @@
             };
             reader.readAsText(file);
             
-            // Limpar input para poder selecionar o mesmo arquivo novamente
             event.target.value = '';
         };
 
@@ -1378,6 +1544,15 @@
                     sessions[idx].just = "nao_justificada";
                 }
                 saveSessions(sessions);
+                
+                // Atualizar cronograma do paciente
+                if (openedPatientId) {
+                    const packSessions = getPackSessions(openedPatientId);
+                    if (packSessions.length > 0) {
+                        updatePackScheduleWithSessions(openedPatientId, packSessions);
+                    }
+                }
+                
                 renderDaily();
                 renderDashboard();
                 if (openedPatientId) openPatientFolder(openedPatientId);
@@ -1420,6 +1595,14 @@
                 const tokens = loadTokens();
                 delete tokens[id];
                 saveTokens(tokens);
+                
+                // Atualizar cronograma do paciente
+                if (openedPatientId) {
+                    const packSessions = getPackSessions(openedPatientId);
+                    if (packSessions.length > 0) {
+                        updatePackScheduleWithSessions(openedPatientId, packSessions);
+                    }
+                }
                 
                 renderDaily();
                 if (openedPatientId) openPatientFolder(openedPatientId);
@@ -1470,6 +1653,8 @@
             showAlert("✅ Token registrado com sucesso!", "success");
         };
 
+        // ========== FUNÇÕES DE PACOTE (ATUALIZADAS) ==========
+        
         window.openPackModal = function(patientId) {
             currentPackPatientId = patientId;
             const patient = getPatientById(patientId);
@@ -1477,16 +1662,16 @@
             
             const packPatientName = $("packPatientName");
             const packStartDate = $("packStartDate");
-            const packTotal = $("packTotal");
+            const packEndDate = $("packEndDate");
             const packFrequency = $("packFrequency");
             const packTime = $("packTime");
-            const packCurrentInfo = $("packCurrentInfo");
+            const packSummary = $("packSummary");
             
             if (packPatientName) packPatientName.textContent = `Configurando pacote para: ${patient?.name}`;
             
             if (existingPack) {
                 if (packStartDate) packStartDate.value = existingPack.startDate;
-                if (packTotal) packTotal.value = existingPack.totalSessions;
+                if (packEndDate) packEndDate.value = existingPack.endDate;
                 if (packFrequency) packFrequency.value = existingPack.frequency;
                 if (packTime) packTime.value = existingPack.time;
                 
@@ -1499,21 +1684,25 @@
                     }
                 });
                 
-                const progress = calculateSessionsProgress(patientId, existingPack.startDate, existingPack.totalSessions);
-                if (packCurrentInfo) {
-                    packCurrentInfo.innerHTML = `
-                        <div style="margin-bottom:10px;">
-                            <strong>Progresso atual:</strong> ${progress.completed}/${existingPack.totalSessions} sessões realizadas (${progress.remaining} restantes)
-                        </div>
+                // Mostrar resumo
+                if (packSummary) {
+                    const sessions = getPackSessions(patientId);
+                    const completed = sessions.filter(s => s.status === 'completed').length;
+                    packSummary.innerHTML = `
+                        <strong>📊 Status atual:</strong><br>
+                        Sessões previstas: ${sessions.length}<br>
+                        Realizadas: ${completed}<br>
+                        Pendentes: ${sessions.length - completed}
                     `;
                 }
+                
             } else {
                 if (packStartDate) packStartDate.value = todayISO();
-                if (packTotal) packTotal.value = "4";
+                if (packEndDate) packEndDate.value = addDays(todayISO(), 30); // +30 dias como sugestão
                 if (packFrequency) packFrequency.value = "1";
                 if (packTime) packTime.value = "08:00";
                 document.querySelectorAll('.weekday-btn').forEach(btn => btn.classList.remove('selected'));
-                if (packCurrentInfo) packCurrentInfo.innerHTML = '';
+                if (packSummary) packSummary.innerHTML = 'Configure as datas para ver o resumo';
             }
             
             toggleWeekdaySelector();
@@ -1525,9 +1714,19 @@
             
             const patient = getPatientById(currentPackPatientId);
             const startDate = $("packStartDate")?.value;
-            const totalSessions = parseInt($("packTotal")?.value || "4");
+            const endDate = $("packEndDate")?.value;
             const frequency = parseInt($("packFrequency")?.value || "1");
             const time = $("packTime")?.value;
+            
+            if (!startDate || !endDate || !time) {
+                showAlert("❌ Preencha todas as datas e horário", "error");
+                return;
+            }
+            
+            if (endDate < startDate) {
+                showAlert("❌ Data de término deve ser após a data de início", "error");
+                return;
+            }
             
             let weekdays = [];
             if (frequency === 2) {
@@ -1538,23 +1737,65 @@
                     return;
                 }
             } else {
-                weekdays = [new Date(startDate).getDay()];
+                // Para 1x por semana, precisamos de um dia selecionado
+                const selected = document.querySelectorAll('.weekday-btn.selected');
+                if (selected.length === 0) {
+                    showAlert("Selecione o dia da semana para as sessões", "warning");
+                    return;
+                }
+                weekdays = [parseInt(selected[0].dataset.day)];
             }
             
+            // Gerar cronograma
+            const packSessions = generatePackSchedule(startDate, endDate, frequency, weekdays, time);
+            
+            if (packSessions.length === 0) {
+                showAlert("❌ Nenhuma sessão possível no período selecionado", "error");
+                return;
+            }
+            
+            // Salvar configuração do pacote
             const packConfig = {
                 patientId: currentPackPatientId,
                 patientName: patient.name,
                 serviceType: patient.serviceType,
                 startDate: startDate,
-                totalSessions: totalSessions,
+                endDate: endDate,
                 frequency: frequency,
                 weekdays: weekdays,
                 time: time,
+                totalSessions: packSessions.length,
                 createdAt: new Date().toISOString()
             };
             
             savePatientPack(currentPackPatientId, packConfig);
-            generatePackSchedule(currentPackPatientId, packConfig);
+            savePackSessionsForPatient(currentPackPatientId, packSessions);
+            
+            // Atualizar agenda
+            const sch = loadSchedule();
+            sch.recurring = sch.recurring || {};
+            
+            weekdays.forEach(day => {
+                if (!sch.times.includes(time)) {
+                    sch.times.push(time);
+                }
+                
+                // Criar entradas na agenda para as sessões futuras
+                packSessions.forEach(session => {
+                    const key = recurKey(day, time);
+                    if (!sch.recurring[key]) {
+                        sch.recurring[key] = {
+                            patientId: currentPackPatientId,
+                            serviceType: patient.serviceType,
+                            startDate: session.date,
+                            plannedTotal: packSessions.length
+                        };
+                    }
+                });
+            });
+            
+            sch.times.sort();
+            saveSchedule(sch);
             
             $("packModal")?.classList.add("hidden");
             
@@ -1565,7 +1806,7 @@
             renderSchedule();
             renderDashboard();
             generateReports();
-            showAlert("✅ Configuração do pacote salva com sucesso!", "success");
+            showAlert(`✅ Pacote configurado com ${packSessions.length} sessões!`, "success");
             currentPackPatientId = null;
         };
 
@@ -1573,8 +1814,41 @@
             const freq = $("packFrequency")?.value;
             const container = $("weekdaysContainer");
             if (container) {
-                container.style.display = freq === "2" ? "block" : "none";
+                container.style.display = freq === "2" ? "block" : "block"; // Sempre mostrar, mas ajustar instrução
             }
+        }
+
+        // Atualizar preview de total de sessões
+        function updateTotalSessionsPreview() {
+            const startDate = $("packStartDate")?.value;
+            const endDate = $("packEndDate")?.value;
+            const frequency = parseInt($("packFrequency")?.value || "1");
+            const time = $("packTime")?.value;
+            
+            if (!startDate || !endDate || !time) {
+                $("totalSessionsPreview").textContent = '0';
+                return;
+            }
+            
+            let weekdays = [];
+            if (frequency === 2) {
+                weekdays = Array.from(document.querySelectorAll('.weekday-btn.selected'))
+                    .map(btn => parseInt(btn.dataset.day));
+                if (weekdays.length !== 2) {
+                    $("totalSessionsPreview").textContent = '0';
+                    return;
+                }
+            } else {
+                const selected = document.querySelectorAll('.weekday-btn.selected');
+                if (selected.length === 0) {
+                    $("totalSessionsPreview").textContent = '0';
+                    return;
+                }
+                weekdays = [parseInt(selected[0].dataset.day)];
+            }
+            
+            const sessions = generatePackSchedule(startDate, endDate, frequency, weekdays, time);
+            $("totalSessionsPreview").textContent = sessions.length;
         }
 
         // ========== FUNÇÕES DE AGENDAMENTO ==========
@@ -1935,6 +2209,9 @@
                 const photo = getPatientPhoto(p.id);
                 const evolucoes = getPatientEvolucoes(p.id);
                 const evolucoesCount = evolucoes.length;
+                const packSessions = getPackSessions(p.id);
+                const packProgress = packSessions.length > 0 ? 
+                    Math.round((packSessions.filter(s => s.status === 'completed').length / packSessions.length) * 100) : 0;
 
                 return `
                 <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
@@ -1946,7 +2223,7 @@
                                     <b>📁 ${escapeHtml(p.name)} ${cassemsIcon} ${packIcon}</b>
                                     <div class="muted">
                                         ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
-                                        ${pack ? ` • ${pack.totalSessions} sessões no pacote` : ''}
+                                        ${pack ? ` • ${pack.totalSessions} sessões (${packProgress}%)` : ''}
                                         ${timeSlots.length ? ` • ${timeSlots.length} horários` : ''}
                                         ${evolucoesCount > 0 ? ` • 📝 ${evolucoesCount} evoluções` : ''}
                                     </div>
@@ -1968,6 +2245,7 @@
             const pack = getPatientPack(id);
             const photo = getPatientPhoto(id);
             const evolucoes = getPatientEvolucoes(id);
+            const packSessions = getPackSessions(id);
             
             const foldersPane = $("foldersPane");
             const folderOpenPane = $("folderOpenPane");
@@ -1990,50 +2268,67 @@
                 }
             }
 
-            let pacoteInfo = "Nenhum pacote configurado";
+            // Mostrar cronograma do pacote
+            let pacoteHtml = '';
+            
             if (pack) {
-                const progress = calculateSessionsProgress(id, pack.startDate, pack.totalSessions);
-                const frequencyText = pack.frequency === 2 ? `2x por semana (${pack.weekdays.map(d => DAYS[d]).join(' e ')})` : '1x por semana';
+                const completed = packSessions.filter(s => s.status === 'completed').length;
+                const missed = packSessions.filter(s => s.status === 'missed').length;
+                const pending = packSessions.filter(s => s.status === 'pending').length;
                 
-                pacoteInfo = `
+                pacoteHtml = `
                     <div style="margin:10px 0;">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                             <div>
                                 <b>📦 Pacote de ${pack.totalSessions} sessões</b>
-                                <div class="muted">Início: ${new Date(pack.startDate).toLocaleDateString("pt-BR")}</div>
-                                <div class="muted">${frequencyText} às ${pack.time}</div>
+                                <div class="muted">Período: ${new Date(pack.startDate).toLocaleDateString("pt-BR")} a ${new Date(pack.endDate).toLocaleDateString("pt-BR")}</div>
+                                <div class="muted">${pack.frequency === 2 ? '2x por semana' : '1x por semana'} às ${pack.time}</div>
                             </div>
                             <button class="small token-btn" onclick="openPackModal('${id}')">⚙️ Configurar</button>
                         </div>
+                        
                         <div class="progress-bar" style="margin:10px 0;">
-                            <div class="progress-fill" style="width:${progress.percent}%; background:#2C7A5A;"></div>
+                            <div class="progress-fill" style="width:${(completed/pack.totalSessions)*100}%; background:#2C7A5A;"></div>
                         </div>
-                        <div style="display:flex; justify-content:space-between;">
-                            <span>✅ ${progress.completed} realizadas</span>
-                            <span>⏳ ${progress.remaining} restantes</span>
+                        
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                            <span>✅ ${completed} realizadas</span>
+                            <span>❌ ${missed} faltas</span>
+                            <span>⏳ ${pending} pendentes</span>
+                        </div>
+                        
+                        <div class="schedule-timeline">
+                            <div class="schedule-header">
+                                <span><b>📅 Cronograma do Pacote</b></span>
+                                <span class="muted">${packSessions.length} sessões</span>
+                            </div>
+                            <div class="schedule-dates">
+                                ${packSessions.map((s, index) => {
+                                    const statusClass = s.status === 'completed' ? 'completed' : 
+                                                       s.status === 'missed' ? 'missed' : 'pending';
+                                    const statusText = s.status === 'completed' ? '✅ Realizada' : 
+                                                      s.status === 'missed' ? '❌ Falta' : '⏳ Pendente';
+                                    return `
+                                        <div class="schedule-row ${statusClass}">
+                                            <span class="schedule-index">#${index + 1}</span>
+                                            <span class="schedule-date">${new Date(s.date).toLocaleDateString("pt-BR")} às ${s.time}</span>
+                                            <span class="schedule-status status-${s.status}">${statusText}</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
                         </div>
                     </div>
                 `;
             } else {
-                pacoteInfo = `
+                pacoteHtml = `
                     <div style="text-align:center; padding:10px;">
                         <button class="small primary" onclick="openPackModal('${id}')">📦 Configurar Pacote de Sessões</button>
                     </div>
                 `;
             }
             
-            if (pacoteProgresso) pacoteProgresso.innerHTML = pacoteInfo;
-
-            if (pack && packControl) {
-                packControl.innerHTML = `
-                    <div style="display:flex; gap:10px; justify-content:center; margin:10px 0;">
-                        <button class="small" onclick="showPackSchedule('${id}')">📅 Ver agenda do pacote</button>
-                        <button class="small" onclick="exportPackProgress('${id}')">📊 Exportar progresso</button>
-                    </div>
-                `;
-            } else if (packControl) {
-                packControl.innerHTML = '';
-            }
+            if (pacoteProgresso) pacoteProgresso.innerHTML = pacoteHtml;
 
             // Histórico de sessões
             const patientSessions = loadSessions().filter(s => s.patientId === id).sort((a, b) => b.date.localeCompare(a.date));
@@ -2051,7 +2346,7 @@
                     <div class="item">
                         <div style="display:flex; justify-content:space-between;">
                             <div>
-                                <b>${s.date} ${s.time ? "às " + s.time : ""}</b>
+                                <b>${new Date(s.date).toLocaleDateString("pt-BR")} ${s.time ? "às " + s.time : ""}</b>
                                 <div class="muted">
                                     ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"} • 
                                     ${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"} • 
@@ -2108,44 +2403,43 @@
             const pack = getPatientPack(patientId);
             if (!pack) return;
             
-            const schedule = loadSchedule();
-            const sessions = [];
+            const packSessions = getPackSessions(patientId);
+            const scheduleList = packSessions.map((s, i) => 
+                `${i+1}. ${new Date(s.date).toLocaleDateString("pt-BR")} às ${s.time}`
+            ).join('\n');
             
-            Object.entries(schedule.recurring).forEach(([key, entry]) => {
-                if (entry.patientId === patientId) {
-                    const [day, time] = key.split("|");
-                    sessions.push({ day: parseInt(day), time });
-                }
-            });
-            
-            const scheduleList = sessions.map(s => `${DAYS[s.day]} às ${s.time}`).join('\n');
             alert(`Agenda do pacote:\n\n${scheduleList}`);
         };
 
         window.exportPackProgress = function(patientId) {
             const pack = getPatientPack(patientId);
             const patient = getPatientById(patientId);
-            const progress = calculateSessionsProgress(patientId, pack.startDate, pack.totalSessions);
+            const packSessions = getPackSessions(patientId);
+            const completed = packSessions.filter(s => s.status === 'completed').length;
             
             const data = {
                 paciente: patient.name,
-                pacote: `${pack.totalSessions} sessões`,
-                inicio: pack.startDate,
-                frequencia: pack.frequency === 2 ? '2x por semana' : '1x por semana',
-                realizadas: progress.completed,
-                restantes: progress.remaining,
-                percentual: `${progress.percent.toFixed(1)}%`
+                periodo: `${pack.startDate} a ${pack.endDate}`,
+                totalSessoes: pack.totalSessions,
+                realizadas: completed,
+                faltas: packSessions.filter(s => s.status === 'missed').length,
+                pendentes: packSessions.filter(s => s.status === 'pending').length,
+                cronograma: packSessions.map(s => ({
+                    data: s.date,
+                    hora: s.time,
+                    status: s.status
+                }))
             };
             
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `progresso_${patient.name}.json`;
+            a.download = `pacote_${patient.name}.json`;
             a.click();
             URL.revokeObjectURL(url);
             
-            showAlert("✅ Progresso exportado!", "success");
+            showAlert("✅ Dados do pacote exportados!", "success");
         };
 
         // ========== FUNÇÕES DE EVOLUÇÃO ==========
@@ -2255,6 +2549,7 @@
             const patients = loadPatients();
             const tokens = loadTokens();
             const packs = loadPacks();
+            const packSessions = loadPackSessions();
             const currentMonth = todayISO().slice(0, 7);
 
             const monthSessions = sessions.filter(s => s.date.startsWith(currentMonth));
@@ -2310,13 +2605,14 @@
             Object.entries(packs).forEach(([patientId, pack]) => {
                 const patient = getPatientById(patientId);
                 if (patient) {
-                    const progress = calculateSessionsProgress(patientId, pack.startDate, pack.totalSessions);
+                    const sessions = packSessions[patientId] || [];
+                    const completed = sessions.filter(s => s.status === 'completed').length;
                     packStatus.push({
                         patient: patient.name,
                         total: pack.totalSessions,
-                        completed: progress.completed,
-                        remaining: progress.remaining,
-                        percent: progress.percent
+                        completed: completed,
+                        remaining: pack.totalSessions - completed,
+                        percent: (completed / pack.totalSessions) * 100
                     });
                 }
             });
@@ -2389,40 +2685,6 @@
 
             if (currentPhotoFile) {
                 savePatientPhoto(patient.id, currentPhotoFile);
-            }
-
-            if (patient.billingType !== "individual") {
-                const sch = loadSchedule();
-                sch.recurring = sch.recurring || {};
-                
-                timeSlots.forEach(slot => {
-                    if (!sch.times.includes(slot.time)) {
-                        sch.times.push(slot.time);
-                    }
-                    
-                    for (let i = 0; i < (patient.billingType === "pack4" ? 4 : 8); i++) {
-                        const startDate = new Date();
-                        let daysToAdd = i * (frequency === 2 ? 3 : 7);
-                        const sessionDate = new Date();
-                        sessionDate.setDate(startDate.getDate() + daysToAdd);
-                        
-                        const key = recurKey(slot.day, slot.time);
-                        
-                        if (!sch.recurring[key]) {
-                            sch.recurring[key] = {
-                                patientId: patient.id,
-                                serviceType: patient.serviceType,
-                                startDate: todayISO(),
-                                plannedTotal: patient.billingType === "pack4" ? 4 : 8
-                            };
-                        }
-                    }
-                });
-                
-                sch.times.sort();
-                saveSchedule(sch);
-                
-                showAlert(`✅ Pacote configurado com ${timeSlots.length} horário(s)!`, "success");
             }
 
             // Limpar formulário
@@ -2559,6 +2821,10 @@
                 delete evolucoes[openedPatientId];
                 saveEvolucoes(evolucoes);
 
+                const packSessions = loadPackSessions();
+                delete packSessions[openedPatientId];
+                savePackSessions(packSessions);
+
                 savePatients(patients);
                 saveSessions(sessions);
                 saveSchedule(sch);
@@ -2623,6 +2889,14 @@
                 });
             }
 
+            // Atualizar cronograma do paciente
+            if (openedPatientId) {
+                const packSessions = getPackSessions(openedPatientId);
+                if (packSessions.length > 0) {
+                    updatePackScheduleWithSessions(openedPatientId, packSessions);
+                }
+            }
+
             const pTime = $("pTime");
             const pValue = $("pValue");
             
@@ -2662,6 +2936,14 @@
                 });
                 saveTokens(tokens);
                 
+                // Atualizar cronogramas
+                if (openedPatientId) {
+                    const packSessions = getPackSessions(openedPatientId);
+                    if (packSessions.length > 0) {
+                        updatePackScheduleWithSessions(openedPatientId, packSessions);
+                    }
+                }
+                
                 renderDaily();
                 renderDashboard();
                 showAlert("🗑️ Dia limpo!", "success");
@@ -2677,6 +2959,7 @@
                 localStorage.removeItem(KEYS.PACKS);
                 localStorage.removeItem(KEYS.PHOTOS);
                 localStorage.removeItem(KEYS.EVOLUCOES);
+                localStorage.removeItem(KEYS.PACK_SESSIONS);
                 location.reload();
             }
         };
@@ -2728,6 +3011,30 @@
                 });
             }
         };
+
+        // ========== EVENT LISTENERS PARA O MODAL DE PACOTE ==========
+        function setupPackModalListeners() {
+            const inputs = [
+                $("packStartDate"),
+                $("packEndDate"),
+                $("packFrequency"),
+                $("packTime")
+            ];
+            
+            inputs.forEach(input => {
+                if (input) {
+                    input.addEventListener('change', updateTotalSessionsPreview);
+                    input.addEventListener('input', updateTotalSessionsPreview);
+                }
+            });
+            
+            // Monitorar seleção de dias
+            document.querySelectorAll('.weekday-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    setTimeout(updateTotalSessionsPreview, 10);
+                });
+            });
+        }
 
         // ========== RENDERIZAÇÃO DO HTML ==========
         function renderApp() {
@@ -3223,6 +3530,9 @@
             if (importFile) {
                 importFile.addEventListener('change', carregarArquivo);
             }
+
+            // Configurar listeners do modal de pacote
+            setupPackModalListeners();
 
             // PWA Installation
             window.addEventListener('beforeinstallprompt', (e) => {
