@@ -408,7 +408,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Barra de progresso circular */
         .circular-progress {
             width: 60px;
             height: 60px;
@@ -551,6 +550,7 @@
             margin-top: 5px;
             display: flex;
             gap: 5px;
+            flex-wrap: wrap;
         }
 
         .slot-counter span {
@@ -812,22 +812,23 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '9.0.0';
+        const APP_VERSION = '10.0.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
         
         const KEYS = {
-            PATIENTS: "gabriel_fono_patients_v9",
-            SESSIONS: "gabriel_fono_sessions_v9",
-            SCHEDULE: "gabriel_fono_schedule_v9",
-            TOKENS: "gabriel_fono_tokens_v9",
-            BACKUP: "gabriel_fono_backup_v9",
-            THEME: "gabriel_fono_theme_v9",
+            PATIENTS: "gabriel_fono_patients_v10",
+            SESSIONS: "gabriel_fono_sessions_v10",
+            SCHEDULE: "gabriel_fono_schedule_v10",
+            TOKENS: "gabriel_fono_tokens_v10",
+            BACKUP: "gabriel_fono_backup_v10",
+            THEME: "gabriel_fono_theme_v10",
             VERSION: "gabriel_fono_version",
             NOTIFICATIONS: "gabriel_fono_notifications",
             PHOTOS: "gabriel_fono_photos",
-            EVOLUCOES: "gabriel_fono_evolucoes"
+            EVOLUCOES: "gabriel_fono_evolucoes",
+            ULTIMO_RESET: "gabriel_fono_ultimo_reset"
         };
 
         const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
@@ -936,6 +937,121 @@
             const date = new Date(dateStr + 'T12:00:00');
             date.setDate(date.getDate() + days);
             return date.toISOString().split('T')[0];
+        }
+
+        // ========== FUNÇÕES DE TOKENS ==========
+        
+        // Verificar se é dia 01 e zerar tokens se necessário
+        function verificarZerarTokens() {
+            const hoje = new Date();
+            const dia = hoje.getDate();
+            const mes = hoje.getMonth();
+            const ano = hoje.getFullYear();
+            
+            // Verificar se já zerou esse mês
+            const ultimoReset = localStorage.getItem(KEYS.ULTIMO_RESET);
+            const chaveReset = `${ano}-${mes}`;
+            
+            if (dia === 1 && ultimoReset !== chaveReset) {
+                // É dia 01 e ainda não zerou esse mês
+                const tokens = loadTokens();
+                const tokensReset = {};
+                
+                // Manter apenas tokens com status 'problema' (não zerar esses)
+                Object.entries(tokens).forEach(([sessionId, token]) => {
+                    if (token.status === 'problema') {
+                        tokensReset[sessionId] = token;
+                    }
+                });
+                
+                saveTokens(tokensReset);
+                localStorage.setItem(KEYS.ULTIMO_RESET, chaveReset);
+                
+                showAlert('🔄 Tokens zerados para o novo mês!', 'info');
+                return true;
+            }
+            return false;
+        }
+
+        // Função para contar tokens de um paciente específico no mês atual
+        function contarTokensPaciente(patientId, mesReferencia = null) {
+            const tokens = loadTokens();
+            const sessions = loadSessions();
+            let total = 0;
+            
+            // Se não especificar mês, usa o mês atual
+            const hoje = new Date();
+            const mesAlvo = mesReferencia || `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+            
+            Object.entries(tokens).forEach(([sessionId, token]) => {
+                if (token.status === 'enviado') {
+                    // Buscar a sessão para verificar o paciente
+                    const session = sessions.find(s => s.id === sessionId);
+                    if (session && session.patientId === patientId) {
+                        // Verificar se é do mês atual
+                        const dataToken = new Date(token.date + 'T12:00:00');
+                        const mesToken = `${dataToken.getFullYear()}-${String(dataToken.getMonth() + 1).padStart(2, '0')}`;
+                        
+                        if (mesToken === mesAlvo) {
+                            total++;
+                        }
+                    }
+                }
+            });
+            
+            return total;
+        }
+
+        // Função para contar tokens pendentes de um paciente
+        function contarTokensPendentesPaciente(patientId) {
+            const tokens = loadTokens();
+            const sessions = loadSessions();
+            let total = 0;
+            
+            Object.entries(tokens).forEach(([sessionId, token]) => {
+                if (token.status === 'pendente') {
+                    const session = sessions.find(s => s.id === sessionId);
+                    if (session && session.patientId === patientId) {
+                        total++;
+                    }
+                }
+            });
+            
+            return total;
+        }
+
+        // Função para contar tokens com problema de um paciente
+        function contarTokensProblemaPaciente(patientId) {
+            const tokens = loadTokens();
+            const sessions = loadSessions();
+            let total = 0;
+            
+            Object.entries(tokens).forEach(([sessionId, token]) => {
+                if (token.status === 'problema') {
+                    const session = sessions.find(s => s.id === sessionId);
+                    if (session && session.patientId === patientId) {
+                        total++;
+                    }
+                }
+            });
+            
+            return total;
+        }
+
+        // Função para contar total de tokens de todos os pacientes (para relatório)
+        function contarTotalTokens(mesReferencia = null) {
+            const tokens = loadTokens();
+            const hoje = new Date();
+            const mesAlvo = mesReferencia || `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+            
+            return Object.values(tokens).filter(t => {
+                if (t.status === 'enviado') {
+                    const dataToken = new Date(t.date + 'T12:00:00');
+                    const mesToken = `${dataToken.getFullYear()}-${String(dataToken.getMonth() + 1).padStart(2, '0')}`;
+                    return mesToken === mesAlvo;
+                }
+                return false;
+            }).length;
         }
 
         // ========== FUNÇÕES DE DADOS ==========
@@ -1184,6 +1300,9 @@
         }
 
         function renderDaily() {
+            // Verificar se precisa zerar tokens (todo dia 01)
+            verificarZerarTokens();
+            
             const date = $("date")?.value || todayISO();
             const search = $("search")?.value.toLowerCase() || "";
             const sessions = loadSessions().filter(s => s.date === date);
@@ -1225,8 +1344,10 @@
                         tokenIndicator = `<span class="pill token" style="background:rgba(44,122,90,.15);">✅ Token: ${token.code || 'Enviado'}</span>`;
                     } else if (token?.status === 'problema') {
                         tokenIndicator = `<span class="pill token" style="background:rgba(239,68,68,.15);">❌ Problema no token</span>`;
-                    } else {
+                    } else if (token?.status === 'pendente') {
                         tokenIndicator = `<span class="pill token" style="background:rgba(232,198,106,.15);">⏳ Token pendente</span>`;
+                    } else {
+                        tokenIndicator = `<span class="pill token" style="background:rgba(245,158,11,.15);">📝 Registrar token</span>`;
                     }
                 }
 
@@ -1375,6 +1496,7 @@
             $("tokenModal")?.classList.add("hidden");
             renderDaily();
             renderDashboard();
+            renderSchedule();
             generateReports();
             if (openedPatientId) openPatientFolder(openedPatientId);
             showAlert("✅ Token registrado com sucesso!", "success");
@@ -1382,6 +1504,9 @@
 
         // ========== FUNÇÕES DE AGENDAMENTO ==========
         function renderSchedule() {
+            // Verificar se precisa zerar tokens (todo dia 01)
+            verificarZerarTokens();
+            
             const sch = loadSchedule();
             const patients = loadPatients();
             const sessions = loadSessions();
@@ -1435,10 +1560,10 @@
 
                         const tokenIcon = patient?.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
                         
-                        // Contar tokens do paciente
-                        const tokensPaciente = Object.values(loadTokens()).filter(t => 
-                            t.sessionId && getPatientById(patient?.id) && t.status === 'enviado'
-                        ).length;
+                        // Contar tokens específicos deste paciente
+                        const tokensPaciente = contarTokensPaciente(patient?.id);
+                        const tokensPendentesPaciente = contarTokensPendentesPaciente(patient?.id);
+                        const tokensProblemaPaciente = contarTokensProblemaPaciente(patient?.id);
                         
                         const stats = sessoesPorPaciente[patient?.id] || { realizadas: 0, faltas: 0, total: 0 };
                         
@@ -1451,8 +1576,14 @@
                                 <span title="Total">📊 ${stats.total}</span>
                             </div>
                             ${patient?.serviceType === 'cassems' ? `
-                                <div class="slot-counter" style="margin-top:5px;">
-                                    <span class="pill token" style="font-size:0.7rem;">🎫 Tokens: ${tokensPaciente}</span>
+                                <div class="slot-counter" style="margin-top:5px; justify-content:space-around;">
+                                    <span class="pill token" style="font-size:0.7rem; background:rgba(232,198,106,0.3);">🎫 Enviados: ${tokensPaciente}</span>
+                                    ${tokensPendentesPaciente > 0 ? `
+                                        <span class="pill warn" style="font-size:0.7rem;">⏳ Pend: ${tokensPendentesPaciente}</span>
+                                    ` : ''}
+                                    ${tokensProblemaPaciente > 0 ? `
+                                        <span class="pill bad" style="font-size:0.7rem;">❌ Prob: ${tokensProblemaPaciente}</span>
+                                    ` : ''}
                                 </div>
                             ` : ''}
                         </td>`;
@@ -1558,6 +1689,9 @@
 
         // ========== DASHBOARD ==========
         function renderDashboard() {
+            // Verificar se precisa zerar tokens (todo dia 01)
+            verificarZerarTokens();
+            
             const hoje = todayISO();
             const agora = nowTime();
             const sessions = loadSessions();
@@ -1721,6 +1855,9 @@
 
         // ========== FUNÇÕES DE PACIENTES ==========
         function renderPatientFolders() {
+            // Verificar se precisa zerar tokens (todo dia 01)
+            verificarZerarTokens();
+            
             const search = $("pSearch")?.value.toLowerCase() || "";
             let pats = loadPatients().filter(p => !search || p.name.toLowerCase().includes(search));
 
@@ -1746,10 +1883,10 @@
                 const evolucoes = getPatientEvolucoes(p.id);
                 const evolucoesCount = evolucoes.length;
                 
-                // Contar tokens do paciente
-                const tokensPaciente = Object.values(loadTokens()).filter(t => 
-                    t.sessionId && getPatientById(t.sessionId?.split('-')[0])?.id === p.id && t.status === 'enviado'
-                ).length;
+                // Contar tokens específicos deste paciente
+                const tokensPaciente = contarTokensPaciente(p.id);
+                const tokensPendentes = contarTokensPendentesPaciente(p.id);
+                const tokensProblema = contarTokensProblemaPaciente(p.id);
 
                 const percent = totalSessoes > 0 ? (realizadas / totalSessoes) * 100 : 0;
 
@@ -1764,11 +1901,13 @@
                                     <div class="muted">
                                         ${p.serviceType || "Particular"} • ${totalSessoes} sessões
                                     </div>
-                                    <div style="display:flex; gap:10px; margin-top:5px;">
+                                    <div style="display:flex; gap:10px; margin-top:5px; flex-wrap:wrap;">
                                         <span class="pill ok">✅ ${realizadas}</span>
                                         <span class="pill bad">❌ ${faltas}</span>
                                         ${p.serviceType === 'cassems' ? `
                                             <span class="pill token">🎫 ${tokensPaciente}</span>
+                                            ${tokensPendentes > 0 ? `<span class="pill warn">⏳ ${tokensPendentes}</span>` : ''}
+                                            ${tokensProblema > 0 ? `<span class="pill bad">❌ ${tokensProblema}</span>` : ''}
                                         ` : ''}
                                     </div>
                                     <div class="progress-bar" style="margin-top:5px; width:100%;">
@@ -1818,16 +1957,10 @@
             const faltas = sessions.filter(s => s.did === "nao").length;
             const pendentes = sessions.length - realizadas - faltas;
             
-            // Contar tokens do paciente
-            const tokensPaciente = Object.values(loadTokens()).filter(t => {
-                const session = sessions.find(s => s.id === t.sessionId);
-                return session && t.status === 'enviado';
-            }).length;
-            
-            const tokensPendentes = Object.values(loadTokens()).filter(t => {
-                const session = sessions.find(s => s.id === t.sessionId);
-                return session && t.status === 'pendente';
-            }).length;
+            // Contar tokens específicos deste paciente
+            const tokensPaciente = contarTokensPaciente(id);
+            const tokensPendentes = contarTokensPendentesPaciente(id);
+            const tokensProblema = contarTokensProblemaPaciente(id);
 
             const percent = sessions.length > 0 ? (realizadas / sessions.length) * 100 : 0;
 
@@ -1839,12 +1972,12 @@
                         </div>
                         ${p?.serviceType === 'cassems' ? `
                             <div class="token-badge">
-                                🎫 Tokens: ${tokensPaciente}
+                                🎫 Tokens mês: ${tokensPaciente}
                             </div>
                         ` : ''}
                     </div>
                     
-                    <div style="display:flex; gap:20px; align-items:center; margin-bottom:15px;">
+                    <div style="display:flex; gap:20px; align-items:center; margin-bottom:15px; flex-wrap:wrap;">
                         <div class="circular-progress" style="background: conic-gradient(var(--primary) ${percent * 3.6}deg, var(--card) 0deg);">
                             <span class="progress-value">${Math.round(percent)}%</span>
                         </div>
@@ -1858,14 +1991,19 @@
                     
                     ${p?.serviceType === 'cassems' ? `
                         <div class="token-counter">
-                            <span>🎫 Controle de Tokens:</span>
+                            <span>🎫 Tokens do mês:</span>
                             <div style="flex:1;">
                                 <div class="token-progress">
                                     <div class="token-progress-fill" style="width: ${sessions.length > 0 ? (tokensPaciente / sessions.length) * 100 : 0}%"></div>
                                 </div>
                             </div>
-                            <span>${tokensPaciente} enviados</span>
-                            <span class="muted">${tokensPendentes} pendentes</span>
+                            <span style="color:var(--accent); font-weight:bold;">${tokensPaciente} enviados</span>
+                            ${tokensPendentes > 0 ? `
+                                <span class="pill warn" style="margin-left:10px;">⏳ ${tokensPendentes} pend</span>
+                            ` : ''}
+                            ${tokensProblema > 0 ? `
+                                <span class="pill bad" style="margin-left:10px;">❌ ${tokensProblema} prob</span>
+                            ` : ''}
                         </div>
                     ` : ''}
                     
@@ -2090,7 +2228,7 @@
             return horarios;
         }
 
-        // ========== ADD PACIENTE COM AGENDAMENTO AUTOMÁTICO ==========
+        // ========== ADD PACIENTE ==========
         window.addPatient = function() {
             const name = $("cName")?.value.trim();
             if (!name) return showAlert("❌ Nome é obrigatório", "error");
@@ -2104,7 +2242,6 @@
 
             const horarios = coletarHorarios();
             
-            // Criar paciente
             const patient = {
                 id: uid(),
                 name,
@@ -2150,7 +2287,6 @@
                 savePatientPhoto(patient.id, currentPhotoFile);
             }
 
-            // Limpar formulário
             $("cName").value = "";
             $("cPhone").value = "";
             $("cValue").value = "";
@@ -2172,7 +2308,7 @@
             renderSchedule();
             renderDashboard();
             
-            showAlert(`✅ Paciente ${name} cadastrado e agendado!`, "success");
+            showAlert(`✅ Paciente ${name} cadastrado!`, "success");
         };
 
         window.openAnamnese = function() {
@@ -2231,7 +2367,6 @@
             const patients = loadPatients().filter(p => p.id !== openedPatientId);
             const sessions = loadSessions().filter(s => s.patientId !== openedPatientId);
 
-            // Remover da agenda
             const sch = loadSchedule();
             if (sch.recurring) {
                 Object.keys(sch.recurring).forEach(key => {
@@ -2409,11 +2544,15 @@
                 return p?.serviceType === "cassems";
             });
 
-            const tokensEnviados = Object.values(tokens).filter(t => t.status === "enviado").length;
+            const tokensEnviados = contarTotalTokens();
+            const tokensPendentes = Object.values(tokens).filter(t => t.status === "pendente").length;
+            const tokensProblema = Object.values(tokens).filter(t => t.status === "problema").length;
+
             $("totalSessoesCassems").textContent = sessoesCassems.length;
             $("totalTokensEnviados").textContent = tokensEnviados;
-            $("totalTokensPendentes").textContent = Math.max(0, sessoesCassems.length - tokensEnviados);
+            $("totalTokensPendentes").textContent = tokensPendentes;
 
+            // Top devedores
             const debtors = patients.map(p => {
                 const debt = sessions.filter(s => s.patientId === p.id && s.paid !== "pago")
                     .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
@@ -2863,54 +3002,6 @@
             }
         };
 
-        // ========== AÇÕES DE SESSÃO ==========
-        window.addSession = function() {
-            const date = $("date")?.value;
-            const patientId = $("pPatient")?.value;
-            const time = $("pTime")?.value;
-            const did = $("pDid")?.value;
-            const just = $("pJust")?.value;
-            const paid = $("pPaid")?.value;
-            const manualValue = $("pValue")?.value;
-
-            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
-
-            const p = getPatientById(patientId);
-            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
-            if (p?.serviceType === "cassems") value = 26;
-
-            const session = {
-                id: uid(),
-                date, patientId, time,
-                did: did,
-                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
-                paid, value
-            };
-
-            const sessions = loadSessions();
-            sessions.push(session);
-            saveSessions(sessions);
-
-            if (p?.serviceType === "cassems") {
-                registerToken(session.id, {
-                    sessionId: session.id,
-                    date: date,
-                    patientName: p.name,
-                    code: '',
-                    status: 'pendente'
-                });
-            }
-
-            $("pTime").value = "";
-            $("pValue").value = "";
-            
-            renderDaily();
-            renderDashboard();
-            renderSchedule();
-            if (openedPatientId) openPatientFolder(openedPatientId);
-            showAlert("✅ Sessão adicionada!", "success");
-        };
-
         window.findInDay = function() {
             const term = $("search")?.value.toLowerCase() || "";
             const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
@@ -2950,11 +3041,11 @@
                 localStorage.removeItem(KEYS.TOKENS);
                 localStorage.removeItem(KEYS.PHOTOS);
                 localStorage.removeItem(KEYS.EVOLUCOES);
+                localStorage.removeItem(KEYS.ULTIMO_RESET);
                 location.reload();
             }
         };
 
-        // ========== AÇÕES DE AGENDA ==========
         window.addTime = function() {
             const time = $("newTime")?.value.trim();
             if (!time) return;
@@ -3008,6 +3099,9 @@
             });
 
             autoBackup = localStorage.getItem("autoBackup") !== "false";
+            
+            // Verificar se precisa zerar tokens ao iniciar
+            verificarZerarTokens();
             
             const notificationStatus = localStorage.getItem(KEYS.NOTIFICATIONS);
             if (notificationStatus === "granted") {
