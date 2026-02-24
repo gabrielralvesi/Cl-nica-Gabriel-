@@ -837,7 +837,7 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '6.0.0';
+        const APP_VERSION = '6.1.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
@@ -953,8 +953,14 @@
 
         function recurKey(day, time) { return `${day}|${time}`; }
 
+        // ========== HORÁRIOS CORRIGIDOS ==========
         function defaultTimes() {
-            return ["07:00", "07:40", "08:20", "09:00", "09:40", "10:20", "11:00", "13:20", "14:00", "14:40", "15:20", "16:00", "16:40", "17:20"];
+            return [
+                // Manhã - 07:00 às 11:00 (de 40 em 40 minutos)
+                "07:00", "07:40", "08:20", "09:00", "09:40", "10:20", "11:00",
+                // Tarde - 13:00 às 17:40 (de 40 em 40 minutos)
+                "13:00", "13:40", "14:20", "15:00", "15:40", "16:20", "17:00", "17:40"
+            ];
         }
 
         // ========== FUNÇÕES DE DATA ==========
@@ -1605,15 +1611,37 @@
             showAlert("✅ Token registrado com sucesso!", "success");
         };
 
-        // ========== FUNÇÕES DE AGENDAMENTO ==========
+        // ========== FUNÇÕES DE AGENDAMENTO CORRIGIDAS ==========
         function renderSchedule() {
             const sch = loadSchedule();
             const patients = loadPatients();
+            const packSessions = loadPackSessions();
             const times = (sch.times || []).sort();
-            const refDate = $("schedRef")?.value || todayISO();
             const table = $("schedTable");
             
             if (!table) return;
+
+            // Mapear todas as sessões por dia da semana e horário
+            const sessoesPorDia = {};
+            
+            // Para cada paciente, pegar as sessões do cronograma
+            patients.forEach(patient => {
+                const sessions = packSessions[patient.id] || [];
+                sessions.forEach(sessao => {
+                    const diaSemana = new Date(sessao.date + 'T12:00:00').getDay();
+                    const diaIndex = diaSemana === 0 ? 6 : diaSemana - 1;
+                    const key = `${diaIndex}|${sessao.time}`;
+                    
+                    sessoesPorDia[key] = {
+                        patientId: patient.id,
+                        patientName: patient.name,
+                        serviceType: patient.serviceType,
+                        status: sessao.status,
+                        time: sessao.time,
+                        date: sessao.date
+                    };
+                });
+            });
 
             let html = "<thead><tr><th class='timeCell'>Horário</th>";
             DAYS.forEach(day => html += `<th>${day}</th>`);
@@ -1623,21 +1651,31 @@
                 html += `<tr><td class="timeCell">${escapeHtml(time)}</td>`;
 
                 for (let day = 0; day < 7; day++) {
-                    const key = recurKey(day, time);
-                    const entry = sch.recurring?.[key];
+                    const key = `${day}|${time}`;
+                    const sessao = sessoesPorDia[key];
 
-                    if (entry) {
-                        const patient = getPatientById(entry.patientId);
-                        const colorClass = SERVICE_COLORS[entry.serviceType] || "slotAmber";
-                        const serviceLabel = entry.serviceType === "cassems" ? "Cassems" :
-                            entry.serviceType === "unimed" ? "Unimed" :
-                                entry.serviceType === "outros" ? "Outros" : "Particular";
+                    if (sessao) {
+                        const patient = getPatientById(sessao.patientId);
+                        const colorClass = sessao.serviceType === "cassems" ? "slotGreen" : 
+                                          sessao.serviceType === "particular" ? "slotAmber" :
+                                          sessao.serviceType === "unimed" ? "slotBlue" : "slotPurple";
+                        
+                        const serviceLabel = sessao.serviceType === "cassems" ? "Cassems" :
+                                            sessao.serviceType === "unimed" ? "Unimed" :
+                                            sessao.serviceType === "outros" ? "Outros" : "Particular";
 
-                        const tokenIcon = entry.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
+                        const tokenIcon = sessao.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
+                        
+                        // Ícone de status
+                        let statusIcon = '';
+                        if (sessao.status === 'completed') statusIcon = '✅ ';
+                        else if (sessao.status === 'missed') statusIcon = '❌ ';
+                        else statusIcon = '⏳ ';
 
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox ${colorClass}">
-                            <div style="font-weight:600;">${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
+                            <div style="font-weight:600;">${statusIcon} ${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
                             <div class="muted" style="font-size:0.85rem;">${serviceLabel}</div>
+                            <div class="muted" style="font-size:0.75rem;">${new Date(sessao.date).toLocaleDateString()}</div>
                         </td>`;
                     } else {
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor:pointer;">
@@ -2399,31 +2437,24 @@
             }
         }
 
-        // ========== NOVA FUNÇÃO PARA HORÁRIOS POR DIA ==========
+        // ========== FUNÇÕES DE HORÁRIOS POR DIA ==========
         window.atualizarDiasSemana = function() {
             const tipo = $("cBillingType")?.value;
             const container = document.getElementById('horariosContainer');
             
             if (!container) return;
             
-            // Limpar container
             container.innerHTML = '';
             
             if (tipo === "pack4") {
-                // 1 horário
                 criarSeletorHorario(container, 1);
-                
             } else if (tipo === "pack8") {
-                // 2 horários
                 criarSeletorHorario(container, 2);
-                
             } else {
-                // Individual - pode adicionar quantos quiser
                 criarSeletorHorarioIndividual(container);
             }
         };
 
-        // Criar seletores para pacotes fixos (1 ou 2 horários)
         function criarSeletorHorario(container, quantidade) {
             for (let i = 0; i < quantidade; i++) {
                 const div = document.createElement('div');
@@ -2450,7 +2481,6 @@
             }
         }
 
-        // Criar para individual (com botão de adicionar)
         function criarSeletorHorarioIndividual(container) {
             const div = document.createElement('div');
             div.innerHTML = `
@@ -2478,7 +2508,6 @@
             container.appendChild(div);
         }
 
-        // Adicionar mais horários no individual
         window.adicionarHorarioIndividual = function() {
             const container = document.getElementById('horariosIndividuais');
             if (!container) return;
@@ -2506,7 +2535,6 @@
             container.appendChild(div);
         };
 
-        // Função para coletar os horários selecionados
         function coletarHorarios() {
             const tipo = $("cBillingType")?.value;
             const horarios = [];
@@ -2525,7 +2553,6 @@
                     }
                 }
             } else {
-                // Individual
                 const dias = document.querySelectorAll('.dia-individual');
                 const horas = document.querySelectorAll('.hora-individual');
                 
@@ -2542,7 +2569,7 @@
             return horarios;
         }
 
-        // ========== AÇÕES DE PACIENTE (NOVO CADASTRO COM CALENDÁRIO) ==========
+        // ========== AÇÕES DE PACIENTE ==========
         window.addPatient = function() {
             const name = $("cName")?.value.trim();
             if (!name) return showAlert("❌ Nome é obrigatório", "error");
@@ -2552,7 +2579,6 @@
             const value = parseMoney($("cValue")?.value);
             const billingType = $("cBillingType")?.value || "pack4";
             
-            // Dados do calendário
             const startDate = $("cStartDate")?.value;
             const endDate = $("cEndDate")?.value;
             
@@ -2564,10 +2590,8 @@
                 return showAlert("❌ Data de término deve ser após a data de início", "error");
             }
 
-            // Coletar horários
             const horarios = coletarHorarios();
             
-            // Validar conforme o tipo de pacote
             if (billingType === "pack4" && horarios.length !== 1) {
                 return showAlert("❌ Para pacote de 4 sessões, preencha 1 dia e horário", "error");
             }
@@ -2578,10 +2602,8 @@
                 return showAlert("❌ Adicione pelo menos 1 horário", "error");
             }
 
-            // Frequência (para cálculo do cronograma)
             const frequency = billingType === "pack8" ? 2 : 1;
 
-            // Gerar cronograma para cada horário
             let todasSessoes = [];
             horarios.forEach(h => {
                 const sessions = gerarCronograma(
@@ -2594,14 +2616,12 @@
                 todasSessoes = [...todasSessoes, ...sessions];
             });
 
-            // Ordenar por data
             todasSessoes.sort((a, b) => a.date.localeCompare(b.date));
 
             if (todasSessoes.length === 0) {
                 return showAlert("❌ Nenhuma sessão possível no período selecionado", "error");
             }
 
-            // Criar paciente
             const patient = {
                 id: uid(),
                 name,
@@ -2623,14 +2643,12 @@
             patients.push(patient);
             savePatients(patients);
 
-            // Salvar cronograma
             savePackSessionsForPatient(patient.id, todasSessoes);
 
             if (currentPhotoFile) {
                 savePatientPhoto(patient.id, currentPhotoFile);
             }
 
-            // Limpar formulário
             $("cName").value = "";
             $("cPhone").value = "";
             $("cValue").value = "";
@@ -2644,7 +2662,6 @@
             if (photoPreview) photoPreview.classList.add("hidden");
             if (photoPlaceholder) photoPlaceholder.classList.remove("hidden");
 
-            // Limpar horários
             const container = document.getElementById('horariosContainer');
             if (container) container.innerHTML = '';
 
@@ -2806,7 +2823,6 @@
                 });
             }
 
-            // Atualizar cronograma do paciente
             atualizarStatusCronograma(patientId);
 
             const pTime = $("pTime");
@@ -2897,11 +2913,6 @@
                 renderSchedule();
                 showAlert("✅ Horários restaurados!", "success");
             }
-        };
-
-        // ========== FUNÇÕES DO CALENDÁRIO ==========
-        window.calcularTotalSessoesPreview = function() {
-            // Esta função pode ser implementada se desejar
         };
 
         // ========== RENDERIZAÇÃO DO HTML ==========
@@ -3097,7 +3108,7 @@
                             <div class="list" id="dayList"></div>
                         </section>
 
-                        <!-- Pacientes (COM NOVOS HORÁRIOS) -->
+                        <!-- Pacientes -->
                         <section id="viewPatients" class="card hidden">
                             <div class="split">
                                 <div class="card">
@@ -3152,7 +3163,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Calendário do pacote -->
                                     <div style="margin:15px 0;">
                                         <label>📅 Período do pacote</label>
                                         <div class="grid2">
@@ -3167,12 +3177,9 @@
                                         </div>
                                     </div>
 
-                                    <!-- NOVO: Dias e horários manuais -->
                                     <div style="margin:15px 0;">
                                         <label>📆 Dias e horários das sessões</label>
-                                        <div id="horariosContainer">
-                                            <!-- Os horários serão inseridos aqui via JavaScript -->
-                                        </div>
+                                        <div id="horariosContainer"></div>
                                         <small class="muted" id="weekdayHint">Selecione o tipo de pacote primeiro</small>
                                     </div>
 
@@ -3215,13 +3222,11 @@
 
                                         <div id="pacoteProgresso" style="margin:10px 0;"></div>
                                         
-                                        <!-- Histórico de Sessões -->
                                         <div style="margin-top:20px;">
                                             <h3>📋 Histórico de Sessões</h3>
                                             <div id="patientHistory" class="list"></div>
                                         </div>
 
-                                        <!-- Seção de Evolução -->
                                         <div style="margin-top:30px;" id="evolucoesSection"></div>
                                     </div>
                                 </div>
@@ -3335,13 +3340,22 @@
             `;
         }
 
-        // ========== EVENT LISTENERS ==========
-        function setupEventListeners() {
-            // Inicializar horários quando a página carregar
-            setTimeout(() => {
-                atualizarDiasSemana();
-            }, 100);
-        }
+        // ========== FUNÇÕES ADICIONAIS ==========
+        window.toggleShortcuts = function() {
+            $("shortcutsPanel")?.classList.toggle("hidden");
+        };
+
+        window.installPWA = function() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showAlert("✅ App instalado com sucesso!", "success");
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        };
 
         // ========== INICIALIZAÇÃO ==========
         function init() {
@@ -3359,28 +3373,17 @@
                 if (themeBtn) themeBtn.innerHTML = "🌙 Tema";
             }
 
-            const dateInput = $("date");
-            if (dateInput) dateInput.value = todayISO();
+            $("date").value = todayISO();
+            $("schedRef").value = todayISO();
+            $("cStartDate").value = todayISO();
+            $("cEndDate").value = addDays(todayISO(), 30);
             
-            const schedRef = $("schedRef");
-            if (schedRef) schedRef.value = todayISO();
-            
-            const cStartDate = $("cStartDate");
-            if (cStartDate) cStartDate.value = todayISO();
-            
-            const cEndDate = $("cEndDate");
-            if (cEndDate) cEndDate.value = addDays(todayISO(), 30);
-            
-            const todayEl = $("today");
-            if (todayEl) {
-                todayEl.innerHTML = new Date().toLocaleDateString("pt-BR", {
-                    weekday: "long", year: "numeric", month: "long", day: "numeric"
-                });
-            }
+            $("today").innerHTML = new Date().toLocaleDateString("pt-BR", {
+                weekday: "long", year: "numeric", month: "long", day: "numeric"
+            });
 
             autoBackup = localStorage.getItem("autoBackup") !== "false";
             
-            // Verificar permissão de notificações
             const notificationStatus = localStorage.getItem(KEYS.NOTIFICATIONS);
             if (notificationStatus === "granted") {
                 notificationsEnabled = true;
@@ -3395,16 +3398,8 @@
                 }, 30000);
             }
 
-            // Configurar input de arquivo
-            const importFile = $("importFile");
-            if (importFile) {
-                importFile.addEventListener('change', carregarArquivo);
-            }
+            $("importFile")?.addEventListener('change', carregarArquivo);
 
-            // Configurar listeners
-            setupEventListeners();
-
-            // PWA Installation
             window.addEventListener('beforeinstallprompt', (e) => {
                 e.preventDefault();
                 deferredPrompt = e;
@@ -3412,7 +3407,6 @@
                 if (installBtn) installBtn.style.display = "inline-block";
             });
 
-            // Atalhos de teclado
             document.addEventListener("keydown", (e) => {
                 if (e.ctrlKey) {
                     switch (e.key) {
@@ -3430,7 +3424,6 @@
                 }
             });
 
-            // Modais
             $("cancelNotification")?.addEventListener("click", () => {
                 $("notificationModal")?.classList.add("hidden");
             });
@@ -3471,6 +3464,8 @@
             renderSchedule();
             renderDashboard();
             generateReports();
+
+            setTimeout(atualizarDiasSemana, 100);
         }
 
         if (document.readyState === 'loading') {
