@@ -1926,7 +1926,6 @@
                 const cassemsIcon = p.serviceType === 'cassems' ? '🎫' : '';
                 const pack = getPatientPack(p.id);
                 const packIcon = pack ? '📦' : '';
-                const timeSlots = p.timeSlots || [];
                 const photo = getPatientPhoto(p.id);
                 const evolucoes = getPatientEvolucoes(p.id);
                 const evolucoesCount = evolucoes.length;
@@ -1945,7 +1944,6 @@
                                     <div class="muted">
                                         ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
                                         ${pack ? ` • ${pack.totalSessoes || 0} sessões (${progress}%)` : ''}
-                                        ${timeSlots.length ? ` • ${timeSlots.length} horários` : ''}
                                         ${evolucoesCount > 0 ? ` • 📝 ${evolucoesCount} evoluções` : ''}
                                     </div>
                                 </div>
@@ -2401,6 +2399,149 @@
             }
         }
 
+        // ========== NOVA FUNÇÃO PARA HORÁRIOS POR DIA ==========
+        window.atualizarDiasSemana = function() {
+            const tipo = $("cBillingType")?.value;
+            const container = document.getElementById('horariosContainer');
+            
+            if (!container) return;
+            
+            // Limpar container
+            container.innerHTML = '';
+            
+            if (tipo === "pack4") {
+                // 1 horário
+                criarSeletorHorario(container, 1);
+                
+            } else if (tipo === "pack8") {
+                // 2 horários
+                criarSeletorHorario(container, 2);
+                
+            } else {
+                // Individual - pode adicionar quantos quiser
+                criarSeletorHorarioIndividual(container);
+            }
+        };
+
+        // Criar seletores para pacotes fixos (1 ou 2 horários)
+        function criarSeletorHorario(container, quantidade) {
+            for (let i = 0; i < quantidade; i++) {
+                const div = document.createElement('div');
+                div.className = 'grid2';
+                div.style.marginBottom = '10px';
+                div.innerHTML = `
+                    <div>
+                        <select class="dia-semana-${i}" style="width:100%;">
+                            <option value="">Dia</option>
+                            <option value="0">Segunda</option>
+                            <option value="1">Terça</option>
+                            <option value="2">Quarta</option>
+                            <option value="3">Quinta</option>
+                            <option value="4">Sexta</option>
+                            <option value="5">Sábado</option>
+                            <option value="6">Domingo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="time" class="horario-${i}" value="08:00" step="600" style="width:100%;">
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // Criar para individual (com botão de adicionar)
+        function criarSeletorHorarioIndividual(container) {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <div id="horariosIndividuais">
+                    <div class="grid2" style="margin-bottom:10px;">
+                        <div>
+                            <select class="dia-individual" style="width:100%;">
+                                <option value="">Dia</option>
+                                <option value="0">Segunda</option>
+                                <option value="1">Terça</option>
+                                <option value="2">Quarta</option>
+                                <option value="3">Quinta</option>
+                                <option value="4">Sexta</option>
+                                <option value="5">Sábado</option>
+                                <option value="6">Domingo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input type="time" class="hora-individual" value="08:00" step="600" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+                <button class="small" onclick="adicionarHorarioIndividual()" style="margin-top:5px;">➕ Adicionar outro horário</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Adicionar mais horários no individual
+        window.adicionarHorarioIndividual = function() {
+            const container = document.getElementById('horariosIndividuais');
+            if (!container) return;
+            
+            const div = document.createElement('div');
+            div.className = 'grid2';
+            div.style.marginBottom = '10px';
+            div.innerHTML = `
+                <div>
+                    <select class="dia-individual" style="width:100%;">
+                        <option value="">Dia</option>
+                        <option value="0">Segunda</option>
+                        <option value="1">Terça</option>
+                        <option value="2">Quarta</option>
+                        <option value="3">Quinta</option>
+                        <option value="4">Sexta</option>
+                        <option value="5">Sábado</option>
+                        <option value="6">Domingo</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="time" class="hora-individual" value="08:00" step="600" style="width:100%;">
+                </div>
+            `;
+            container.appendChild(div);
+        };
+
+        // Função para coletar os horários selecionados
+        function coletarHorarios() {
+            const tipo = $("cBillingType")?.value;
+            const horarios = [];
+            
+            if (tipo === "pack4" || tipo === "pack8") {
+                const quantidade = tipo === "pack4" ? 1 : 2;
+                for (let i = 0; i < quantidade; i++) {
+                    const diaSelect = document.querySelector(`.dia-semana-${i}`);
+                    const horarioInput = document.querySelector(`.horario-${i}`);
+                    
+                    if (diaSelect && horarioInput && diaSelect.value) {
+                        horarios.push({
+                            dia: parseInt(diaSelect.value),
+                            horario: horarioInput.value
+                        });
+                    }
+                }
+            } else {
+                // Individual
+                const dias = document.querySelectorAll('.dia-individual');
+                const horas = document.querySelectorAll('.hora-individual');
+                
+                for (let i = 0; i < dias.length; i++) {
+                    if (dias[i].value) {
+                        horarios.push({
+                            dia: parseInt(dias[i].value),
+                            horario: horas[i].value
+                        });
+                    }
+                }
+            }
+            
+            return horarios;
+        }
+
         // ========== AÇÕES DE PACIENTE (NOVO CADASTRO COM CALENDÁRIO) ==========
         window.addPatient = function() {
             const name = $("cName")?.value.trim();
@@ -2414,43 +2555,49 @@
             // Dados do calendário
             const startDate = $("cStartDate")?.value;
             const endDate = $("cEndDate")?.value;
-            const time = $("cTime")?.value;
             
-            if (!startDate || !endDate || !time) {
-                return showAlert("❌ Preencha as datas e horário do pacote", "error");
+            if (!startDate || !endDate) {
+                return showAlert("❌ Preencha as datas do pacote", "error");
             }
             
             if (endDate < startDate) {
                 return showAlert("❌ Data de término deve ser após a data de início", "error");
             }
 
-            <!-- Dias da semana e horários (NOVO) -->
-<div style="margin:15px 0;">
-    <label>📆 Dias e horários das sessões</label>
-    <div id="horariosContainer">
-        <!-- Os horários serão inseridos aqui via JavaScript -->
-    </div>
-    <small class="muted" id="weekdayHint">Selecione o tipo de pacote primeiro</small>
-</div>
+            // Coletar horários
+            const horarios = coletarHorarios();
             
             // Validar conforme o tipo de pacote
-            if (billingType === "pack4" && selectedDays.length !== 1) {
-                return showAlert("❌ Para pacote de 4 sessões, selecione 1 dia da semana", "error");
+            if (billingType === "pack4" && horarios.length !== 1) {
+                return showAlert("❌ Para pacote de 4 sessões, preencha 1 dia e horário", "error");
             }
-            if (billingType === "pack8" && selectedDays.length !== 2) {
-                return showAlert("❌ Para pacote de 8 sessões, selecione 2 dias da semana", "error");
+            if (billingType === "pack8" && horarios.length !== 2) {
+                return showAlert("❌ Para pacote de 8 sessões, preencha 2 dias e horários", "error");
             }
-            if (billingType === "individual" && selectedDays.length === 0) {
-                return showAlert("❌ Selecione pelo menos 1 dia da semana", "error");
+            if (billingType === "individual" && horarios.length === 0) {
+                return showAlert("❌ Adicione pelo menos 1 horário", "error");
             }
 
-            // Frequência
+            // Frequência (para cálculo do cronograma)
             const frequency = billingType === "pack8" ? 2 : 1;
 
-            // Gerar cronograma
-            const cronograma = gerarCronograma(startDate, endDate, frequency, selectedDays, time);
-            
-            if (cronograma.length === 0) {
+            // Gerar cronograma para cada horário
+            let todasSessoes = [];
+            horarios.forEach(h => {
+                const sessions = gerarCronograma(
+                    startDate, 
+                    endDate, 
+                    frequency, 
+                    [h.dia], 
+                    h.horario
+                );
+                todasSessoes = [...todasSessoes, ...sessions];
+            });
+
+            // Ordenar por data
+            todasSessoes.sort((a, b) => a.date.localeCompare(b.date));
+
+            if (todasSessoes.length === 0) {
                 return showAlert("❌ Nenhuma sessão possível no período selecionado", "error");
             }
 
@@ -2463,12 +2610,10 @@
                 defaultValue: value,
                 billingType,
                 frequency,
-                timeSlots: [{ day: selectedDays[0], time }], // Manter compatibilidade
+                horarios: horarios,
                 startDate,
                 endDate,
-                time,
-                weekdays: selectedDays,
-                totalSessoes: cronograma.length,
+                totalSessoes: todasSessoes.length,
                 notes: $("cNotes")?.value || "",
                 anamnese: { queixa: "", historico: "", obs: "" },
                 createdAt: new Date().toISOString()
@@ -2479,7 +2624,7 @@
             savePatients(patients);
 
             // Salvar cronograma
-            savePackSessionsForPatient(patient.id, cronograma);
+            savePackSessionsForPatient(patient.id, todasSessoes);
 
             if (currentPhotoFile) {
                 savePatientPhoto(patient.id, currentPhotoFile);
@@ -2492,8 +2637,6 @@
             $("cNotes").value = "";
             $("cStartDate").value = todayISO();
             $("cEndDate").value = addDays(todayISO(), 30);
-            $("cTime").value = "08:00";
-            document.querySelectorAll('.weekday-btn').forEach(btn => btn.classList.remove('selected'));
             
             currentPhotoFile = null;
             const photoPreview = $("photoPreview");
@@ -2501,11 +2644,15 @@
             if (photoPreview) photoPreview.classList.add("hidden");
             if (photoPlaceholder) photoPlaceholder.classList.remove("hidden");
 
+            // Limpar horários
+            const container = document.getElementById('horariosContainer');
+            if (container) container.innerHTML = '';
+
             renderPatientSelect();
             renderPatientFolders();
             renderDashboard();
             
-            showAlert(`✅ Paciente cadastrado! ${cronograma.length} sessões previstas.`, "success");
+            showAlert(`✅ Paciente cadastrado! ${todasSessoes.length} sessões previstas.`, "success");
         };
 
         window.openAnamnese = function() {
@@ -2752,327 +2899,51 @@
             }
         };
 
-        // ========== FUNÇÕES DO CALENDÁRIO NO CADASTRO ==========
+        // ========== FUNÇÕES DO CALENDÁRIO ==========
         window.calcularTotalSessoesPreview = function() {
-            const start = $("cStartDate")?.value;
-            const end = $("cEndDate")?.value;
-            const tipo = $("cBillingType")?.value;
-            const time = $("cTime")?.value;
-            
-            if (!start || !end || !time) {
-                const preview = $("totalSessoesPreview");
-                if (preview) preview.innerHTML = '<span class="muted">Preencha as datas</span>';
-                return;
-            }
-
-            const selected = Array.from(document.querySelectorAll('.weekday-btn.selected')).map(btn => parseInt(btn.dataset.day));
-            
-            if (tipo === "pack4" && selected.length !== 1) {
-                const preview = $("totalSessoesPreview");
-                if (preview) preview.innerHTML = '<span class="muted" style="color:#ef4444;">Selecione 1 dia</span>';
-                return;
-            }
-            if (tipo === "pack8" && selected.length !== 2) {
-                const preview = $("totalSessoesPreview");
-                if (preview) preview.innerHTML = '<span class="muted" style="color:#ef4444;">Selecione 2 dias</span>';
-                return;
-            }
-            if (tipo === "individual" && selected.length === 0) {
-                const preview = $("totalSessoesPreview");
-                if (preview) preview.innerHTML = '<span class="muted" style="color:#ef4444;">Selecione os dias</span>';
-                return;
-            }
-
-            const frequency = tipo === "pack8" ? 2 : 1;
-            const sessions = gerarCronograma(start, end, frequency, selected, time);
-            
-            const preview = $("totalSessoesPreview");
-            if (preview) {
-                preview.innerHTML = `
-                    <span style="font-weight:bold; color:var(--primary);">${sessions.length} sessões</span>
-                    <span class="muted"> (${new Date(start).toLocaleDateString()} a ${new Date(end).toLocaleDateString()})</span>
-                `;
-            }
+            // Esta função pode ser implementada se desejar
         };
 
-        // Configurar seleção de dias
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('weekday-btn')) {
-                const tipo = $("cBillingType")?.value;
-                const max = tipo === "pack8" ? 2 : (tipo === "pack4" ? 1 : 7);
-                
-                if (e.target.classList.contains('selected')) {
-                    e.target.classList.remove('selected');
-                } else {
-                    const selected = document.querySelectorAll('.weekday-btn.selected').length;
-                    if (selected < max) {
-                        e.target.classList.add('selected');
-                    } else {
-                        showAlert(`Selecione no máximo ${max} dia(s)`, 'warning');
-                    }
-                }
-                calcularTotalSessoesPreview();
-            }
-        });
-
-      // ========== NOVO: GERENCIAMENTO DE HORÁRIOS POR DIA ==========
-window.atualizarDiasSemana = function() {
-    const tipo = $("cBillingType")?.value;
-    const container = document.getElementById('horariosContainer');
-    const hint = $("weekdayHint");
-    
-    if (!container) return;
-    
-    // Limpar container
-    container.innerHTML = '';
-    
-    if (tipo === "pack4") {
-        // 1 horário
-        hint.innerHTML = "Selecione 1 dia da semana e informe o horário";
-        criarSeletorHorario(container, 1);
-        
-    } else if (tipo === "pack8") {
-        // 2 horários
-        hint.innerHTML = "Selecione 2 dias da semana e informe os horários (podem ser diferentes)";
-        criarSeletorHorario(container, 2);
-        
-    } else {
-        // Individual - pode adicionar quantos quiser
-        hint.innerHTML = "Individual - clique em + para adicionar horários";
-        criarSeletorHorarioIndividual(container);
-    }
-};
-
-// Criar seletores para pacotes fixos (1 ou 2 horários)
-function criarSeletorHorario(container, quantidade) {
-    for (let i = 0; i < quantidade; i++) {
-        const div = document.createElement('div');
-        div.className = 'grid2';
-        div.style.marginBottom = '10px';
-        div.innerHTML = `
-            <div>
-                <select class="dia-semana-${i}" style="width:100%;">
-                    <option value="">Dia</option>
-                    <option value="0">Segunda</option>
-                    <option value="1">Terça</option>
-                    <option value="2">Quarta</option>
-                    <option value="3">Quinta</option>
-                    <option value="4">Sexta</option>
-                    <option value="5">Sábado</option>
-                    <option value="6">Domingo</option>
-                </select>
-            </div>
-            <div>
-                <input type="time" class="horario-${i}" value="08:00" step="600" style="width:100%;">
-            </div>
-        `;
-        container.appendChild(div);
-    }
-}
-
-// Criar para individual (com botão de adicionar)
-function criarSeletorHorarioIndividual(container) {
-    const div = document.createElement('div');
-    div.innerHTML = `
-        <div id="horariosIndividuais">
-            <div class="grid2" style="margin-bottom:10px;">
-                <div>
-                    <select class="dia-individual" style="width:100%;">
-                        <option value="">Dia</option>
-                        <option value="0">Segunda</option>
-                        <option value="1">Terça</option>
-                        <option value="2">Quarta</option>
-                        <option value="3">Quinta</option>
-                        <option value="4">Sexta</option>
-                        <option value="5">Sábado</option>
-                        <option value="6">Domingo</option>
-                    </select>
-                </div>
-                <div>
-                    <input type="time" class="hora-individual" value="08:00" step="600" style="width:100%;">
-                </div>
-            </div>
-        </div>
-        <button class="small" onclick="adicionarHorarioIndividual()" style="margin-top:5px;">➕ Adicionar outro horário</button>
-    `;
-    container.appendChild(div);
-}
-
-// Adicionar mais horários no individual
-window.adicionarHorarioIndividual = function() {
-    const container = document.getElementById('horariosIndividuais');
-    if (!container) return;
-    
-    const div = document.createElement('div');
-    div.className = 'grid2';
-    div.style.marginBottom = '10px';
-    div.innerHTML = `
-        <div>
-            <select class="dia-individual" style="width:100%;">
-                <option value="">Dia</option>
-                <option value="0">Segunda</option>
-                <option value="1">Terça</option>
-                <option value="2">Quarta</option>
-                <option value="3">Quinta</option>
-                <option value="4">Sexta</option>
-                <option value="5">Sábado</option>
-                <option value="6">Domingo</option>
-            </select>
-        </div>
-        <div>
-            <input type="time" class="hora-individual" value="08:00" step="600" style="width:100%;">
-        </div>
-    `;
-    container.appendChild(div);
-};
-
-// Função para coletar os horários selecionados
-function coletarHorarios() {
-    const tipo = $("cBillingType")?.value;
-    const horarios = [];
-    
-    if (tipo === "pack4" || tipo === "pack8") {
-        const quantidade = tipo === "pack4" ? 1 : 2;
-        for (let i = 0; i < quantidade; i++) {
-            const diaSelect = document.querySelector(`.dia-semana-${i}`);
-            const horarioInput = document.querySelector(`.horario-${i}`);
+        // ========== RENDERIZAÇÃO DO HTML ==========
+        function renderApp() {
+            const app = document.getElementById('app');
             
-            if (diaSelect && horarioInput && diaSelect.value) {
-                horarios.push({
-                    dia: parseInt(diaSelect.value),
-                    horario: horarioInput.value
-                });
-            }
-        }
-    } else {
-        // Individual
-        const dias = document.querySelectorAll('.dia-individual');
-        const horas = document.querySelectorAll('.hora-individual');
-        
-        for (let i = 0; i < dias.length; i++) {
-            if (dias[i].value) {
-                horarios.push({
-                    dia: parseInt(dias[i].value),
-                    horario: horas[i].value
-                });
-            }
-        }
-    }
-    
-    return horarios;
-}
+            app.innerHTML = `
+                <section id="appWrap">
+                    <header>
+                        <div class="logo-container">
+                            <div class="logo-icon">GA</div>
+                            <div class="logo-text">
+                                <h2>${CLINIC_NAME}</h2>
+                                <p>${CLINIC_SUBTITLE}</p>
+                                <small>${CLINIC_CRFA}</small>
+                            </div>
+                        </div>
 
-// Modificar a função addPatient para usar os novos horários
-window.addPatient = function() {
-    const name = $("cName")?.value.trim();
-    if (!name) return showAlert("❌ Nome é obrigatório", "error");
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div id="today" class="muted"></div>
+                            <button id="themeToggle" class="small" style="border-radius:30px;" onclick="toggleTheme()">🌓 Tema</button>
+                            <button id="installPWA" class="small primary" style="display:none;" onclick="installPWA()">📱 Instalar App</button>
+                        </div>
 
-    const phone = $("cPhone")?.value || "";
-    const serviceType = $("cServiceType")?.value || "particular";
-    const value = parseMoney($("cValue")?.value);
-    const billingType = $("cBillingType")?.value || "pack4";
-    
-    // Dados do calendário
-    const startDate = $("cStartDate")?.value;
-    const endDate = $("cEndDate")?.value;
-    
-    if (!startDate || !endDate) {
-        return showAlert("❌ Preencha as datas do pacote", "error");
-    }
-    
-    if (endDate < startDate) {
-        return showAlert("❌ Data de término deve ser após a data de início", "error");
-    }
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                            <div class="backup-bar">
+                                <span class="muted">💾 Backup:</span>
+                                <button class="small primary" onclick="exportarDados()">📤 Exportar</button>
+                                <button class="small" onclick="importarDados()">📥 Importar</button>
+                            </div>
 
-    // Coletar horários
-    const horarios = coletarHorarios();
-    
-    // Validar conforme o tipo de pacote
-    if (billingType === "pack4" && horarios.length !== 1) {
-        return showAlert("❌ Para pacote de 4 sessões, preencha 1 dia e horário", "error");
-    }
-    if (billingType === "pack8" && horarios.length !== 2) {
-        return showAlert("❌ Para pacote de 8 sessões, preencha 2 dias e horários", "error");
-    }
-    if (billingType === "individual" && horarios.length === 0) {
-        return showAlert("❌ Adicione pelo menos 1 horário", "error");
-    }
+                            <div class="tabs">
+                                <button class="tab active" id="tabDashboard" onclick="setTab('dashboard')">📊 Dashboard</button>
+                                <button class="tab" id="tabDaily" onclick="setTab('daily')">📅 Diário</button>
+                                <button class="tab" id="tabPatients" onclick="setTab('patients')">👥 Pacientes</button>
+                                <button class="tab" id="tabSchedule" onclick="setTab('schedule')">📆 Agendamento</button>
+                                <button class="tab" id="tabReports" onclick="setTab('reports')">📈 Relatórios</button>
+                            </div>
+                        </div>
+                    </header>
 
-    // Frequência (para cálculo do cronograma)
-    const frequency = billingType === "pack8" ? 2 : 1;
-
-    // Gerar cronograma para cada horário
-    let todasSessoes = [];
-    horarios.forEach(h => {
-        const sessions = gerarCronograma(
-            startDate, 
-            endDate, 
-            frequency, 
-            [h.dia], 
-            h.horario
-        );
-        todasSessoes = [...todasSessoes, ...sessions];
-    });
-
-    // Ordenar por data
-    todasSessoes.sort((a, b) => a.date.localeCompare(b.date));
-
-    if (todasSessoes.length === 0) {
-        return showAlert("❌ Nenhuma sessão possível no período selecionado", "error");
-    }
-
-    // Criar paciente
-    const patient = {
-        id: uid(),
-        name,
-        phone,
-        serviceType,
-        defaultValue: value,
-        billingType,
-        frequency,
-        horarios: horarios, // Guardar os horários configurados
-        startDate,
-        endDate,
-        totalSessoes: todasSessoes.length,
-        notes: $("cNotes")?.value || "",
-        anamnese: { queixa: "", historico: "", obs: "" },
-        createdAt: new Date().toISOString()
-    };
-
-    const patients = loadPatients();
-    patients.push(patient);
-    savePatients(patients);
-
-    // Salvar cronograma
-    savePackSessionsForPatient(patient.id, todasSessoes);
-
-    if (currentPhotoFile) {
-        savePatientPhoto(patient.id, currentPhotoFile);
-    }
-
-    // Limpar formulário
-    $("cName").value = "";
-    $("cPhone").value = "";
-    $("cValue").value = "";
-    $("cNotes").value = "";
-    $("cStartDate").value = todayISO();
-    $("cEndDate").value = addDays(todayISO(), 30);
-    
-    currentPhotoFile = null;
-    const photoPreview = $("photoPreview");
-    const photoPlaceholder = $("photoPlaceholder");
-    if (photoPreview) photoPreview.classList.add("hidden");
-    if (photoPlaceholder) photoPlaceholder.classList.remove("hidden");
-
-    // Limpar horários
-    atualizarDiasSemana();
-
-    renderPatientSelect();
-    renderPatientFolders();
-    renderDashboard();
-    
-    showAlert(`✅ Paciente cadastrado! ${todasSessoes.length} sessões previstas.`, "success");
-};
+                    <main>
                         <!-- DASHBOARD -->
                         <section id="viewDashboard" class="card">
                             <h2>📊 Dashboard</h2>
@@ -3226,7 +3097,7 @@ window.addPatient = function() {
                             <div class="list" id="dayList"></div>
                         </section>
 
-                        <!-- Pacientes (COM CALENDÁRIO NOVO) -->
+                        <!-- Pacientes (COM NOVOS HORÁRIOS) -->
                         <section id="viewPatients" class="card hidden">
                             <div class="split">
                                 <div class="card">
@@ -3276,8 +3147,8 @@ window.addPatient = function() {
                                             </select>
                                         </div>
                                         <div>
-                                            <label>Horário das sessões</label>
-                                            <input type="time" id="cTime" value="08:00" step="600" />
+                                            <label>&nbsp;</label>
+                                            <input type="text" readonly style="background:transparent; border:none;" />
                                         </div>
                                     </div>
 
@@ -3286,34 +3157,23 @@ window.addPatient = function() {
                                         <label>📅 Período do pacote</label>
                                         <div class="grid2">
                                             <div>
-                                                <input type="date" id="cStartDate" onchange="calcularTotalSessoesPreview()" />
+                                                <input type="date" id="cStartDate" />
                                                 <small class="muted">Data de início</small>
                                             </div>
                                             <div>
-                                                <input type="date" id="cEndDate" onchange="calcularTotalSessoesPreview()" />
+                                                <input type="date" id="cEndDate" />
                                                 <small class="muted">Data de término</small>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Dias da semana -->
+                                    <!-- NOVO: Dias e horários manuais -->
                                     <div style="margin:15px 0;">
-                                        <label>📆 Dias da semana</label>
-                                        <div class="weekday-selector" id="weekdaySelector">
-                                            <div class="weekday-btn" data-day="0">S</div>
-                                            <div class="weekday-btn" data-day="1">T</div>
-                                            <div class="weekday-btn" data-day="2">Q</div>
-                                            <div class="weekday-btn" data-day="3">Q</div>
-                                            <div class="weekday-btn" data-day="4">S</div>
-                                            <div class="weekday-btn" data-day="5">S</div>
-                                            <div class="weekday-btn" data-day="6">D</div>
+                                        <label>📆 Dias e horários das sessões</label>
+                                        <div id="horariosContainer">
+                                            <!-- Os horários serão inseridos aqui via JavaScript -->
                                         </div>
-                                        <small class="muted" id="weekdayHint">Selecione 1 dia para 4 sessões ou 2 dias para 8 sessões</small>
-                                    </div>
-
-                                    <!-- Preview da contagem -->
-                                    <div class="info-box" id="totalSessoesPreview" style="text-align:center;">
-                                        <span class="muted">Preencha as datas e selecione os dias</span>
+                                        <small class="muted" id="weekdayHint">Selecione o tipo de pacote primeiro</small>
                                     </div>
 
                                     <label style="margin-top:15px;">Observações</label>
@@ -3477,14 +3337,10 @@ window.addPatient = function() {
 
         // ========== EVENT LISTENERS ==========
         function setupEventListeners() {
-            // Configurar inputs do calendário
-            const inputs = [$("cStartDate"), $("cEndDate"), $("cTime"), $("cBillingType")];
-            inputs.forEach(input => {
-                if (input) {
-                    input.addEventListener('change', calcularTotalSessoesPreview);
-                    input.addEventListener('input', calcularTotalSessoesPreview);
-                }
-            });
+            // Inicializar horários quando a página carregar
+            setTimeout(() => {
+                atualizarDiasSemana();
+            }, 100);
         }
 
         // ========== INICIALIZAÇÃO ==========
@@ -3615,9 +3471,6 @@ window.addPatient = function() {
             renderSchedule();
             renderDashboard();
             generateReports();
-
-            // Preview inicial do calendário
-            setTimeout(calcularTotalSessoesPreview, 100);
         }
 
         if (document.readyState === 'loading') {
