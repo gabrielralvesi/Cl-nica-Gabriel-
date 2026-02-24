@@ -812,7 +812,7 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '10.0.0';
+        const APP_VERSION = '10.1.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
@@ -941,23 +941,19 @@
 
         // ========== FUNÇÕES DE TOKENS ==========
         
-        // Verificar se é dia 01 e zerar tokens se necessário
         function verificarZerarTokens() {
             const hoje = new Date();
             const dia = hoje.getDate();
             const mes = hoje.getMonth();
             const ano = hoje.getFullYear();
             
-            // Verificar se já zerou esse mês
             const ultimoReset = localStorage.getItem(KEYS.ULTIMO_RESET);
             const chaveReset = `${ano}-${mes}`;
             
             if (dia === 1 && ultimoReset !== chaveReset) {
-                // É dia 01 e ainda não zerou esse mês
                 const tokens = loadTokens();
                 const tokensReset = {};
                 
-                // Manter apenas tokens com status 'problema' (não zerar esses)
                 Object.entries(tokens).forEach(([sessionId, token]) => {
                     if (token.status === 'problema') {
                         tokensReset[sessionId] = token;
@@ -973,22 +969,18 @@
             return false;
         }
 
-        // Função para contar tokens de um paciente específico no mês atual
         function contarTokensPaciente(patientId, mesReferencia = null) {
             const tokens = loadTokens();
             const sessions = loadSessions();
             let total = 0;
             
-            // Se não especificar mês, usa o mês atual
             const hoje = new Date();
             const mesAlvo = mesReferencia || `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
             
             Object.entries(tokens).forEach(([sessionId, token]) => {
                 if (token.status === 'enviado') {
-                    // Buscar a sessão para verificar o paciente
                     const session = sessions.find(s => s.id === sessionId);
                     if (session && session.patientId === patientId) {
-                        // Verificar se é do mês atual
                         const dataToken = new Date(token.date + 'T12:00:00');
                         const mesToken = `${dataToken.getFullYear()}-${String(dataToken.getMonth() + 1).padStart(2, '0')}`;
                         
@@ -1002,7 +994,6 @@
             return total;
         }
 
-        // Função para contar tokens pendentes de um paciente
         function contarTokensPendentesPaciente(patientId) {
             const tokens = loadTokens();
             const sessions = loadSessions();
@@ -1020,7 +1011,6 @@
             return total;
         }
 
-        // Função para contar tokens com problema de um paciente
         function contarTokensProblemaPaciente(patientId) {
             const tokens = loadTokens();
             const sessions = loadSessions();
@@ -1038,7 +1028,6 @@
             return total;
         }
 
-        // Função para contar total de tokens de todos os pacientes (para relatório)
         function contarTotalTokens(mesReferencia = null) {
             const tokens = loadTokens();
             const hoje = new Date();
@@ -1274,7 +1263,7 @@
             if (tab === "reports") generateReports();
         };
 
-        // ========== FUNÇÕES DO DIÁRIO ==========
+        // ========== FUNÇÕES DO DIÁRIO (CORRIGIDAS) ==========
         function renderPatientSelect() {
             const pats = loadPatients();
             const sel = $("pPatient");
@@ -1299,27 +1288,28 @@
             hint.textContent = `${p.serviceType || "Particular"} • Valor: ${fmtMoney(p.defaultValue || 0)}`;
         }
 
+        // ========== FUNÇÃO DO DIÁRIO CORRIGIDA ==========
         function renderDaily() {
-            // Verificar se precisa zerar tokens (todo dia 01)
             verificarZerarTokens();
             
             const date = $("date")?.value || todayISO();
             const search = $("search")?.value.toLowerCase() || "";
             const sessions = loadSessions().filter(s => s.date === date);
             const tokens = loadTokens();
+            const patients = loadPatients();
 
             const filtered = sessions.filter(s => {
-                const p = getPatientById(s.patientId);
+                const p = patients.find(pat => pat.id === s.patientId);
                 return !search || (p?.name || "").toLowerCase().includes(search);
             });
 
             const cassemsHoje = filtered.filter(s => {
-                const p = getPatientById(s.patientId);
+                const p = patients.find(pat => pat.id === s.patientId);
                 return p?.serviceType === "cassems";
             });
 
             const tokensHojeEnviados = cassemsHoje.filter(s => tokens[s.id]?.status === "enviado").length;
-            const tokensHojePendentes = cassemsHoje.length - tokensHojeEnviados;
+            const tokensHojePendentes = cassemsHoje.filter(s => !tokens[s.id] || tokens[s.id]?.status === "pendente").length;
 
             const cassemsEl = $("cassemsHoje");
             if (cassemsEl) cassemsEl.textContent = cassemsHoje.length;
@@ -1333,63 +1323,70 @@
             const list = $("dayList");
             if (!list) return;
             
-            list.innerHTML = filtered.map(s => {
-                const p = getPatientById(s.patientId);
-                const token = tokens[s.id];
-                const photo = getPatientPhoto(s.patientId);
-                
-                let tokenIndicator = '';
-                if (p?.serviceType === 'cassems') {
-                    if (token?.status === 'enviado') {
-                        tokenIndicator = `<span class="pill token" style="background:rgba(44,122,90,.15);">✅ Token: ${token.code || 'Enviado'}</span>`;
-                    } else if (token?.status === 'problema') {
-                        tokenIndicator = `<span class="pill token" style="background:rgba(239,68,68,.15);">❌ Problema no token</span>`;
-                    } else if (token?.status === 'pendente') {
-                        tokenIndicator = `<span class="pill token" style="background:rgba(232,198,106,.15);">⏳ Token pendente</span>`;
-                    } else {
-                        tokenIndicator = `<span class="pill token" style="background:rgba(245,158,11,.15);">📝 Registrar token</span>`;
+            if (filtered.length === 0) {
+                list.innerHTML = '<div class="muted" style="text-align:center; padding:20px;">Nenhuma sessão neste dia</div>';
+            } else {
+                list.innerHTML = filtered.map(s => {
+                    const p = patients.find(pat => pat.id === s.patientId);
+                    const token = tokens[s.id];
+                    const photo = getPatientPhoto(s.patientId);
+                    
+                    let tokenIndicator = '';
+                    if (p?.serviceType === 'cassems') {
+                        if (token?.status === 'enviado') {
+                            tokenIndicator = `<span class="pill token" style="background:rgba(44,122,90,.15);">✅ Token: ${token.code || 'Enviado'}</span>`;
+                        } else if (token?.status === 'problema') {
+                            tokenIndicator = `<span class="pill token" style="background:rgba(239,68,68,.15);">❌ Problema no token</span>`;
+                        } else if (token?.status === 'pendente') {
+                            tokenIndicator = `<span class="pill token" style="background:rgba(232,198,106,.15);">⏳ Token pendente</span>`;
+                        } else {
+                            tokenIndicator = `<span class="pill token" style="background:rgba(245,158,11,.15);">📝 Registrar token</span>`;
+                        }
                     }
-                }
 
-                return `
-                <div class="item" id="session-${s.id}">
-                    <div style="display:flex; gap:10px;">
-                        ${photo ? `<img src="${photo}" class="photo-preview small" style="width:40px; height:40px;" />` : ''}
-                        <div style="flex:1;">
-                            <div style="display:flex; justify-content:space-between;">
-                                <div>
-                                    <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
-                                    <div class="muted">
-                                        ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
-                                        ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
+                    return `
+                    <div class="item" id="session-${s.id}">
+                        <div style="display:flex; gap:10px;">
+                            ${photo ? `<img src="${photo}" class="photo-preview small" style="width:40px; height:40px;" />` : ''}
+                            <div style="flex:1;">
+                                <div style="display:flex; justify-content:space-between;">
+                                    <div>
+                                        <b>${s.time || "—"} - ${escapeHtml(p?.name || "?")}</b>
+                                        <div class="muted">
+                                            ${s.did === "realizou" ? "✅ Realizou" : "❌ Não realizou"}
+                                            ${s.just === "justificada" ? "(Justificada)" : s.just === "nao_justificada" ? "(Sem just.)" : ""}
+                                        </div>
+                                        <div style="margin-top:5px;">
+                                            ${tokenIndicator}
+                                        </div>
                                     </div>
-                                    <div style="margin-top:5px;">
-                                        ${tokenIndicator}
+                                    <div>
+                                        <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
+                                        <span class="pill">${fmtMoney(s.value)}</span>
                                     </div>
                                 </div>
-                                <div>
-                                    <span class="pill ${s.paid === "pago" ? "ok" : "bad"}">${s.paid === "pago" ? "💰 Pago" : "💸 Não pago"}</span>
-                                    <span class="pill">${fmtMoney(s.value)}</span>
+                                <div class="actions" style="margin-top:10px;">
+                                    <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
+                                    <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
+                                    <button class="small" onclick="editSessionValue('${s.id}')">✏️ Editar valor</button>
+                                    ${p?.serviceType === 'cassems' ? `<button class="small token-btn" onclick="openTokenModal('${s.id}', '${p.name}', '${s.date}')">🎫 Token</button>` : ''}
+                                    <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
                                 </div>
-                            </div>
-                            <div class="actions" style="margin-top:10px;">
-                                <button class="small" onclick="toggleSessionDid('${s.id}')">🔄 Alternar</button>
-                                <button class="small" onclick="toggleSessionPaid('${s.id}')">💰 Pagamento</button>
-                                <button class="small" onclick="editSessionValue('${s.id}')">✏️ Editar valor</button>
-                                ${p?.serviceType === 'cassems' ? `<button class="small token-btn" onclick="openTokenModal('${s.id}', '${p.name}', '${s.date}')">🎫 Token</button>` : ''}
-                                <button class="small danger" onclick="deleteSession('${s.id}')">🗑️ Excluir</button>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-            }).join("") || "<div class='muted'>Nenhuma sessão neste dia</div>";
+                `;
+                }).join('');
+            }
 
             const sumDay = $("sumDay");
             if (sumDay) sumDay.innerHTML = `Total: ${filtered.length}`;
             
             const sumMoney = $("sumMoney");
-            if (sumMoney) sumMoney.innerHTML = `Total: ${fmtMoney(filtered.reduce((s, r) => s + (Number(r.value) || 0), 0))}`;
+            if (sumMoney) {
+                const total = filtered.reduce((s, r) => s + (Number(r.value) || 0), 0);
+                sumMoney.innerHTML = `Total: ${fmtMoney(total)}`;
+            }
             
             const sumAbsences = $("sumAbsences");
             if (sumAbsences) sumAbsences.innerHTML = filtered.filter(s => s.did === "nao").length.toString();
@@ -1504,7 +1501,6 @@
 
         // ========== FUNÇÕES DE AGENDAMENTO ==========
         function renderSchedule() {
-            // Verificar se precisa zerar tokens (todo dia 01)
             verificarZerarTokens();
             
             const sch = loadSchedule();
@@ -1515,7 +1511,6 @@
             
             if (!table) return;
 
-            // Contar sessões por paciente
             const sessoesPorPaciente = {};
             sessions.forEach(s => {
                 if (!sessoesPorPaciente[s.patientId]) {
@@ -1530,7 +1525,6 @@
                 sessoesPorPaciente[s.patientId].total++;
             });
 
-            // Mapear horários recorrentes
             const horariosRecorrentes = {};
             Object.entries(sch.recurring || {}).forEach(([key, entry]) => {
                 horariosRecorrentes[key] = entry;
@@ -1546,10 +1540,9 @@
                 for (let day = 0; day < 7; day++) {
                     const key = recurKey(day, time);
                     
-                    // Verificar se tem horário recorrente
                     if (horariosRecorrentes[key]) {
                         const entry = horariosRecorrentes[key];
-                        const patient = getPatientById(entry.patientId);
+                        const patient = patients.find(p => p.id === entry.patientId);
                         const colorClass = patient?.serviceType === "cassems" ? "slotGreen" : 
                                           patient?.serviceType === "particular" ? "slotAmber" :
                                           patient?.serviceType === "unimed" ? "slotBlue" : "slotPurple";
@@ -1560,7 +1553,6 @@
 
                         const tokenIcon = patient?.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
                         
-                        // Contar tokens específicos deste paciente
                         const tokensPaciente = contarTokensPaciente(patient?.id);
                         const tokensPendentesPaciente = contarTokensPendentesPaciente(patient?.id);
                         const tokensProblemaPaciente = contarTokensProblemaPaciente(patient?.id);
@@ -1616,7 +1608,7 @@
             const patients = loadPatients();
 
             if (current) {
-                const patient = getPatientById(current.patientId);
+                const patient = patients.find(p => p.id === current.patientId);
                 if (confirm(`Remover ${patient?.name} deste horário?`)) {
                     delete sch.recurring[key];
                     saveSchedule(sch);
@@ -1689,7 +1681,6 @@
 
         // ========== DASHBOARD ==========
         function renderDashboard() {
-            // Verificar se precisa zerar tokens (todo dia 01)
             verificarZerarTokens();
             
             const hoje = todayISO();
@@ -1719,7 +1710,7 @@
                     const diffMinutes = (h1 * 60 + m1) - (h2 * 60 + m2);
                     
                     if (diffMinutes > 0 && diffMinutes <= 15) {
-                        const patient = getPatientById(entry.patientId);
+                        const patient = patients.find(p => p.id === entry.patientId);
                         proximos.push({ name: patient?.name || "?", time });
                     }
                 }
@@ -1760,7 +1751,7 @@
             if (dashProgresso) dashProgresso.style.width = `${taxa}%`;
 
             const cassemsHoje = hojeSessions.filter(s => {
-                const p = getPatientById(s.patientId);
+                const p = patients.find(pat => pat.id === s.patientId);
                 return p?.serviceType === "cassems";
             });
 
@@ -1831,7 +1822,7 @@
                 const nextDate = new Date();
                 nextDate.setDate(nextDate.getDate() + daysToAdd);
                 
-                const patient = getPatientById(entry.patientId);
+                const patient = patients.find(p => p.id === entry.patientId);
                 proximosAtendimentos.push({
                     date: nextDate,
                     time,
@@ -1855,7 +1846,6 @@
 
         // ========== FUNÇÕES DE PACIENTES ==========
         function renderPatientFolders() {
-            // Verificar se precisa zerar tokens (todo dia 01)
             verificarZerarTokens();
             
             const search = $("pSearch")?.value.toLowerCase() || "";
@@ -1883,7 +1873,6 @@
                 const evolucoes = getPatientEvolucoes(p.id);
                 const evolucoesCount = evolucoes.length;
                 
-                // Contar tokens específicos deste paciente
                 const tokensPaciente = contarTokensPaciente(p.id);
                 const tokensPendentes = contarTokensPendentesPaciente(p.id);
                 const tokensProblema = contarTokensProblemaPaciente(p.id);
@@ -1951,13 +1940,11 @@
                 }
             }
 
-            // Contador de sessões do paciente
             const sessions = loadSessions().filter(s => s.patientId === id);
             const realizadas = sessions.filter(s => s.did === "realizou").length;
             const faltas = sessions.filter(s => s.did === "nao").length;
             const pendentes = sessions.length - realizadas - faltas;
             
-            // Contar tokens específicos deste paciente
             const tokensPaciente = contarTokensPaciente(id);
             const tokensPendentes = contarTokensPendentesPaciente(id);
             const tokensProblema = contarTokensProblemaPaciente(id);
@@ -2015,7 +2002,6 @@
                 </div>
             `;
 
-            // Histórico de sessões
             const patientSessions = sessions.sort((a, b) => b.date.localeCompare(a.date));
             const tokens = loadTokens();
 
@@ -2050,7 +2036,6 @@
                 `}).join("") || "<div class='muted'>Nenhum histórico</div>";
             }
 
-            // Seção de Evolução
             const evolucoesSection = $("evolucoesSection");
             if (evolucoesSection) {
                 if (evolucoes.length === 0) {
@@ -2260,7 +2245,6 @@
             patients.push(patient);
             savePatients(patients);
 
-            // Adicionar à agenda automaticamente se tiver horários
             if (horarios.length > 0) {
                 const sch = loadSchedule();
                 sch.recurring = sch.recurring || {};
@@ -2273,7 +2257,6 @@
                         startDate: startDate
                     };
                     
-                    // Adicionar horário à lista se não existir
                     if (!sch.times.includes(h.horario)) {
                         sch.times.push(h.horario);
                         sch.times.sort();
@@ -2540,7 +2523,7 @@
             $("activePatients").innerHTML = patients.length.toString();
 
             const sessoesCassems = sessions.filter(s => {
-                const p = getPatientById(s.patientId);
+                const p = patients.find(pat => pat.id === s.patientId);
                 return p?.serviceType === "cassems";
             });
 
@@ -2552,7 +2535,6 @@
             $("totalTokensEnviados").textContent = tokensEnviados;
             $("totalTokensPendentes").textContent = tokensPendentes;
 
-            // Top devedores
             const debtors = patients.map(p => {
                 const debt = sessions.filter(s => s.patientId === p.id && s.paid !== "pago")
                     .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
@@ -3074,6 +3056,53 @@
             }
         };
 
+        window.addSession = function() {
+            const date = $("date")?.value;
+            const patientId = $("pPatient")?.value;
+            const time = $("pTime")?.value;
+            const did = $("pDid")?.value;
+            const just = $("pJust")?.value;
+            const paid = $("pPaid")?.value;
+            const manualValue = $("pValue")?.value;
+
+            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
+
+            const p = getPatientById(patientId);
+            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
+            if (p?.serviceType === "cassems") value = 26;
+
+            const session = {
+                id: uid(),
+                date, patientId, time,
+                did: did,
+                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
+                paid, value
+            };
+
+            const sessions = loadSessions();
+            sessions.push(session);
+            saveSessions(sessions);
+
+            if (p?.serviceType === "cassems") {
+                registerToken(session.id, {
+                    sessionId: session.id,
+                    date: date,
+                    patientName: p.name,
+                    code: '',
+                    status: 'pendente'
+                });
+            }
+
+            $("pTime").value = "";
+            $("pValue").value = "";
+            
+            renderDaily();
+            renderDashboard();
+            renderSchedule();
+            if (openedPatientId) openPatientFolder(openedPatientId);
+            showAlert("✅ Sessão adicionada!", "success");
+        };
+
         // ========== INICIALIZAÇÃO ==========
         function init() {
             const lastVersion = localStorage.getItem(KEYS.VERSION);
@@ -3100,7 +3129,6 @@
 
             autoBackup = localStorage.getItem("autoBackup") !== "false";
             
-            // Verificar se precisa zerar tokens ao iniciar
             verificarZerarTokens();
             
             const notificationStatus = localStorage.getItem(KEYS.NOTIFICATIONS);
