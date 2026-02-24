@@ -635,93 +635,6 @@
             justify-content: flex-end;
             margin-top: 10px;
         }
-
-        .schedule-timeline {
-            margin-top: 20px;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .schedule-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--line);
-        }
-
-        .schedule-dates {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .schedule-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .schedule-row.completed {
-            opacity: 0.8;
-            border-left: 3px solid var(--primary);
-        }
-
-        .schedule-row.missed {
-            border-left: 3px solid var(--bad);
-        }
-
-        .schedule-row.pending {
-            border-left: 3px solid var(--accent);
-        }
-
-        .schedule-index {
-            width: 30px;
-            text-align: center;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .schedule-date {
-            flex: 1;
-        }
-
-        .schedule-status {
-            font-size: 0.85rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-        }
-
-        .status-completed {
-            background: rgba(44, 122, 90, 0.2);
-            color: #4ade80;
-        }
-
-        .status-missed {
-            background: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-        }
-
-        .status-pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: #fbbf24;
-        }
-
-        .info-box {
-            background: rgba(44, 122, 90, 0.1);
-            border-left: 4px solid var(--primary);
-            padding: 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
     </style>
 </head>
 <body>
@@ -836,18 +749,18 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '7.0.0';
+        const APP_VERSION = '8.0.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
         
         const KEYS = {
-            PATIENTS: "gabriel_fono_patients_v7",
-            SESSIONS: "gabriel_fono_sessions_v7",
-            SCHEDULE: "gabriel_fono_schedule_v7",
-            TOKENS: "gabriel_fono_tokens_v7",
-            BACKUP: "gabriel_fono_backup_v7",
-            THEME: "gabriel_fono_theme_v7",
+            PATIENTS: "gabriel_fono_patients_v8",
+            SESSIONS: "gabriel_fono_sessions_v8",
+            SCHEDULE: "gabriel_fono_schedule_v8",
+            TOKENS: "gabriel_fono_tokens_v8",
+            BACKUP: "gabriel_fono_backup_v8",
+            THEME: "gabriel_fono_theme_v8",
             VERSION: "gabriel_fono_version",
             NOTIFICATIONS: "gabriel_fono_notifications",
             PHOTOS: "gabriel_fono_photos",
@@ -1311,6 +1224,7 @@
                 
                 renderDaily();
                 renderDashboard();
+                renderSchedule(); // Atualiza a agenda também
                 if (openedPatientId) openPatientFolder(openedPatientId);
                 showAlert("✅ Sessão atualizada!", "success");
             }
@@ -1353,6 +1267,7 @@
                 saveTokens(tokens);
                 
                 renderDaily();
+                renderSchedule(); // Atualiza a agenda
                 if (openedPatientId) openPatientFolder(openedPatientId);
                 showAlert("🗑️ Sessão excluída!", "success");
             }
@@ -1401,14 +1316,45 @@
             showAlert("✅ Token registrado com sucesso!", "success");
         };
 
-        // ========== FUNÇÕES DE AGENDAMENTO ==========
+        // ========== FUNÇÕES DE AGENDAMENTO CORRIGIDAS ==========
         function renderSchedule() {
             const sch = loadSchedule();
             const patients = loadPatients();
+            const sessions = loadSessions(); // Carrega as sessões do diário
             const times = (sch.times || []).sort();
             const table = $("schedTable");
             
             if (!table) return;
+
+            // Mapear todas as sessões por dia da semana e horário
+            const sessoesPorDia = {};
+            
+            // Adicionar sessões recorrentes da agenda
+            Object.entries(sch.recurring || {}).forEach(([key, entry]) => {
+                const [day, time] = key.split("|");
+                sessoesPorDia[key] = {
+                    ...entry,
+                    isRecurring: true
+                };
+            });
+            
+            // Adicionar sessões já realizadas/marcadas do diário
+            sessions.forEach(sessao => {
+                const data = new Date(sessao.date + 'T12:00:00');
+                const diaSemana = data.getDay();
+                const diaIndex = diaSemana === 0 ? 6 : diaSemana - 1;
+                const key = `${diaIndex}|${sessao.time}`;
+                
+                // Se já tem uma sessão recorrente, não substitui
+                if (!sessoesPorDia[key]) {
+                    sessoesPorDia[key] = {
+                        patientId: sessao.patientId,
+                        isRecurring: false,
+                        date: sessao.date,
+                        did: sessao.did
+                    };
+                }
+            });
 
             let html = "<thead><tr><th class='timeCell'>Horário</th>";
             DAYS.forEach(day => html += `<th>${day}</th>`);
@@ -1419,20 +1365,35 @@
 
                 for (let day = 0; day < 7; day++) {
                     const key = recurKey(day, time);
-                    const entry = sch.recurring?.[key];
+                    const entry = sessoesPorDia[key];
 
                     if (entry) {
                         const patient = getPatientById(entry.patientId);
-                        const colorClass = SERVICE_COLORS[entry.serviceType] || "slotAmber";
-                        const serviceLabel = entry.serviceType === "cassems" ? "Cassems" :
-                            entry.serviceType === "unimed" ? "Unimed" :
-                                entry.serviceType === "outros" ? "Outros" : "Particular";
+                        const colorClass = patient?.serviceType === "cassems" ? "slotGreen" : 
+                                          patient?.serviceType === "particular" ? "slotAmber" :
+                                          patient?.serviceType === "unimed" ? "slotBlue" : "slotPurple";
+                        
+                        const serviceLabel = patient?.serviceType === "cassems" ? "Cassems" :
+                                            patient?.serviceType === "unimed" ? "Unimed" :
+                                            patient?.serviceType === "outros" ? "Outros" : "Particular";
 
-                        const tokenIcon = entry.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
+                        const tokenIcon = patient?.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
+                        
+                        // Mostrar status da sessão se for do diário
+                        let statusIcon = '';
+                        if (entry.did === 'realizou') statusIcon = '✅ ';
+                        else if (entry.did === 'nao') statusIcon = '❌ ';
+                        
+                        // Mostrar data se for uma sessão específica
+                        let dataInfo = '';
+                        if (entry.date) {
+                            dataInfo = `<div class="muted" style="font-size:0.75rem;">${new Date(entry.date).toLocaleDateString()}</div>`;
+                        }
 
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox ${colorClass}">
-                            <div style="font-weight:600;">${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
+                            <div style="font-weight:600;">${statusIcon} ${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
                             <div class="muted" style="font-size:0.85rem;">${serviceLabel}</div>
+                            ${dataInfo}
                         </td>`;
                     } else {
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor:pointer;">
@@ -1773,21 +1734,30 @@
                 }
             }
 
-            // Informações do período (apenas para referência)
-            if (p?.startDate && p?.endDate) {
-                $("pacoteProgresso").innerHTML = `
-                    <div class="info-box" style="margin:10px 0;">
-                        <b>📅 Período do tratamento</b><br>
-                        Início: ${new Date(p.startDate).toLocaleDateString()}<br>
-                        Término: ${new Date(p.endDate).toLocaleDateString()}
+            // Contador de sessões do paciente
+            const sessions = loadSessions().filter(s => s.patientId === id);
+            const realizadas = sessions.filter(s => s.did === "realizou").length;
+            const faltas = sessions.filter(s => s.did === "nao").length;
+            const pendentes = sessions.length - realizadas - faltas;
+
+            $("pacoteProgresso").innerHTML = `
+                <div class="info-box" style="margin:10px 0;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span><b>📊 Total de sessões:</b> ${sessions.length}</span>
+                        <span><b>✅ Realizadas:</b> ${realizadas}</span>
+                        <span><b>❌ Faltas:</b> ${faltas}</span>
+                        <span><b>⏳ Pendentes:</b> ${pendentes}</span>
                     </div>
-                `;
-            } else {
-                $("pacoteProgresso").innerHTML = '';
-            }
+                    ${p?.startDate && p?.endDate ? `
+                        <div class="muted">
+                            Período: ${new Date(p.startDate).toLocaleDateString()} a ${new Date(p.endDate).toLocaleDateString()}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
 
             // Histórico de sessões
-            const patientSessions = loadSessions().filter(s => s.patientId === id).sort((a, b) => b.date.localeCompare(a.date));
+            const patientSessions = sessions.sort((a, b) => b.date.localeCompare(a.date));
             const tokens = loadTokens();
 
             const patientHistory = $("patientHistory");
@@ -1996,7 +1966,7 @@
             return horarios;
         }
 
-        // ========== ADD PATIENT SIMPLIFICADO (MANUAL) ==========
+        // ========== ADD PACIENTE ==========
         window.addPatient = function() {
             const name = $("cName")?.value.trim();
             if (!name) return showAlert("❌ Nome é obrigatório", "error");
@@ -2004,23 +1974,18 @@
             const phone = $("cPhone")?.value || "";
             const serviceType = $("cServiceType")?.value || "particular";
             const value = parseMoney($("cValue")?.value);
-            const billingType = $("cBillingType")?.value || "pack4";
             
-            // Datas são apenas informativas
             const startDate = $("cStartDate")?.value || todayISO();
             const endDate = $("cEndDate")?.value || addDays(todayISO(), 30);
 
-            // Horários são apenas para referência
             const horarios = coletarHorarios();
             
-            // Criar paciente SEM validações automáticas
             const patient = {
                 id: uid(),
                 name,
                 phone,
                 serviceType,
                 defaultValue: value,
-                billingType,
                 horarios: horarios,
                 startDate,
                 endDate,
@@ -2037,7 +2002,6 @@
                 savePatientPhoto(patient.id, currentPhotoFile);
             }
 
-            // Limpar formulário
             $("cName").value = "";
             $("cPhone").value = "";
             $("cValue").value = "";
@@ -2154,6 +2118,126 @@
             const btn = $("onlyDebtFolders");
             if (btn) btn.classList.toggle("primary", debtFilterActive);
             renderPatientFolders();
+        };
+
+        // ========== AÇÕES DE SESSÃO ==========
+        window.addSession = function() {
+            const date = $("date")?.value;
+            const patientId = $("pPatient")?.value;
+            const time = $("pTime")?.value;
+            const did = $("pDid")?.value;
+            const just = $("pJust")?.value;
+            const paid = $("pPaid")?.value;
+            const manualValue = $("pValue")?.value;
+
+            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
+
+            const p = getPatientById(patientId);
+            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
+            if (p?.serviceType === "cassems") value = 26;
+
+            const session = {
+                id: uid(),
+                date, patientId, time,
+                did: did,
+                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
+                paid, value
+            };
+
+            const sessions = loadSessions();
+            sessions.push(session);
+            saveSessions(sessions);
+
+            if (p?.serviceType === "cassems") {
+                registerToken(session.id, {
+                    sessionId: session.id,
+                    date: date,
+                    patientName: p.name,
+                    code: '',
+                    status: 'pendente'
+                });
+            }
+
+            $("pTime").value = "";
+            $("pValue").value = "";
+            
+            renderDaily();
+            renderDashboard();
+            renderSchedule(); // Atualiza a agenda com a nova sessão
+            if (openedPatientId) openPatientFolder(openedPatientId);
+            showAlert("✅ Sessão adicionada!", "success");
+        };
+
+        window.findInDay = function() {
+            const term = $("search")?.value.toLowerCase() || "";
+            const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
+            if (patient) {
+                $("pPatient").value = patient.id;
+                updateDefaultHint();
+                showAlert(`🔍 ${patient.name} selecionado`, "success");
+            }
+            renderDaily();
+        };
+
+        window.clearDay = function() {
+            const date = $("date")?.value;
+            if (!date) return;
+            
+            if (confirm(`Limpar todas as sessões de ${date}?`)) {
+                const sessions = loadSessions().filter(s => s.date !== date);
+                saveSessions(sessions);
+                
+                const tokens = loadTokens();
+                const sessionsToRemove = loadSessions().filter(s => s.date === date);
+                sessionsToRemove.forEach(s => delete tokens[s.id]);
+                saveTokens(tokens);
+                
+                renderDaily();
+                renderDashboard();
+                renderSchedule(); // Atualiza a agenda
+                showAlert("🗑️ Dia limpo!", "success");
+            }
+        };
+
+        window.resetAll = function() {
+            if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
+                localStorage.removeItem(KEYS.PATIENTS);
+                localStorage.removeItem(KEYS.SESSIONS);
+                localStorage.removeItem(KEYS.SCHEDULE);
+                localStorage.removeItem(KEYS.TOKENS);
+                localStorage.removeItem(KEYS.PHOTOS);
+                localStorage.removeItem(KEYS.EVOLUCOES);
+                location.reload();
+            }
+        };
+
+        // ========== AÇÕES DE AGENDA ==========
+        window.addTime = function() {
+            const time = $("newTime")?.value.trim();
+            if (!time) return;
+            if (!/^\d{1,2}:\d{2}$/.test(time)) {
+                return showAlert("❌ Formato inválido. Use HH:MM", "error");
+            }
+
+            const sch = loadSchedule();
+            if (!sch.times.includes(time)) {
+                sch.times.push(time);
+                sch.times.sort();
+                saveSchedule(sch);
+                renderSchedule();
+                showAlert(`✅ Horário ${time} adicionado!`, "success");
+            }
+            $("newTime").value = "";
+        };
+
+        window.resetTimes = function() {
+            if (confirm("Restaurar horários padrão?")) {
+                const sch = loadSchedule();
+                sch.times = defaultTimes();
+                saveSchedule(sch);
+                renderSchedule();
+                showAlert("✅ Horários restaurados!", "success");
+            }
         };
 
         // ========== FUNÇÕES DE EVOLUÇÃO ==========
@@ -2543,21 +2627,6 @@
                                         </div>
                                     </div>
 
-                                    <div class="grid2">
-                                        <div>
-                                            <label>Pacote</label>
-                                            <select id="cBillingType" onchange="atualizarDiasSemana()">
-                                                <option value="pack4">4 sessões</option>
-                                                <option value="pack8">8 sessões</option>
-                                                <option value="individual">Individual</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label>&nbsp;</label>
-                                            <input type="text" readonly style="background:transparent; border:none;" />
-                                        </div>
-                                    </div>
-
                                     <div style="margin:15px 0;">
                                         <label>📅 Período (referência)</label>
                                         <div class="grid2">
@@ -2741,124 +2810,6 @@
                     }
                     deferredPrompt = null;
                 });
-            }
-        };
-
-        // ========== AÇÕES DE SESSÃO ==========
-        window.addSession = function() {
-            const date = $("date")?.value;
-            const patientId = $("pPatient")?.value;
-            const time = $("pTime")?.value;
-            const did = $("pDid")?.value;
-            const just = $("pJust")?.value;
-            const paid = $("pPaid")?.value;
-            const manualValue = $("pValue")?.value;
-
-            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
-
-            const p = getPatientById(patientId);
-            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
-            if (p?.serviceType === "cassems") value = 26;
-
-            const session = {
-                id: uid(),
-                date, patientId, time,
-                did: did,
-                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
-                paid, value
-            };
-
-            const sessions = loadSessions();
-            sessions.push(session);
-            saveSessions(sessions);
-
-            if (p?.serviceType === "cassems") {
-                registerToken(session.id, {
-                    sessionId: session.id,
-                    date: date,
-                    patientName: p.name,
-                    code: '',
-                    status: 'pendente'
-                });
-            }
-
-            $("pTime").value = "";
-            $("pValue").value = "";
-            
-            renderDaily();
-            renderDashboard();
-            if (openedPatientId) openPatientFolder(openedPatientId);
-            showAlert("✅ Sessão adicionada!", "success");
-        };
-
-        window.findInDay = function() {
-            const term = $("search")?.value.toLowerCase() || "";
-            const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
-            if (patient) {
-                $("pPatient").value = patient.id;
-                updateDefaultHint();
-                showAlert(`🔍 ${patient.name} selecionado`, "success");
-            }
-            renderDaily();
-        };
-
-        window.clearDay = function() {
-            const date = $("date")?.value;
-            if (!date) return;
-            
-            if (confirm(`Limpar todas as sessões de ${date}?`)) {
-                const sessions = loadSessions().filter(s => s.date !== date);
-                saveSessions(sessions);
-                
-                const tokens = loadTokens();
-                const sessionsToRemove = loadSessions().filter(s => s.date === date);
-                sessionsToRemove.forEach(s => delete tokens[s.id]);
-                saveTokens(tokens);
-                
-                renderDaily();
-                renderDashboard();
-                showAlert("🗑️ Dia limpo!", "success");
-            }
-        };
-
-        window.resetAll = function() {
-            if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
-                localStorage.removeItem(KEYS.PATIENTS);
-                localStorage.removeItem(KEYS.SESSIONS);
-                localStorage.removeItem(KEYS.SCHEDULE);
-                localStorage.removeItem(KEYS.TOKENS);
-                localStorage.removeItem(KEYS.PHOTOS);
-                localStorage.removeItem(KEYS.EVOLUCOES);
-                location.reload();
-            }
-        };
-
-        // ========== AÇÕES DE AGENDA ==========
-        window.addTime = function() {
-            const time = $("newTime")?.value.trim();
-            if (!time) return;
-            if (!/^\d{1,2}:\d{2}$/.test(time)) {
-                return showAlert("❌ Formato inválido. Use HH:MM", "error");
-            }
-
-            const sch = loadSchedule();
-            if (!sch.times.includes(time)) {
-                sch.times.push(time);
-                sch.times.sort();
-                saveSchedule(sch);
-                renderSchedule();
-                showAlert(`✅ Horário ${time} adicionado!`, "success");
-            }
-            $("newTime").value = "";
-        };
-
-        window.resetTimes = function() {
-            if (confirm("Restaurar horários padrão?")) {
-                const sch = loadSchedule();
-                sch.times = defaultTimes();
-                saveSchedule(sch);
-                renderSchedule();
-                showAlert("✅ Horários restaurados!", "success");
             }
         };
 
