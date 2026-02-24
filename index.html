@@ -683,29 +683,55 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONFIGURAÇÃO DO DRIVE (NOVO) -->
-    <div id="driveConfigModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3 style="margin-bottom:15px;">☁️ Configurar Google Drive</h3>
-            <p class="muted">Para salvar e restaurar seus dados na nuvem, precisamos de permissão para acessar seu Google Drive.</p>
-            
-            <div style="margin:20px 0; text-align:center;">
-                <button id="authorizeDrive" class="primary" style="width:100%;">🔌 Conectar com Google Drive</button>
-            </div>
-            
-            <div style="margin:20px 0; padding:15px; background:rgba(44,122,90,0.1); border-radius:10px;">
-                <p style="margin-bottom:10px;"><strong>📁 Pasta no Drive:</strong></p>
-                <p class="muted">Os dados serão salvos em:</p>
-                <code style="display:block; padding:10px; background:rgba(0,0,0,0.2); border-radius:5px;">📁 ClinicaFono/dados.json</code>
-            </div>
-            
-            <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button id="cancelDriveConfig" class="small">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
+   // ========== FUNÇÃO CORRIGIDA PARA CONECTAR ==========
+window.authorizeDrive = async function() {
+    try {
+        console.log('🔵 Iniciando conexão com Google Drive...');
+        
+        // Mostrar que está tentando
+        updateDriveStatus('syncing');
+        
+        const auth = gapi.auth2.getAuthInstance();
+        
+        if (!auth) {
+            console.error('❌ Auth não inicializado');
+            showAlert('❌ Erro: API do Google não carregada', 'error');
+            updateDriveStatus('offline');
+            return;
+        }
+        
+        // Forçar pop-up
+        await auth.signIn({
+            prompt: 'select_account',
+            ux_mode: 'popup'  // Forçar modo pop-up
+        });
+        
+        console.log('✅ Conectado com sucesso!');
+        gapiReady = true;
+        updateDriveStatus('online');
+        showAlert('✅ Conectado ao Google Drive!', 'success');
+        
+        // Fechar modal
+        const modal = document.getElementById('driveConfigModal');
+        if (modal) modal.classList.add('hidden');
+        
+        // Criar pasta
+        await createDriveFolder();
+        
+    } catch (error) {
+        console.error('❌ Erro detalhado:', error);
+        updateDriveStatus('offline');
+        
+        // Mensagens amigáveis
+        if (error.error === 'popup_blocked_by_browser') {
+            showAlert('❌ Pop-up bloqueado! Clique no ícone 🔔 na barra de endereço e permita pop-ups', 'error');
+        } else if (error.error === 'access_denied') {
+            showAlert('❌ Acesso negado. Você precisa autorizar o aplicativo', 'error');
+        } else {
+            showAlert('❌ Erro ao conectar: ' + (error.message || 'Tente novamente'), 'error');
+        }
+    }
+};
         // ========== CONFIGURAÇÕES ==========
         const APP_VERSION = '4.0.0';
         const CLINIC_NAME = "Gabriel Alves";
