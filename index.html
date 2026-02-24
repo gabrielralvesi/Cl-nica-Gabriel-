@@ -408,6 +408,66 @@
             transition: width 0.3s ease;
         }
 
+        /* Barra de progresso circular */
+        .circular-progress {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0deg, var(--card) 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .circular-progress::before {
+            content: "";
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--card);
+        }
+
+        .progress-value {
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .token-counter {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 10px;
+            background: rgba(232, 198, 106, 0.1);
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .token-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: var(--accent);
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .token-progress {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .token-progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
         .schedWrap {
             overflow-x: auto;
             overflow-y: auto;
@@ -486,9 +546,17 @@
             border-left: 4px solid #8b5cf6;
         }
 
-        .iconAlert {
-            font-size: 1.1rem;
-            margin-right: 5px;
+        .slot-counter {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .slot-counter span {
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.2);
         }
 
         .weekday-selector {
@@ -509,17 +577,12 @@
             background: rgba(255, 255, 255, 0.06);
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.2s;
         }
 
         .weekday-btn.selected {
             background: var(--primary);
             border-color: var(--primary);
             color: white;
-        }
-
-        .weekday-btn:active {
-            transform: scale(0.95);
         }
 
         .modal-overlay {
@@ -749,18 +812,18 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '8.0.0';
+        const APP_VERSION = '9.0.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
         
         const KEYS = {
-            PATIENTS: "gabriel_fono_patients_v8",
-            SESSIONS: "gabriel_fono_sessions_v8",
-            SCHEDULE: "gabriel_fono_schedule_v8",
-            TOKENS: "gabriel_fono_tokens_v8",
-            BACKUP: "gabriel_fono_backup_v8",
-            THEME: "gabriel_fono_theme_v8",
+            PATIENTS: "gabriel_fono_patients_v9",
+            SESSIONS: "gabriel_fono_sessions_v9",
+            SCHEDULE: "gabriel_fono_schedule_v9",
+            TOKENS: "gabriel_fono_tokens_v9",
+            BACKUP: "gabriel_fono_backup_v9",
+            THEME: "gabriel_fono_theme_v9",
             VERSION: "gabriel_fono_version",
             NOTIFICATIONS: "gabriel_fono_notifications",
             PHOTOS: "gabriel_fono_photos",
@@ -1224,7 +1287,7 @@
                 
                 renderDaily();
                 renderDashboard();
-                renderSchedule(); // Atualiza a agenda também
+                renderSchedule();
                 if (openedPatientId) openPatientFolder(openedPatientId);
                 showAlert("✅ Sessão atualizada!", "success");
             }
@@ -1267,7 +1330,7 @@
                 saveTokens(tokens);
                 
                 renderDaily();
-                renderSchedule(); // Atualiza a agenda
+                renderSchedule();
                 if (openedPatientId) openPatientFolder(openedPatientId);
                 showAlert("🗑️ Sessão excluída!", "success");
             }
@@ -1313,47 +1376,39 @@
             renderDaily();
             renderDashboard();
             generateReports();
+            if (openedPatientId) openPatientFolder(openedPatientId);
             showAlert("✅ Token registrado com sucesso!", "success");
         };
 
-        // ========== FUNÇÕES DE AGENDAMENTO CORRIGIDAS ==========
+        // ========== FUNÇÕES DE AGENDAMENTO ==========
         function renderSchedule() {
             const sch = loadSchedule();
             const patients = loadPatients();
-            const sessions = loadSessions(); // Carrega as sessões do diário
+            const sessions = loadSessions();
             const times = (sch.times || []).sort();
             const table = $("schedTable");
             
             if (!table) return;
 
-            // Mapear todas as sessões por dia da semana e horário
-            const sessoesPorDia = {};
-            
-            // Adicionar sessões recorrentes da agenda
-            Object.entries(sch.recurring || {}).forEach(([key, entry]) => {
-                const [day, time] = key.split("|");
-                sessoesPorDia[key] = {
-                    ...entry,
-                    isRecurring: true
-                };
-            });
-            
-            // Adicionar sessões já realizadas/marcadas do diário
-            sessions.forEach(sessao => {
-                const data = new Date(sessao.date + 'T12:00:00');
-                const diaSemana = data.getDay();
-                const diaIndex = diaSemana === 0 ? 6 : diaSemana - 1;
-                const key = `${diaIndex}|${sessao.time}`;
-                
-                // Se já tem uma sessão recorrente, não substitui
-                if (!sessoesPorDia[key]) {
-                    sessoesPorDia[key] = {
-                        patientId: sessao.patientId,
-                        isRecurring: false,
-                        date: sessao.date,
-                        did: sessao.did
+            // Contar sessões por paciente
+            const sessoesPorPaciente = {};
+            sessions.forEach(s => {
+                if (!sessoesPorPaciente[s.patientId]) {
+                    sessoesPorPaciente[s.patientId] = {
+                        realizadas: 0,
+                        faltas: 0,
+                        total: 0
                     };
                 }
+                if (s.did === 'realizou') sessoesPorPaciente[s.patientId].realizadas++;
+                else if (s.did === 'nao') sessoesPorPaciente[s.patientId].faltas++;
+                sessoesPorPaciente[s.patientId].total++;
+            });
+
+            // Mapear horários recorrentes
+            const horariosRecorrentes = {};
+            Object.entries(sch.recurring || {}).forEach(([key, entry]) => {
+                horariosRecorrentes[key] = entry;
             });
 
             let html = "<thead><tr><th class='timeCell'>Horário</th>";
@@ -1365,9 +1420,10 @@
 
                 for (let day = 0; day < 7; day++) {
                     const key = recurKey(day, time);
-                    const entry = sessoesPorDia[key];
-
-                    if (entry) {
+                    
+                    // Verificar se tem horário recorrente
+                    if (horariosRecorrentes[key]) {
+                        const entry = horariosRecorrentes[key];
                         const patient = getPatientById(entry.patientId);
                         const colorClass = patient?.serviceType === "cassems" ? "slotGreen" : 
                                           patient?.serviceType === "particular" ? "slotAmber" :
@@ -1379,21 +1435,26 @@
 
                         const tokenIcon = patient?.serviceType === "cassems" ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
                         
-                        // Mostrar status da sessão se for do diário
-                        let statusIcon = '';
-                        if (entry.did === 'realizou') statusIcon = '✅ ';
-                        else if (entry.did === 'nao') statusIcon = '❌ ';
+                        // Contar tokens do paciente
+                        const tokensPaciente = Object.values(loadTokens()).filter(t => 
+                            t.sessionId && getPatientById(patient?.id) && t.status === 'enviado'
+                        ).length;
                         
-                        // Mostrar data se for uma sessão específica
-                        let dataInfo = '';
-                        if (entry.date) {
-                            dataInfo = `<div class="muted" style="font-size:0.75rem;">${new Date(entry.date).toLocaleDateString()}</div>`;
-                        }
-
+                        const stats = sessoesPorPaciente[patient?.id] || { realizadas: 0, faltas: 0, total: 0 };
+                        
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox ${colorClass}">
-                            <div style="font-weight:600;">${statusIcon} ${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
+                            <div style="font-weight:600;">${escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
                             <div class="muted" style="font-size:0.85rem;">${serviceLabel}</div>
-                            ${dataInfo}
+                            <div class="slot-counter">
+                                <span title="Sessões realizadas">✅ ${stats.realizadas}</span>
+                                <span title="Faltas">❌ ${stats.faltas}</span>
+                                <span title="Total">📊 ${stats.total}</span>
+                            </div>
+                            ${patient?.serviceType === 'cassems' ? `
+                                <div class="slot-counter" style="margin-top:5px;">
+                                    <span class="pill token" style="font-size:0.7rem;">🎫 Tokens: ${tokensPaciente}</span>
+                                </div>
+                            ` : ''}
                         </td>`;
                     } else {
                         html += `<td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor:pointer;">
@@ -1679,10 +1740,18 @@
                 const debt = sessions.filter(s => s.paid !== "pago").reduce((sum, s) => sum + (Number(s.value) || 0), 0);
                 const totalSessoes = sessions.length;
                 const realizadas = sessions.filter(s => s.did === "realizou").length;
+                const faltas = sessions.filter(s => s.did === "nao").length;
                 const cassemsIcon = p.serviceType === 'cassems' ? '🎫' : '';
                 const photo = getPatientPhoto(p.id);
                 const evolucoes = getPatientEvolucoes(p.id);
                 const evolucoesCount = evolucoes.length;
+                
+                // Contar tokens do paciente
+                const tokensPaciente = Object.values(loadTokens()).filter(t => 
+                    t.sessionId && getPatientById(t.sessionId?.split('-')[0])?.id === p.id && t.status === 'enviado'
+                ).length;
+
+                const percent = totalSessoes > 0 ? (realizadas / totalSessoes) * 100 : 0;
 
                 return `
                 <div class="item" onclick="openPatientFolder('${p.id}')" style="cursor:pointer;">
@@ -1693,8 +1762,17 @@
                                 <div>
                                     <b>📁 ${escapeHtml(p.name)} ${cassemsIcon}</b>
                                     <div class="muted">
-                                        ${p.serviceType || "Particular"} • ${totalSessoes} sessões • ${realizadas} realizadas
-                                        ${evolucoesCount > 0 ? ` • 📝 ${evolucoesCount} evoluções` : ''}
+                                        ${p.serviceType || "Particular"} • ${totalSessoes} sessões
+                                    </div>
+                                    <div style="display:flex; gap:10px; margin-top:5px;">
+                                        <span class="pill ok">✅ ${realizadas}</span>
+                                        <span class="pill bad">❌ ${faltas}</span>
+                                        ${p.serviceType === 'cassems' ? `
+                                            <span class="pill token">🎫 ${tokensPaciente}</span>
+                                        ` : ''}
+                                    </div>
+                                    <div class="progress-bar" style="margin-top:5px; width:100%;">
+                                        <div class="progress-fill" style="width:${percent}%;"></div>
                                     </div>
                                 </div>
                                 <div>
@@ -1739,17 +1817,60 @@
             const realizadas = sessions.filter(s => s.did === "realizou").length;
             const faltas = sessions.filter(s => s.did === "nao").length;
             const pendentes = sessions.length - realizadas - faltas;
+            
+            // Contar tokens do paciente
+            const tokensPaciente = Object.values(loadTokens()).filter(t => {
+                const session = sessions.find(s => s.id === t.sessionId);
+                return session && t.status === 'enviado';
+            }).length;
+            
+            const tokensPendentes = Object.values(loadTokens()).filter(t => {
+                const session = sessions.find(s => s.id === t.sessionId);
+                return session && t.status === 'pendente';
+            }).length;
+
+            const percent = sessions.length > 0 ? (realizadas / sessions.length) * 100 : 0;
 
             $("pacoteProgresso").innerHTML = `
                 <div class="info-box" style="margin:10px 0;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                        <span><b>📊 Total de sessões:</b> ${sessions.length}</span>
-                        <span><b>✅ Realizadas:</b> ${realizadas}</span>
-                        <span><b>❌ Faltas:</b> ${faltas}</span>
-                        <span><b>⏳ Pendentes:</b> ${pendentes}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <div>
+                            <h3 style="margin:0;">📊 Progresso do Paciente</h3>
+                        </div>
+                        ${p?.serviceType === 'cassems' ? `
+                            <div class="token-badge">
+                                🎫 Tokens: ${tokensPaciente}
+                            </div>
+                        ` : ''}
                     </div>
+                    
+                    <div style="display:flex; gap:20px; align-items:center; margin-bottom:15px;">
+                        <div class="circular-progress" style="background: conic-gradient(var(--primary) ${percent * 3.6}deg, var(--card) 0deg);">
+                            <span class="progress-value">${Math.round(percent)}%</span>
+                        </div>
+                        <div>
+                            <div><span class="pill ok">✅ Realizadas: ${realizadas}</span></div>
+                            <div><span class="pill bad">❌ Faltas: ${faltas}</span></div>
+                            <div><span class="pill warn">⏳ Pendentes: ${pendentes}</span></div>
+                            <div><span class="pill">📊 Total: ${sessions.length}</span></div>
+                        </div>
+                    </div>
+                    
+                    ${p?.serviceType === 'cassems' ? `
+                        <div class="token-counter">
+                            <span>🎫 Controle de Tokens:</span>
+                            <div style="flex:1;">
+                                <div class="token-progress">
+                                    <div class="token-progress-fill" style="width: ${sessions.length > 0 ? (tokensPaciente / sessions.length) * 100 : 0}%"></div>
+                                </div>
+                            </div>
+                            <span>${tokensPaciente} enviados</span>
+                            <span class="muted">${tokensPendentes} pendentes</span>
+                        </div>
+                    ` : ''}
+                    
                     ${p?.startDate && p?.endDate ? `
-                        <div class="muted">
+                        <div class="muted" style="margin-top:10px;">
                             Período: ${new Date(p.startDate).toLocaleDateString()} a ${new Date(p.endDate).toLocaleDateString()}
                         </div>
                     ` : ''}
@@ -1782,6 +1903,9 @@
                             </div>
                             <div>
                                 <button class="small" onclick="event.stopPropagation(); toggleSessionPaid('${s.id}')">💰</button>
+                                ${p?.serviceType === 'cassems' ? `
+                                    <button class="small token-btn" onclick="event.stopPropagation(); openTokenModal('${s.id}', '${p.name}', '${s.date}')">🎫</button>
+                                ` : ''}
                             </div>
                         </div>
                     </div>
@@ -1966,7 +2090,7 @@
             return horarios;
         }
 
-        // ========== ADD PACIENTE ==========
+        // ========== ADD PACIENTE COM AGENDAMENTO AUTOMÁTICO ==========
         window.addPatient = function() {
             const name = $("cName")?.value.trim();
             if (!name) return showAlert("❌ Nome é obrigatório", "error");
@@ -1980,6 +2104,7 @@
 
             const horarios = coletarHorarios();
             
+            // Criar paciente
             const patient = {
                 id: uid(),
                 name,
@@ -1998,10 +2123,34 @@
             patients.push(patient);
             savePatients(patients);
 
+            // Adicionar à agenda automaticamente se tiver horários
+            if (horarios.length > 0) {
+                const sch = loadSchedule();
+                sch.recurring = sch.recurring || {};
+                
+                horarios.forEach(h => {
+                    const key = recurKey(h.dia, h.horario);
+                    sch.recurring[key] = {
+                        patientId: patient.id,
+                        serviceType: patient.serviceType,
+                        startDate: startDate
+                    };
+                    
+                    // Adicionar horário à lista se não existir
+                    if (!sch.times.includes(h.horario)) {
+                        sch.times.push(h.horario);
+                        sch.times.sort();
+                    }
+                });
+                
+                saveSchedule(sch);
+            }
+
             if (currentPhotoFile) {
                 savePatientPhoto(patient.id, currentPhotoFile);
             }
 
+            // Limpar formulário
             $("cName").value = "";
             $("cPhone").value = "";
             $("cValue").value = "";
@@ -2020,9 +2169,10 @@
 
             renderPatientSelect();
             renderPatientFolders();
+            renderSchedule();
             renderDashboard();
             
-            showAlert(`✅ Paciente ${name} cadastrado!`, "success");
+            showAlert(`✅ Paciente ${name} cadastrado e agendado!`, "success");
         };
 
         window.openAnamnese = function() {
@@ -2081,6 +2231,7 @@
             const patients = loadPatients().filter(p => p.id !== openedPatientId);
             const sessions = loadSessions().filter(s => s.patientId !== openedPatientId);
 
+            // Remover da agenda
             const sch = loadSchedule();
             if (sch.recurring) {
                 Object.keys(sch.recurring).forEach(key => {
@@ -2118,126 +2269,6 @@
             const btn = $("onlyDebtFolders");
             if (btn) btn.classList.toggle("primary", debtFilterActive);
             renderPatientFolders();
-        };
-
-        // ========== AÇÕES DE SESSÃO ==========
-        window.addSession = function() {
-            const date = $("date")?.value;
-            const patientId = $("pPatient")?.value;
-            const time = $("pTime")?.value;
-            const did = $("pDid")?.value;
-            const just = $("pJust")?.value;
-            const paid = $("pPaid")?.value;
-            const manualValue = $("pValue")?.value;
-
-            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
-
-            const p = getPatientById(patientId);
-            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
-            if (p?.serviceType === "cassems") value = 26;
-
-            const session = {
-                id: uid(),
-                date, patientId, time,
-                did: did,
-                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
-                paid, value
-            };
-
-            const sessions = loadSessions();
-            sessions.push(session);
-            saveSessions(sessions);
-
-            if (p?.serviceType === "cassems") {
-                registerToken(session.id, {
-                    sessionId: session.id,
-                    date: date,
-                    patientName: p.name,
-                    code: '',
-                    status: 'pendente'
-                });
-            }
-
-            $("pTime").value = "";
-            $("pValue").value = "";
-            
-            renderDaily();
-            renderDashboard();
-            renderSchedule(); // Atualiza a agenda com a nova sessão
-            if (openedPatientId) openPatientFolder(openedPatientId);
-            showAlert("✅ Sessão adicionada!", "success");
-        };
-
-        window.findInDay = function() {
-            const term = $("search")?.value.toLowerCase() || "";
-            const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
-            if (patient) {
-                $("pPatient").value = patient.id;
-                updateDefaultHint();
-                showAlert(`🔍 ${patient.name} selecionado`, "success");
-            }
-            renderDaily();
-        };
-
-        window.clearDay = function() {
-            const date = $("date")?.value;
-            if (!date) return;
-            
-            if (confirm(`Limpar todas as sessões de ${date}?`)) {
-                const sessions = loadSessions().filter(s => s.date !== date);
-                saveSessions(sessions);
-                
-                const tokens = loadTokens();
-                const sessionsToRemove = loadSessions().filter(s => s.date === date);
-                sessionsToRemove.forEach(s => delete tokens[s.id]);
-                saveTokens(tokens);
-                
-                renderDaily();
-                renderDashboard();
-                renderSchedule(); // Atualiza a agenda
-                showAlert("🗑️ Dia limpo!", "success");
-            }
-        };
-
-        window.resetAll = function() {
-            if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
-                localStorage.removeItem(KEYS.PATIENTS);
-                localStorage.removeItem(KEYS.SESSIONS);
-                localStorage.removeItem(KEYS.SCHEDULE);
-                localStorage.removeItem(KEYS.TOKENS);
-                localStorage.removeItem(KEYS.PHOTOS);
-                localStorage.removeItem(KEYS.EVOLUCOES);
-                location.reload();
-            }
-        };
-
-        // ========== AÇÕES DE AGENDA ==========
-        window.addTime = function() {
-            const time = $("newTime")?.value.trim();
-            if (!time) return;
-            if (!/^\d{1,2}:\d{2}$/.test(time)) {
-                return showAlert("❌ Formato inválido. Use HH:MM", "error");
-            }
-
-            const sch = loadSchedule();
-            if (!sch.times.includes(time)) {
-                sch.times.push(time);
-                sch.times.sort();
-                saveSchedule(sch);
-                renderSchedule();
-                showAlert(`✅ Horário ${time} adicionado!`, "success");
-            }
-            $("newTime").value = "";
-        };
-
-        window.resetTimes = function() {
-            if (confirm("Restaurar horários padrão?")) {
-                const sch = loadSchedule();
-                sch.times = defaultTimes();
-                saveSchedule(sch);
-                renderSchedule();
-                showAlert("✅ Horários restaurados!", "success");
-            }
         };
 
         // ========== FUNÇÕES DE EVOLUÇÃO ==========
@@ -2390,7 +2421,10 @@
             }).filter(d => d.debt > 0).sort((a, b) => b.debt - a.debt).slice(0, 5);
 
             $("topDebtors").innerHTML = debtors.map(d => `
-                <div class="item"><b>${escapeHtml(d.name)}</b><div class="muted">${fmtMoney(d.debt)}</div></div>
+                <div class="item">
+                    <b>${escapeHtml(d.name)}</b>
+                    <div class="muted">${fmtMoney(d.debt)}</div>
+                </div>
             `).join("") || "<div class='muted'>Nenhum devedor</div>";
         }
 
@@ -2627,8 +2661,23 @@
                                         </div>
                                     </div>
 
+                                    <div class="grid2">
+                                        <div>
+                                            <label>Pacote</label>
+                                            <select id="cBillingType" onchange="atualizarDiasSemana()">
+                                                <option value="pack4">4 sessões</option>
+                                                <option value="pack8">8 sessões</option>
+                                                <option value="individual">Individual</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label>&nbsp;</label>
+                                            <input type="text" readonly style="background:transparent; border:none;" />
+                                        </div>
+                                    </div>
+
                                     <div style="margin:15px 0;">
-                                        <label>📅 Período (referência)</label>
+                                        <label>📅 Período</label>
                                         <div class="grid2">
                                             <div>
                                                 <input type="date" id="cStartDate" />
@@ -2642,9 +2691,9 @@
                                     </div>
 
                                     <div style="margin:15px 0;">
-                                        <label>📆 Horários de referência</label>
+                                        <label>📆 Horários das sessões</label>
                                         <div id="horariosContainer"></div>
-                                        <small class="muted">Apenas para consulta</small>
+                                        <small class="muted">Esses horários serão automaticamente agendados</small>
                                     </div>
 
                                     <label style="margin-top:15px;">Observações</label>
@@ -2730,6 +2779,7 @@
                                 <span class="pill info">🔵 Unimed/Outros</span>
                                 <span class="pill bad">🔴 Vago</span>
                                 <span class="pill token">🎫 Token</span>
+                                <span class="pill">📊 Contador de sessões</span>
                             </div>
                         </section>
 
@@ -2810,6 +2860,126 @@
                     }
                     deferredPrompt = null;
                 });
+            }
+        };
+
+        // ========== AÇÕES DE SESSÃO ==========
+        window.addSession = function() {
+            const date = $("date")?.value;
+            const patientId = $("pPatient")?.value;
+            const time = $("pTime")?.value;
+            const did = $("pDid")?.value;
+            const just = $("pJust")?.value;
+            const paid = $("pPaid")?.value;
+            const manualValue = $("pValue")?.value;
+
+            if (!date || !patientId) return showAlert("❌ Selecione data e paciente", "error");
+
+            const p = getPatientById(patientId);
+            let value = manualValue ? parseMoney(manualValue) : (p?.defaultValue || 0);
+            if (p?.serviceType === "cassems") value = 26;
+
+            const session = {
+                id: uid(),
+                date, patientId, time,
+                did: did,
+                just: did === "nao" ? (just === "na" ? "nao_justificada" : just) : "na",
+                paid, value
+            };
+
+            const sessions = loadSessions();
+            sessions.push(session);
+            saveSessions(sessions);
+
+            if (p?.serviceType === "cassems") {
+                registerToken(session.id, {
+                    sessionId: session.id,
+                    date: date,
+                    patientName: p.name,
+                    code: '',
+                    status: 'pendente'
+                });
+            }
+
+            $("pTime").value = "";
+            $("pValue").value = "";
+            
+            renderDaily();
+            renderDashboard();
+            renderSchedule();
+            if (openedPatientId) openPatientFolder(openedPatientId);
+            showAlert("✅ Sessão adicionada!", "success");
+        };
+
+        window.findInDay = function() {
+            const term = $("search")?.value.toLowerCase() || "";
+            const patient = loadPatients().find(p => p.name.toLowerCase().includes(term));
+            if (patient) {
+                $("pPatient").value = patient.id;
+                updateDefaultHint();
+                showAlert(`🔍 ${patient.name} selecionado`, "success");
+            }
+            renderDaily();
+        };
+
+        window.clearDay = function() {
+            const date = $("date")?.value;
+            if (!date) return;
+            
+            if (confirm(`Limpar todas as sessões de ${date}?`)) {
+                const sessions = loadSessions().filter(s => s.date !== date);
+                saveSessions(sessions);
+                
+                const tokens = loadTokens();
+                const sessionsToRemove = loadSessions().filter(s => s.date === date);
+                sessionsToRemove.forEach(s => delete tokens[s.id]);
+                saveTokens(tokens);
+                
+                renderDaily();
+                renderDashboard();
+                renderSchedule();
+                showAlert("🗑️ Dia limpo!", "success");
+            }
+        };
+
+        window.resetAll = function() {
+            if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
+                localStorage.removeItem(KEYS.PATIENTS);
+                localStorage.removeItem(KEYS.SESSIONS);
+                localStorage.removeItem(KEYS.SCHEDULE);
+                localStorage.removeItem(KEYS.TOKENS);
+                localStorage.removeItem(KEYS.PHOTOS);
+                localStorage.removeItem(KEYS.EVOLUCOES);
+                location.reload();
+            }
+        };
+
+        // ========== AÇÕES DE AGENDA ==========
+        window.addTime = function() {
+            const time = $("newTime")?.value.trim();
+            if (!time) return;
+            if (!/^\d{1,2}:\d{2}$/.test(time)) {
+                return showAlert("❌ Formato inválido. Use HH:MM", "error");
+            }
+
+            const sch = loadSchedule();
+            if (!sch.times.includes(time)) {
+                sch.times.push(time);
+                sch.times.sort();
+                saveSchedule(sch);
+                renderSchedule();
+                showAlert(`✅ Horário ${time} adicionado!`, "success");
+            }
+            $("newTime").value = "";
+        };
+
+        window.resetTimes = function() {
+            if (confirm("Restaurar horários padrão?")) {
+                const sch = loadSchedule();
+                sch.times = defaultTimes();
+                saveSchedule(sch);
+                renderSchedule();
+                showAlert("✅ Horários restaurados!", "success");
             }
         };
 
