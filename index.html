@@ -1,3 +1,39 @@
+Adicionei um botão exclusivo para gerenciar tokens manualmente dentro da pasta de cada paciente. Agora você pode adicionar ou remover tokens sem precisar registrar a sessão do dia.
+
+Aqui estão as principais mudanças que fiz:
+
+🔧 Novas Funcionalidades:
+
+1. Botão "🎫 Tokens" na Pasta do Paciente
+
+· Aparece apenas para pacientes Cassems
+· Localizado na barra de ações ao lado de WhatsApp, Anamnese, etc.
+· Abre um modal exclusivo para gestão manual de tokens
+
+2. Modal de Gerenciamento de Tokens
+
+· Permite adicionar tokens manualmente (selecionando mês)
+· Visualiza todos os tokens do paciente por mês
+· Permite marcar tokens como enviados, pendentes ou problema
+· Opção de remover tokens individualmente
+· Contador de tokens usados no mês
+
+3. Controles Visuais
+
+· Indicador visual de quantos tokens já foram usados no mês
+· Lista organizada por mês/ano
+· Cores diferentes para cada status (verde: enviado, amarelo: pendente, vermelho: problema)
+
+4. Funcionalidades do Modal
+
+· Adicionar token manual: Cria um token pendente para o mês selecionado
+· Editar status: Altere entre enviado, pendente ou problema
+· Remover token: Exclui um token específico
+· Fechar automaticamente: O modal atualiza a interface após cada ação
+
+Agora você pode gerenciar os tokens Cassems de forma independente das sessões diárias, ideal para quando o paciente traz o token fora do dia da consulta ou para ajustes no controle mensal.
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -774,6 +810,37 @@
         </div>
     </div>
 
+    <!-- NOVO MODAL: GESTÃO MANUAL DE TOKENS -->
+    <div id="manualTokenModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3>🎫 Gerenciar Tokens Manuais</h3>
+            <p class="muted" id="manualTokenPatientName"></p>
+            
+            <div style="margin:20px 0;">
+                <label>Adicionar token manual</label>
+                <div class="grid2">
+                    <select id="manualTokenMonth">
+                        <option value="">Selecione o mês</option>
+                    </select>
+                    <button id="addManualToken" class="primary small" style="margin-top:20px;">➕ Adicionar Token</button>
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div style="margin:15px 0;">
+                <label>Tokens registrados</label>
+                <div id="manualTokensList" class="list" style="max-height:300px; overflow-y:auto;">
+                    <!-- Lista será preenchida dinamicamente -->
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:20px;">
+                <button id="closeManualToken" class="small">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <div id="evolucaoModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3 style="margin-bottom:15px;">📝 Registrar Evolução</h3>
@@ -812,7 +879,7 @@
 
     <script>
         // ========== CONFIGURAÇÕES ==========
-        const APP_VERSION = '10.1.0';
+        const APP_VERSION = '10.2.0';
         const CLINIC_NAME = "Gabriel Alves";
         const CLINIC_SUBTITLE = "Fonoaudiologia Infantil";
         const CLINIC_CRFA = "CRFa 5-13766";
@@ -987,6 +1054,14 @@
                         if (mesToken === mesAlvo) {
                             total++;
                         }
+                    } else if (!session && token.patientId === patientId) {
+                        // Tokens manuais (sem sessão vinculada)
+                        const dataToken = new Date(token.date + 'T12:00:00');
+                        const mesToken = `${dataToken.getFullYear()}-${String(dataToken.getMonth() + 1).padStart(2, '0')}`;
+                        
+                        if (mesToken === mesAlvo) {
+                            total++;
+                        }
                     }
                 }
             });
@@ -1004,6 +1079,9 @@
                     const session = sessions.find(s => s.id === sessionId);
                     if (session && session.patientId === patientId) {
                         total++;
+                    } else if (!session && token.patientId === patientId) {
+                        // Tokens manuais pendentes
+                        total++;
                     }
                 }
             });
@@ -1020,6 +1098,8 @@
                 if (token.status === 'problema') {
                     const session = sessions.find(s => s.id === sessionId);
                     if (session && session.patientId === patientId) {
+                        total++;
+                    } else if (!session && token.patientId === patientId) {
                         total++;
                     }
                 }
@@ -1082,6 +1162,172 @@
             saveTokens(tokens);
             return tokens[sessionId];
         }
+
+        // ========== NOVAS FUNÇÕES: TOKENS MANUAIS ==========
+        
+        function openManualTokenModal(patientId) {
+            const patient = getPatientById(patientId);
+            if (!patient) return;
+            
+            $("manualTokenPatientName").textContent = `Paciente: ${patient.name}`;
+            
+            // Preencher select de meses
+            const monthSelect = $("manualTokenMonth");
+            monthSelect.innerHTML = "";
+            
+            const hoje = new Date();
+            for (let i = -2; i <= 2; i++) {
+                const data = new Date(hoje.getFullYear(), hoje.getMonth() + i, 1);
+                const value = `${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`;
+                const label = data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = label;
+                if (i === 0) option.selected = true;
+                monthSelect.appendChild(option);
+            }
+            
+            renderManualTokensList(patientId);
+            $("manualTokenModal").classList.remove("hidden");
+        }
+
+        function renderManualTokensList(patientId) {
+            const container = $("manualTokensList");
+            const tokens = loadTokens();
+            const sessions = loadSessions();
+            
+            // Filtrar tokens do paciente (incluindo manuais)
+            const patientTokens = Object.entries(tokens)
+                .filter(([sessionId, token]) => {
+                    const session = sessions.find(s => s.id === sessionId);
+                    return (session && session.patientId === patientId) || token.patientId === patientId;
+                })
+                .map(([sessionId, token]) => {
+                    const dataToken = new Date(token.date + 'T12:00:00');
+                    const mesToken = `${dataToken.getFullYear()}-${String(dataToken.getMonth() + 1).padStart(2, '0')}`;
+                    return {
+                        id: sessionId,
+                        ...token,
+                        mes: mesToken
+                    };
+                })
+                .sort((a, b) => b.date.localeCompare(a.date));
+            
+            if (patientTokens.length === 0) {
+                container.innerHTML = '<div class="muted" style="text-align:center; padding:20px;">Nenhum token registrado</div>';
+                return;
+            }
+            
+            // Agrupar por mês
+            const porMes = {};
+            patientTokens.forEach(token => {
+                if (!porMes[token.mes]) porMes[token.mes] = [];
+                porMes[token.mes].push(token);
+            });
+            
+            container.innerHTML = Object.keys(porMes).sort().reverse().map(mes => {
+                const [ano, mesNum] = mes.split('-');
+                const data = new Date(parseInt(ano), parseInt(mesNum) - 1, 1);
+                const mesLabel = data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                
+                return `
+                    <div style="margin-bottom:15px;">
+                        <div style="font-weight:bold; margin-bottom:8px;">📅 ${mesLabel}</div>
+                        ${porMes[mes].map(token => {
+                            const statusClass = token.status === 'enviado' ? 'ok' : (token.status === 'problema' ? 'bad' : 'warn');
+                            const statusText = token.status === 'enviado' ? '✅ Enviado' : (token.status === 'problema' ? '❌ Problema' : '⏳ Pendente');
+                            
+                            return `
+                                <div class="item" style="padding:10px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <div>
+                                            <span class="pill ${statusClass}">${statusText}</span>
+                                            ${token.code ? `<span class="pill token">Cód: ${token.code}</span>` : ''}
+                                            <div class="muted" style="font-size:0.8rem; margin-top:5px;">
+                                                ${new Date(token.date).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                        <div style="display:flex; gap:5px;">
+                                            <select onchange="updateTokenStatus('${token.id}', this.value)" style="min-height:30px; width:120px; padding:4px;">
+                                                <option value="pendente" ${token.status === 'pendente' ? 'selected' : ''}>⏳ Pendente</option>
+                                                <option value="enviado" ${token.status === 'enviado' ? 'selected' : ''}>✅ Enviado</option>
+                                                <option value="problema" ${token.status === 'problema' ? 'selected' : ''}>❌ Problema</option>
+                                            </select>
+                                            <button class="small danger" onclick="deleteManualToken('${token.id}')" style="min-height:30px;">🗑️</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.updateTokenStatus = function(tokenId, newStatus) {
+            const tokens = loadTokens();
+            if (tokens[tokenId]) {
+                tokens[tokenId].status = newStatus;
+                saveTokens(tokens);
+                
+                if (openedPatientId) {
+                    renderManualTokensList(openedPatientId);
+                    openPatientFolder(openedPatientId);
+                }
+                renderDashboard();
+                renderDaily();
+                renderSchedule();
+                showAlert("✅ Status do token atualizado!", "success");
+            }
+        };
+
+        window.deleteManualToken = function(tokenId) {
+            if (!confirm("Remover este token?")) return;
+            
+            const tokens = loadTokens();
+            delete tokens[tokenId];
+            saveTokens(tokens);
+            
+            if (openedPatientId) {
+                renderManualTokensList(openedPatientId);
+                openPatientFolder(openedPatientId);
+            }
+            renderDashboard();
+            renderDaily();
+            renderSchedule();
+            showAlert("🗑️ Token removido!", "success");
+        };
+
+        window.addManualToken = function() {
+            if (!openedPatientId) return;
+            
+            const monthSelect = $("manualTokenMonth");
+            if (!monthSelect.value) {
+                return showAlert("❌ Selecione o mês", "error");
+            }
+            
+            const [ano, mes] = monthSelect.value.split('-');
+            // Criar data no primeiro dia do mês selecionado
+            const data = `${ano}-${mes}-01`;
+            
+            const tokenId = uid();
+            const tokens = loadTokens();
+            
+            tokens[tokenId] = {
+                id: tokenId,
+                patientId: openedPatientId,
+                date: data,
+                code: '',
+                status: 'pendente',
+                manual: true,
+                registeredAt: new Date().toISOString()
+            };
+            
+            saveTokens(tokens);
+            renderManualTokensList(openedPatientId);
+            openPatientFolder(openedPatientId);
+            showAlert("✅ Token manual adicionado!", "success");
+        };
 
         // ========== NOTIFICAÇÕES ==========
         window.requestNotificationPermission = async function() {
@@ -2849,6 +3095,10 @@
                                                 <button id="btnAnamnese" class="small info" onclick="openAnamnese()">📋 Anamnese</button>
                                                 <button id="openWhats" class="small" onclick="openWhatsApp()">📱 WhatsApp</button>
                                                 <button id="renamePatient" class="small" onclick="renamePatient()">✏️ Renomear</button>
+                                                <!-- NOVO BOTÃO: Gerenciar Tokens Manuais (só aparece para Cassems) -->
+                                                ${getPatientById(openedPatientId)?.serviceType === 'cassems' ? `
+                                                    <button id="manualTokenBtn" class="small token" onclick="openManualTokenModal('${openedPatientId}')">🎫 Tokens</button>
+                                                ` : ''}
                                                 <button id="deletePatient" class="small danger" onclick="deletePatient()">🗑️ Excluir</button>
                                             </div>
                                         </div>
@@ -3177,6 +3427,13 @@
                 currentTokenSessionId = null;
             });
             $("saveToken")?.addEventListener("click", saveToken);
+            
+            // NOVOS EVENTOS: Modal de tokens manuais
+            $("closeManualToken")?.addEventListener("click", () => {
+                $("manualTokenModal")?.classList.add("hidden");
+            });
+            $("addManualToken")?.addEventListener("click", addManualToken);
+            
             $("cancelEvolucao")?.addEventListener("click", () => $("evolucaoModal")?.classList.add("hidden"));
             $("saveEvolucao")?.addEventListener("click", saveEvolucao);
             $("cancelEditEvolucao")?.addEventListener("click", () => $("editEvolucaoModal")?.classList.add("hidden"));
@@ -3200,3 +3457,4 @@
     </script>
 </body>
 </html>
+```
