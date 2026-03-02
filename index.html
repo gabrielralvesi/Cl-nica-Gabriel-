@@ -1,39 +1,3 @@
-Adicionei um botão exclusivo para gerenciar tokens manualmente dentro da pasta de cada paciente. Agora você pode adicionar ou remover tokens sem precisar registrar a sessão do dia.
-
-Aqui estão as principais mudanças que fiz:
-
-🔧 Novas Funcionalidades:
-
-1. Botão "🎫 Tokens" na Pasta do Paciente
-
-· Aparece apenas para pacientes Cassems
-· Localizado na barra de ações ao lado de WhatsApp, Anamnese, etc.
-· Abre um modal exclusivo para gestão manual de tokens
-
-2. Modal de Gerenciamento de Tokens
-
-· Permite adicionar tokens manualmente (selecionando mês)
-· Visualiza todos os tokens do paciente por mês
-· Permite marcar tokens como enviados, pendentes ou problema
-· Opção de remover tokens individualmente
-· Contador de tokens usados no mês
-
-3. Controles Visuais
-
-· Indicador visual de quantos tokens já foram usados no mês
-· Lista organizada por mês/ano
-· Cores diferentes para cada status (verde: enviado, amarelo: pendente, vermelho: problema)
-
-4. Funcionalidades do Modal
-
-· Adicionar token manual: Cria um token pendente para o mês selecionado
-· Editar status: Altere entre enviado, pendente ou problema
-· Remover token: Exclui um token específico
-· Fechar automaticamente: O modal atualiza a interface após cada ação
-
-Agora você pode gerenciar os tokens Cassems de forma independente das sessões diárias, ideal para quando o paciente traz o token fora do dia da consulta ou para ajustes no controle mensal.
-
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
