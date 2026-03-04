@@ -2,15 +2,15 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClinicFlow Pro - Gestão de Clínica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>ClinicFlow Pro - Gestão de Clínica Profissional</title>
     
     <!-- Fontes modernas -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     
-    <!-- Ícones -->
+    <!-- Ícones Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
     <style>
@@ -189,6 +189,16 @@
             color: var(--primary-500);
         }
 
+        .backup-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--hover-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+        }
+
         /* ===== NAVEGAÇÃO ===== */
         .nav-tabs {
             background: var(--bg-secondary);
@@ -277,6 +287,13 @@
             margin-right: 0.5rem;
         }
 
+        .cardMini {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            background: var(--hover-bg);
+        }
+
         /* ===== GRIDS ===== */
         .dashboard-grid {
             display: grid;
@@ -297,6 +314,31 @@
             .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
             .main-content { padding: 1rem; }
             .header-content { flex-direction: column; align-items: flex-start; }
+        }
+
+        .split {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1000px) {
+            .split { grid-template-columns: 1fr; }
+        }
+
+        .row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .row > * { flex: 1 1 200px; }
+
+        .sum {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         /* ===== STAT CARDS ===== */
@@ -485,54 +527,216 @@
 
         .input-group .form-control { flex: 1; }
 
-        /* ===== AI SUGGESTIONS ===== */
-        .ai-suggestions {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: linear-gradient(135deg, #6366f110, #8b5cf610);
-            border: 1px solid #8b5cf640;
-            border-radius: var(--radius-lg);
-        }
-
-        .ai-suggestions h4 {
-            color: #8b5cf6;
-            margin: 0 0 0.5rem 0;
+        /* ===== LISTAS ===== */
+        .list {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 0.75rem;
         }
 
-        .ai-suggestions h4 i { font-size: 1.2rem; }
-
-        .suggestion-chip {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            margin: 0.25rem;
+        .list-item {
             background: var(--hover-bg);
             border: 1px solid var(--border);
-            border-radius: var(--radius-full);
-            font-size: 0.875rem;
-            cursor: pointer;
+            border-radius: var(--radius-lg);
+            padding: 1rem;
             transition: all 0.2s;
         }
 
-        .suggestion-chip:hover {
-            background: #8b5cf6;
-            color: white;
-            border-color: #8b5cf6;
+        .list-item:hover {
+            border-color: var(--primary-500);
+            transform: translateX(2px);
         }
 
-        .ai-loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--border);
-            border-top-color: #8b5cf6;
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        /* ===== PILLS ===== */
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: var(--hover-bg);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .pill-success {
+            background: var(--success-light);
+            color: var(--success);
+            border-color: transparent;
+        }
+
+        .pill-warning {
+            background: var(--warning-light);
+            color: var(--warning);
+            border-color: transparent;
+        }
+
+        .pill-error {
+            background: var(--error-light);
+            color: var(--error);
+            border-color: transparent;
+        }
+
+        .pill-cassems {
+            background: var(--cassems-light);
+            color: var(--cassems);
+        }
+
+        .pill-particular {
+            background: var(--particular-light);
+            color: var(--particular);
+        }
+
+        .pill-info {
+            background: var(--info-light);
+            color: var(--info);
+        }
+
+        /* ===== AVATAR ===== */
+        .avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            object-fit: cover;
+            border: 2px solid var(--primary-500);
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .avatar-lg { width: 80px; height: 80px; }
+        .avatar-sm { width: 32px; height: 32px; }
+
+        .avatar-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-600);
+            font-weight: 600;
+        }
+
+        /* ===== FOTO UPLOAD ===== */
+        .photo-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        /* ===== AGENDA ===== */
+        .schedWrap {
+            overflow-x: auto;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-height: 600px;
+        }
+
+        table.sched {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        .sched th, .sched td {
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+        }
+
+        .sched th {
+            background: var(--hover-bg);
+            position: sticky;
+            top: 0;
+        }
+
+        .timeCell {
+            position: sticky;
+            left: 0;
+            background: var(--hover-bg);
+            font-weight: 600;
+        }
+
+        .slotBox {
+            border-radius: var(--radius-md);
+            padding: 0.75rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .slotGreen {
+            background: var(--cassems-light);
+            border-left: 4px solid var(--cassems);
+        }
+
+        .slotAmber {
+            background: var(--particular-light);
+            border-left: 4px solid var(--particular);
+        }
+
+        .slotBlue {
+            background: var(--unimed-light);
+            border-left: 4px solid var(--unimed);
+        }
+
+        .slotPurple {
+            background: var(--outros-light);
+            border-left: 4px solid var(--outros);
+        }
+
+        .slotRed {
+            background: var(--hover-bg);
+            border-left: 4px solid var(--border);
+        }
+
+        .slot-counter {
+            display: flex;
+            gap: 0.25rem;
+            margin-top: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        /* ===== TOKEN COUNTER ===== */
+        .token-counter {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--hover-bg);
+            border-radius: var(--radius-lg);
+            margin: 1rem 0;
+        }
+
+        .token-progress {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            border-radius: var(--radius-full);
+        }
+
+        .token-progress-fill {
+            height: 100%;
+            background: var(--warning-500);
+            border-radius: var(--radius-full);
+            transition: width 0.3s;
+        }
+
+        .token-badge {
+            padding: 0.25rem 0.75rem;
+            background: var(--warning-light);
+            color: var(--warning-500);
+            border-radius: var(--radius-full);
+            font-weight: 600;
+        }
 
         /* ===== TIMELINE ===== */
         .timeline {
@@ -573,7 +777,59 @@
             margin-bottom: 0.5rem;
         }
 
-        .timeline-content { color: var(--text-primary); }
+        .timeline-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+            margin-top: 0.75rem;
+        }
+
+        /* ===== AI SUGGESTIONS ===== */
+        .ai-suggestions {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #6366f110, #8b5cf610);
+            border: 1px solid #8b5cf640;
+            border-radius: var(--radius-lg);
+        }
+
+        .ai-suggestions h4 {
+            color: #8b5cf6;
+            margin: 0 0 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .suggestion-chip {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            background: var(--hover-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-full);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-chip:hover {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+
+        .ai-loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: #8b5cf6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ===== MODAIS ===== */
         .modal-overlay {
@@ -633,172 +889,6 @@
             margin-top: 2rem;
         }
 
-        /* ===== LISTAS ===== */
-        .list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .list-item {
-            background: var(--hover-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            transition: all 0.2s;
-        }
-
-        .list-item:hover {
-            border-color: var(--primary-500);
-            transform: translateX(2px);
-        }
-
-        /* ===== PILLS ===== */
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 500;
-            background: var(--hover-bg);
-            color: var(--text-secondary);
-            border: 1px solid var(--border);
-        }
-
-        .pill-success {
-            background: var(--success-light);
-            color: var(--success);
-            border-color: transparent;
-        }
-
-        .pill-warning {
-            background: var(--warning-light);
-            color: var(--warning);
-            border-color: transparent;
-        }
-
-        .pill-error {
-            background: var(--error-light);
-            color: var(--error);
-            border-color: transparent;
-        }
-
-        .pill-cassems {
-            background: var(--cassems-light);
-            color: var(--cassems);
-        }
-
-        .pill-particular {
-            background: var(--particular-light);
-            color: var(--particular);
-        }
-
-        /* ===== AVATAR ===== */
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary-500);
-        }
-
-        .avatar-lg { width: 80px; height: 80px; }
-        .avatar-sm { width: 32px; height: 32px; }
-
-        .avatar-placeholder {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary-100);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-600);
-            font-weight: 600;
-        }
-
-        /* ===== AGENDA ===== */
-        .table-container {
-            overflow-x: auto;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: var(--hover-bg);
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border);
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border);
-            color: var(--text-primary);
-        }
-
-        .schedule-slot {
-            padding: 1rem;
-            border-radius: var(--radius-lg);
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .slot-cassems {
-            background: var(--cassems-light);
-            border-left: 4px solid var(--cassems);
-        }
-
-        .slot-particular {
-            background: var(--particular-light);
-            border-left: 4px solid var(--particular);
-        }
-
-        .slot-empty {
-            background: var(--hover-bg);
-            border-left: 4px solid var(--border);
-            opacity: 0.7;
-        }
-
-        .slot-empty:hover {
-            opacity: 1;
-            background: var(--primary-100);
-        }
-
-        /* ===== TOKEN COUNTER ===== */
-        .token-counter {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--hover-bg);
-            border-radius: var(--radius-lg);
-            margin: 1rem 0;
-        }
-
-        .token-progress {
-            flex: 1;
-            height: 8px;
-            background: var(--border);
-            border-radius: var(--radius-full);
-        }
-
-        .token-progress-fill {
-            height: 100%;
-            background: var(--warning-500);
-            border-radius: var(--radius-full);
-            transition: width 0.3s;
-        }
-
         /* ===== ALERTAS ===== */
         .alert {
             position: fixed;
@@ -823,6 +913,18 @@
             border-color: var(--success);
             background: var(--success-light);
             color: var(--success);
+        }
+
+        .alert-warning {
+            border-color: var(--warning);
+            background: var(--warning-light);
+            color: var(--warning);
+        }
+
+        .alert-error {
+            border-color: var(--error);
+            background: var(--error-light);
+            color: var(--error);
         }
 
         /* ===== SHORTCUTS ===== */
@@ -879,41 +981,43 @@
 </head>
 <body>
     <div id="app"></div>
+
+    <!-- Input oculto para importar arquivo -->
     <input type="file" id="importFile" accept=".json" style="display:none">
 
     <script>
         // ============================================
         // CONFIGURAÇÕES
         // ============================================
-        const APP_VERSION = '13.0.0';
+        const APP_VERSION = '14.0.0';
         const CLINIC_NAME = "ClinicFlow Pro";
         const CLINIC_SUBTITLE = "Gestão de Clínica Profissional";
         const CLINIC_CRFA = "CRFa 5-13766";
 
-        // SUA CHAVE API DO GEMINI (gratuita - pegue em https://aistudio.google.com/apikey)
-        const GEMINI_API_KEY = "AIzaSyA0WulpOSIW9YgQ80_5JvRXdcqQceXqp-8"; // Substitua pela sua chave
+        // SUA CHAVE API DO GEMINI
+        const GEMINI_API_KEY = "AIzaSyA0WulpOSIW9YgQ80_5JvRXdcqQceXqp-8";
 
         const STORAGE_KEYS = {
-            PATIENTS: "clinicflow_patients_v13",
-            SESSIONS: "clinicflow_sessions_v13",
-            SCHEDULE: "clinicflow_schedule_v13",
-            TOKENS: "clinicflow_tokens_v13",
-            THEME: "clinicflow_theme_v13",
+            PATIENTS: "clinicflow_patients_v14",
+            SESSIONS: "clinicflow_sessions_v14",
+            SCHEDULE: "clinicflow_schedule_v14",
+            TOKENS: "clinicflow_tokens_v14",
+            THEME: "clinicflow_theme_v14",
             VERSION: "clinicflow_version",
             NOTIFICATIONS: "clinicflow_notifications",
             PHOTOS: "clinicflow_photos",
             EVOLUCOES: "clinicflow_evolucoes",
-            ULTIMO_RESET: "clinicflow_ultimo_reset",
-            AI_SETTINGS: "clinicflow_ai_settings"
+            ULTIMO_RESET: "clinicflow_ultimo_reset"
         };
 
         const DAYS = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+        const DAYS_FULL = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
         
         const SERVICE_TYPES = {
-            cassems: { label: 'Cassems', color: 'cassems', class: 'slot-cassems', pill: 'pill-cassems' },
-            particular: { label: 'Particular', color: 'particular', class: 'slot-particular', pill: 'pill-particular' },
-            unimed: { label: 'Unimed', color: 'unimed', class: 'slot-unimed', pill: 'pill-success' },
-            outros: { label: 'Outros', color: 'outros', class: 'slot-outros', pill: 'pill-info' }
+            cassems: { label: 'Cassems', color: 'cassems', class: 'slotGreen', pill: 'pill-cassems' },
+            particular: { label: 'Particular', color: 'particular', class: 'slotAmber', pill: 'pill-particular' },
+            unimed: { label: 'Unimed', color: 'unimed', class: 'slotBlue', pill: 'pill-info' },
+            outros: { label: 'Outros', color: 'outros', class: 'slotPurple', pill: 'pill-info' }
         };
 
         const DEFAULT_TIMES = [
@@ -1004,133 +1108,15 @@
 
             formatDate(dateStr) {
                 return new Date(dateStr).toLocaleDateString('pt-BR');
+            },
+
+            formatDateTime(dateStr) {
+                return new Date(dateStr).toLocaleString('pt-BR');
             }
         };
 
         // ============================================
-        // AI SERVICE (GEMINI)
-        // ============================================
-        const AIService = {
-            apiKey: GEMINI_API_KEY,
-            apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
-
-            async generateText(prompt) {
-                if (!this.apiKey || this.apiKey === "COLOQUE_SUA_CHAVE_AQUI") {
-                    Utils.showAlert('Configure a chave da API Gemini nas configurações', 'warning');
-                    return null;
-                }
-
-                try {
-                    aiLoading = true;
-                    this.updateLoadingState(true);
-
-                    const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{
-                                    text: prompt
-                                }]
-                            }],
-                            generationConfig: {
-                                temperature: 0.7,
-                                maxOutputTokens: 500
-                            }
-                        })
-                    });
-
-                    const data = await response.json();
-                    
-                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                        return data.candidates[0].content.parts[0].text;
-                    } else {
-                        throw new Error('Resposta inválida da API');
-                    }
-                } catch (error) {
-                    console.error('Erro na API Gemini:', error);
-                    Utils.showAlert('Erro ao conectar com a IA', 'error');
-                    return null;
-                } finally {
-                    aiLoading = false;
-                    this.updateLoadingState(false);
-                }
-            },
-
-            updateLoadingState(loading) {
-                const aiButtons = document.querySelectorAll('.ai-loading-indicator');
-                aiButtons.forEach(btn => {
-                    if (loading) {
-                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                        btn.disabled = true;
-                    } else {
-                        btn.innerHTML = '<i class="fas fa-robot"></i> IA';
-                        btn.disabled = false;
-                    }
-                });
-            },
-
-            async suggestEvolucao(patientId, currentText = '') {
-                const patient = Patients.getById(patientId);
-                const evolucoes = Evolucoes.getByPatient(patientId);
-                const historico = evolucoes.slice(0, 3).map(e => `- ${e.date}: ${e.text}`).join('\n');
-                
-                const prompt = `Você é um assistente de fonoaudiologia infantil. Ajude o profissional a escrever uma evolução clínica.
-                
-Paciente: ${patient?.name || 'Paciente'}
-Idade: Calcular a partir da data de nascimento se disponível
-Tipo de atendimento: ${patient?.serviceType || 'Não especificado'}
-
-Histórico recente:
-${historico || 'Nenhuma evolução anterior'}
-
-Texto atual do profissional:
-${currentText || 'Ainda não escrito'}
-
-Sugira 3 opções de evolução clínica profissional, cada uma com aproximadamente 3 frases, focando em:
-- Progresso do paciente
-- Atividades realizadas
-- Próximos passos
-- Observações relevantes
-
-Formato: Apenas as sugestões numeradas, sem explicações adicionais.`;
-
-                return await this.generateText(prompt);
-            },
-
-            async improveEvolucao(text) {
-                const prompt = `Melhore o seguinte texto de evolução clínica, corrigindo erros e tornando mais profissional, mas mantendo o significado:
-
-Texto: "${text}"
-
-Forneça apenas a versão melhorada, sem explicações adicionais.`;
-
-                return await this.generateText(prompt);
-            },
-
-            async summarizeEvolucao(text) {
-                const prompt = `Resuma a seguinte evolução clínica em 2 frases concisas:
-
-Texto: "${text}"
-
-Forneça apenas o resumo, sem explicações adicionais.`;
-
-                return await this.generateText(prompt);
-            },
-
-            async extractKeyPoints(text) {
-                const prompt = `Extraia os pontos-chave da seguinte evolução clínica:
-
-Texto: "${text}"
-
-Liste os pontos-chave em formato de tópicos simples, um por linha.`;
-
-                return await this.generateText(prompt);
-            }
-        };
-
-        // ============================================
-        // STORAGE (resumido para manter o código menor)
+        // STORAGE
         // ============================================
         const Storage = {
             save(key, data) {
@@ -1154,6 +1140,13 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
 
             remove(key) { localStorage.removeItem(key); },
 
+            clear() {
+                if (confirm("⚠️ Isso apagará TODOS os dados! Continuar?")) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            },
+
             exportAll() {
                 try {
                     const dados = {
@@ -1175,10 +1168,10 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                     a.click();
                     URL.revokeObjectURL(url);
                     
-                    Utils.showAlert('Backup exportado!', 'success');
+                    Utils.showAlert('Backup exportado com sucesso!', 'success');
                 } catch (erro) {
                     console.error(erro);
-                    Utils.showAlert('Erro ao exportar', 'error');
+                    Utils.showAlert('Erro ao exportar backup', 'error');
                 }
             },
 
@@ -1195,7 +1188,8 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                         if (dados.fotos) this.save(STORAGE_KEYS.PHOTOS, dados.fotos);
                         if (dados.evolucoes) this.save(STORAGE_KEYS.EVOLUCOES, dados.evolucoes);
                         
-                        Utils.showAlert('Dados importados!', 'success');
+                        Utils.showAlert('Dados importados com sucesso!', 'success');
+                        
                         if (callback) setTimeout(callback, 1500);
                         
                     } catch (erro) {
@@ -1432,6 +1426,18 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 return recurring[key] || null;
             },
 
+            getByPatient(patientId) {
+                const recurring = this.getRecurring();
+                const result = [];
+                Object.entries(recurring).forEach(([key, entry]) => {
+                    if (entry.patientId === patientId) {
+                        const [day, time] = key.split('|');
+                        result.push({ day: parseInt(day), time, ...entry });
+                    }
+                });
+                return result;
+            },
+
             removeByPatient(patientId) {
                 const schedule = this.get();
                 if (schedule.recurring) {
@@ -1598,7 +1604,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                     this.save(tokensReset);
                     Storage.save(STORAGE_KEYS.ULTIMO_RESET, chaveReset);
                     
-                    Utils.showAlert('Tokens reiniciados', 'info');
+                    Utils.showAlert('Tokens reiniciados para o novo mês', 'info');
                     return true;
                 }
                 return false;
@@ -1653,7 +1659,117 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
         };
 
         // ============================================
-        // COMPONENTS (resumido)
+        // AI SERVICE (GEMINI)
+        // ============================================
+        const AIService = {
+            apiKey: GEMINI_API_KEY,
+            apiUrl: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+
+            async generateText(prompt) {
+                if (!this.apiKey) {
+                    Utils.showAlert('Configure a chave da API Gemini', 'warning');
+                    return null;
+                }
+
+                try {
+                    aiLoading = true;
+                    this.updateLoadingState(true);
+
+                    const response = await fetch(`${this.apiUrl}?key=${this.apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{
+                                    text: prompt
+                                }]
+                            }],
+                            generationConfig: {
+                                temperature: 0.7,
+                                maxOutputTokens: 500
+                            }
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                        return data.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error('Resposta inválida da API');
+                    }
+                } catch (error) {
+                    console.error('Erro na API Gemini:', error);
+                    Utils.showAlert('Erro ao conectar com a IA', 'error');
+                    return null;
+                } finally {
+                    aiLoading = false;
+                    this.updateLoadingState(false);
+                }
+            },
+
+            updateLoadingState(loading) {
+                const aiButtons = document.querySelectorAll('.ai-loading-indicator');
+                aiButtons.forEach(btn => {
+                    if (loading) {
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                        btn.disabled = true;
+                    } else {
+                        btn.innerHTML = '<i class="fas fa-robot"></i> IA';
+                        btn.disabled = false;
+                    }
+                });
+            },
+
+            async suggestEvolucao(patientId, currentText = '') {
+                const patient = Patients.getById(patientId);
+                const evolucoes = Evolucoes.getByPatient(patientId);
+                const historico = evolucoes.slice(0, 3).map(e => `- ${e.date}: ${e.text}`).join('\n');
+                
+                const prompt = `Você é um assistente de fonoaudiologia infantil. Ajude o profissional a escrever uma evolução clínica.
+                
+Paciente: ${patient?.name || 'Paciente'}
+Tipo de atendimento: ${patient?.serviceType || 'Não especificado'}
+
+Histórico recente:
+${historico || 'Nenhuma evolução anterior'}
+
+Texto atual:
+${currentText || 'Ainda não escrito'}
+
+Sugira 3 opções de evolução clínica profissional, cada uma com aproximadamente 3 frases, focando em:
+- Progresso do paciente
+- Atividades realizadas
+- Próximos passos
+
+Formato: Apenas as sugestões numeradas, sem explicações adicionais.`;
+
+                return await this.generateText(prompt);
+            },
+
+            async improveEvolucao(text) {
+                const prompt = `Melhore o seguinte texto de evolução clínica, corrigindo erros e tornando mais profissional, mas mantendo o significado:
+
+Texto: "${text}"
+
+Forneça apenas a versão melhorada, sem explicações adicionais.`;
+
+                return await this.generateText(prompt);
+            },
+
+            async summarizeEvolucao(text) {
+                const prompt = `Resuma a seguinte evolução clínica em 2 frases concisas:
+
+Texto: "${text}"
+
+Forneça apenas o resumo, sem explicações adicionais.`;
+
+                return await this.generateText(prompt);
+            }
+        };
+
+        // ============================================
+        // COMPONENTS
         // ============================================
         const Components = {
             pill(text, type = 'default') {
@@ -1661,31 +1777,47 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                     success: 'pill-success',
                     warning: 'pill-warning',
                     error: 'pill-error',
+                    info: 'pill-info',
                     cassems: 'pill-cassems',
                     particular: 'pill-particular'
                 }[type] || '';
+                
                 return `<span class="pill ${typeClass}">${text}</span>`;
             },
 
+            tokenIndicator(session, patient, token) {
+                if (patient?.serviceType !== 'cassems') return '';
+                
+                if (token?.status === 'enviado') {
+                    return this.pill(`✅ Token: ${token.code || 'Enviado'}`, 'success');
+                } else if (token?.status === 'problema') {
+                    return this.pill('❌ Problema no token', 'error');
+                } else if (token?.status === 'pendente') {
+                    return this.pill('⏳ Token pendente', 'warning');
+                }
+                return this.pill('📝 Registrar token', 'warning');
+            },
+
             sessionCard(session, patient, token, photo, showActions = true) {
+                const tokenIndicator = this.tokenIndicator(session, patient, token);
                 const photoHtml = photo ? 
                     `<img src="${photo}" class="avatar avatar-sm">` : 
                     `<div class="avatar-placeholder avatar-sm"><i class="fas fa-user"></i></div>`;
                 
                 const actionsHtml = showActions ? `
-                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <div class="actions">
                         <button class="btn btn-sm btn-secondary" onclick="SessionActions.toggleDid('${session.id}')">
-                            <i class="fas fa-sync-alt"></i>
+                            <i class="fas fa-sync-alt"></i> Alternar
                         </button>
                         <button class="btn btn-sm btn-secondary" onclick="SessionActions.togglePaid('${session.id}')">
-                            <i class="fas fa-dollar-sign"></i>
+                            <i class="fas fa-dollar-sign"></i> Pagamento
                         </button>
                         <button class="btn btn-sm btn-secondary" onclick="SessionActions.editValue('${session.id}')">
-                            <i class="fas fa-edit"></i>
+                            <i class="fas fa-edit"></i> Editar
                         </button>
                         ${patient?.serviceType === 'cassems' ? 
                             `<button class="btn btn-sm btn-secondary" onclick="TokenActions.openModal('${session.id}', '${patient.name}', '${session.date}')">
-                                <i class="fas fa-ticket-alt"></i>
+                                <i class="fas fa-ticket-alt"></i> Token
                             </button>` : ''}
                         <button class="btn btn-sm btn-danger" onclick="SessionActions.delete('${session.id}')">
                             <i class="fas fa-trash"></i>
@@ -1694,19 +1826,147 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 ` : '';
 
                 return `
-                    <div class="list-item">
+                    <div class="list-item" id="session-${session.id}">
                         <div style="display: flex; gap: 1rem;">
                             ${photoHtml}
                             <div style="flex: 1;">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                                    <strong>${session.time || '—'} - ${Utils.escapeHtml(patient?.name || '?')}</strong>
-                                    ${this.pill(session.did === 'realizou' ? 'Realizou' : 'Não realizou', session.did === 'realizou' ? 'success' : 'error')}
-                                    ${this.pill(session.paid === 'pago' ? 'Pago' : 'Não pago', session.paid === 'pago' ? 'success' : 'warning')}
-                                </div>
-                                <div style="font-size: 0.875rem; color: var(--text-secondary);">
-                                    ${Utils.fmtMoney(session.value)}
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
+                                            <strong>${session.time || '—'} - ${Utils.escapeHtml(patient?.name || '?')}</strong>
+                                            ${this.pill(session.did === 'realizou' ? 'Realizou' : 'Não realizou', session.did === 'realizou' ? 'success' : 'error')}
+                                            ${this.pill(session.paid === 'pago' ? 'Pago' : 'Não pago', session.paid === 'pago' ? 'success' : 'warning')}
+                                        </div>
+                                        <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
+                                            ${Utils.fmtMoney(session.value)}
+                                            ${session.just === 'justificada' ? ' • Justificada' : session.just === 'nao_justificada' ? ' • Sem justificativa' : ''}
+                                        </div>
+                                        ${tokenIndicator}
+                                    </div>
                                 </div>
                                 ${actionsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            patientFolderCard(patient, stats) {
+                const photo = Photos.get(patient.id);
+                const photoHtml = photo ? 
+                    `<img src="${photo}" class="avatar" style="width:50px; height:50px;">` : 
+                    `<div class="avatar-placeholder" style="width:50px; height:50px;"><i class="fas fa-user"></i></div>`;
+                
+                const serviceType = SERVICE_TYPES[patient.serviceType] || SERVICE_TYPES.particular;
+                const percent = stats.total > 0 ? (stats.realizadas / stats.total) * 100 : 0;
+                
+                const tokensPaciente = Tokens.countByPatient(patient.id, 'enviado');
+                const tokensPendentes = Tokens.countByPatient(patient.id, 'pendente');
+                const tokensProblema = Tokens.countByPatient(patient.id, 'problema');
+
+                return `
+                    <div class="list-item" onclick="PatientActions.openFolder('${patient.id}')" style="cursor: pointer;">
+                        <div style="display: flex; gap: 1rem;">
+                            ${photoHtml}
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <strong style="font-size: 1.1rem;">${Utils.escapeHtml(patient.name)}</strong>
+                                            ${this.pill(serviceType.label, patient.serviceType)}
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                                            ${this.pill(`✅ ${stats.realizadas}`, 'success')}
+                                            ${this.pill(`❌ ${stats.faltas}`, 'error')}
+                                            ${patient.serviceType === 'cassems' ? `
+                                                ${this.pill(`🎫 ${tokensPaciente}`, 'success')}
+                                                ${tokensPendentes > 0 ? this.pill(`⏳ ${tokensPendentes}`, 'warning') : ''}
+                                                ${tokensProblema > 0 ? this.pill(`❌ ${tokensProblema}`, 'error') : ''}
+                                            ` : ''}
+                                        </div>
+                                        <div class="progress-bar" style="width: 200px;">
+                                            <div class="progress-fill" style="width: ${percent}%;"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        ${stats.debt > 0 ? this.pill(`💰 ${Utils.fmtMoney(stats.debt)}`, 'warning') : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            scheduleSlot(day, time, entry, patient, stats) {
+                if (!entry) {
+                    return `
+                        <td data-day="${day}" data-time="${time}" class="slotBox slotRed" style="cursor: pointer;">
+                            <div style="opacity:0.7;">🟥 Vago</div>
+                            <div class="muted" style="font-size:0.8rem;">Clique para agendar</div>
+                        </td>
+                    `;
+                }
+                
+                const serviceType = SERVICE_TYPES[patient?.serviceType] || SERVICE_TYPES.particular;
+                const tokenIcon = patient?.serviceType === 'cassems' ? '<span class="pill token" style="margin-top:0;">🎫</span>' : '';
+                
+                const tokensPaciente = Tokens.countByPatient(patient?.id, 'enviado');
+                const tokensPendentes = Tokens.countByPatient(patient?.id, 'pendente');
+                const tokensProblema = Tokens.countByPatient(patient?.id, 'problema');
+                
+                return `
+                    <td data-day="${day}" data-time="${time}" class="slotBox ${serviceType.class}">
+                        <div style="font-weight:600;">${Utils.escapeHtml(patient?.name || "?")} ${tokenIcon}</div>
+                        <div class="muted" style="font-size:0.85rem;">${serviceType.label}</div>
+                        <div class="slot-counter">
+                            <span title="Sessões realizadas">✅ ${stats?.realizadas || 0}</span>
+                            <span title="Faltas">❌ ${stats?.faltas || 0}</span>
+                            <span title="Total">📊 ${stats?.total || 0}</span>
+                        </div>
+                        ${patient?.serviceType === 'cassems' ? `
+                            <div class="slot-counter" style="margin-top:5px;">
+                                <span class="pill" style="font-size:0.7rem;">🎫 Enviados: ${tokensPaciente}</span>
+                                ${tokensPendentes > 0 ? `<span class="pill warn" style="font-size:0.7rem;">⏳ ${tokensPendentes}</span>` : ''}
+                                ${tokensProblema > 0 ? `<span class="pill bad" style="font-size:0.7rem;">❌ ${tokensProblema}</span>` : ''}
+                            </div>
+                        ` : ''}
+                    </td>
+                `;
+            },
+
+            manualTokenCard(token) {
+                const statusClass = {
+                    enviado: 'success',
+                    pendente: 'warning',
+                    problema: 'error'
+                }[token.status];
+                
+                const statusText = {
+                    enviado: '✅ Enviado',
+                    pendente: '⏳ Pendente',
+                    problema: '❌ Problema'
+                }[token.status];
+
+                return `
+                    <div class="list-item" style="padding: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                ${this.pill(statusText, statusClass)}
+                                ${token.code ? this.pill(`Cód: ${token.code}`, 'info') : ''}
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                    ${Utils.formatDate(token.date)}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <select onchange="TokenActions.updateStatus('${token.id}', this.value)" class="form-control" style="width: 120px; min-height: auto; padding: 0.25rem;">
+                                    <option value="pendente" ${token.status === 'pendente' ? 'selected' : ''}>⏳ Pendente</option>
+                                    <option value="enviado" ${token.status === 'enviado' ? 'selected' : ''}>✅ Enviado</option>
+                                    <option value="problema" ${token.status === 'problema' ? 'selected' : ''}>❌ Problema</option>
+                                </select>
+                                <button class="btn btn-sm btn-danger" onclick="TokenActions.deleteManual('${token.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1722,7 +1982,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                         <div class="timeline-content">
                             ${Utils.escapeHtml(evolucao.text)}
                         </div>
-                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.75rem;">
+                        <div class="timeline-actions">
                             <button class="btn btn-sm btn-secondary" onclick="EvolucaoActions.openEdit('${evolucao.id}')">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -1732,11 +1992,66 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                         </div>
                     </div>
                 `;
+            },
+
+            aniversarianteCard(patient) {
+                const photo = Photos.get(patient.id);
+                const photoHtml = photo ? 
+                    `<img src="${photo}" class="avatar avatar-sm">` : 
+                    `<div class="avatar-placeholder avatar-sm"><i class="fas fa-user"></i></div>`;
+
+                return `
+                    <div class="list-item">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            ${photoHtml}
+                            <div style="flex: 1;">
+                                <strong>${Utils.escapeHtml(patient.name)}</strong>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                    ${Utils.formatDate(patient.birth)}
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="PatientActions.sendBirthdayMessage('${patient.id}')">
+                                <i class="fab fa-whatsapp"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            },
+
+            proximoAtendimentoCard(item) {
+                const diasText = item.days === 0 ? 'Hoje' : item.days === 1 ? 'Amanhã' : `Em ${item.days} dias`;
+                
+                return `
+                    <div class="list-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${Utils.escapeHtml(item.patient)}</strong>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                    ${item.time} • ${diasText}
+                                </div>
+                            </div>
+                            <span class="pill ${item.days === 0 ? 'pill-warning' : 'pill-info'}">
+                                ${diasText}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            },
+
+            devedorCard(devedor) {
+                return `
+                    <div class="list-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong>${Utils.escapeHtml(devedor.name)}</strong>
+                            <span class="pill pill-warning">${Utils.fmtMoney(devedor.debt)}</span>
+                        </div>
+                    </div>
+                `;
             }
         };
 
         // ============================================
-        // VIEWS (resumido - apenas o essencial)
+        // VIEWS
         // ============================================
         const DashboardView = {
             render() {
@@ -1820,175 +2135,177 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 });
 
                 const tokens = Tokens.getAll();
-                const enviados = cassemsHoje.filter(s => tokens[s.id]?.status === 'enviado').length;
+                const tokensHoje = cassemsHoje.map(s => ({
+                    session: s,
+                    token: tokens[s.id]
+                }));
+
+                const enviados = tokensHoje.filter(t => t.token?.status === 'enviado').length;
                 const pendentes = cassemsHoje.length - enviados;
 
                 $('tokensHoje').textContent = cassemsHoje.length;
-                $('tokensHojeDetalhe').innerHTML = `${cassemsHoje.length} pacientes`;
+                $('tokensHojeDetalhe').innerHTML = `${cassemsHoje.length} pacientes Cassems`;
                 $('tokensEnviados').textContent = enviados;
+                $('tokensEnviadosDetalhe').innerHTML = `${enviados} tokens enviados`;
                 $('tokensPendentes').textContent = pendentes;
+                $('tokensPendentesDetalhe').innerHTML = `${pendentes} pendentes`;
             },
 
             renderAniversariantes() {
-                $('aniversariantes').innerHTML = '<div class="muted">Nenhum aniversariante</div>';
+                const month = new Date().getMonth() + 1;
+                const patients = Patients.getAll();
+                
+                const aniversariantes = patients.filter(p => {
+                    if (!p.birth) return false;
+                    return parseInt(p.birth.split('-')[1]) === month;
+                });
+                
+                const container = $('aniversariantes');
+                if (!container) return;
+                
+                if (aniversariantes.length === 0) {
+                    container.innerHTML = '<div class="muted">Nenhum aniversariante este mês</div>';
+                } else {
+                    container.innerHTML = aniversariantes.map(p => Components.aniversarianteCard(p)).join('');
+                }
             },
 
             renderProximosAtendimentos() {
-                $('proximosAtendimentos').innerHTML = '<div class="muted">Nenhum agendamento</div>';
-            }
-        };
-
-        // ============================================
-        // EVOLUCAO ACTIONS COM IA
-        // ============================================
-        const EvolucaoActions = {
-            openModal() {
-                if (!openedPatientId) return;
-                $('evolucaoData').value = Utils.todayISO();
-                $('evolucaoTexto').value = '';
-                $('evolucaoModal').classList.remove('hidden');
+                const proximos = Schedule.getUpcoming(5);
+                const container = $('proximosAtendimentos');
                 
-                // Mostrar sugestões da IA
-                this.showAISuggestions();
-            },
-
-            async showAISuggestions() {
-                const container = document.getElementById('aiSuggestions');
                 if (!container) return;
                 
-                container.innerHTML = '<div class="ai-loading"></div> Carregando sugestões...';
-                
-                const suggestions = await AIService.suggestEvolucao(openedPatientId);
-                
-                if (suggestions) {
-                    const suggestionsList = suggestions.split('\n').filter(s => s.trim());
-                    container.innerHTML = `
-                        <h4><i class="fas fa-robot"></i> Sugestões da IA</h4>
-                        ${suggestionsList.map(s => 
-                            `<span class="suggestion-chip" onclick="EvolucaoActions.useSuggestion('${s.replace(/'/g, "\\'")}')">${s}</span>`
-                        ).join('')}
-                    `;
+                if (proximos.length === 0) {
+                    container.innerHTML = '<div class="muted">Nenhum agendamento</div>';
                 } else {
-                    container.innerHTML = '<div class="muted">Não foi possível carregar sugestões</div>';
+                    container.innerHTML = proximos.map(item => Components.proximoAtendimentoCard(item)).join('');
                 }
-            },
-
-            useSuggestion(text) {
-                $('evolucaoTexto').value = text;
-            },
-
-            async improveText() {
-                const textarea = $('evolucaoTexto');
-                const currentText = textarea.value;
-                
-                if (!currentText) {
-                    Utils.showAlert('Digite algum texto primeiro', 'warning');
-                    return;
-                }
-                
-                const improved = await AIService.improveEvolucao(currentText);
-                if (improved) {
-                    textarea.value = improved;
-                    Utils.showAlert('Texto melhorado!', 'success');
-                }
-            },
-
-            async summarizeText() {
-                const textarea = $('evolucaoTexto');
-                const currentText = textarea.value;
-                
-                if (!currentText) {
-                    Utils.showAlert('Digite algum texto primeiro', 'warning');
-                    return;
-                }
-                
-                const summary = await AIService.summarizeEvolucao(currentText);
-                if (summary) {
-                    textarea.value = summary;
-                    Utils.showAlert('Resumo criado!', 'success');
-                }
-            },
-
-            save() {
-                if (!openedPatientId) return;
-                
-                const data = $('evolucaoData').value;
-                const texto = $('evolucaoTexto').value.trim();
-                
-                if (!texto) {
-                    Utils.showAlert('Escreva a evolução', 'warning');
-                    return;
-                }
-                
-                Evolucoes.add(openedPatientId, { date: data, text: texto });
-                Modals.closeEvolucao();
-                PatientsView.openFolder(openedPatientId);
-                Utils.showAlert('Evolução registrada!', 'success');
-            },
-
-            openEdit(evolucaoId) {
-                if (!openedPatientId) return;
-                
-                const evolucoes = Evolucoes.getByPatient(openedPatientId);
-                const evolucao = evolucoes.find(e => e.id === evolucaoId);
-                if (!evolucao) return;
-                
-                currentEvolucaoId = evolucaoId;
-                $('editEvolucaoData').value = evolucao.date;
-                $('editEvolucaoTexto').value = evolucao.text;
-                $('editEvolucaoModal').classList.remove('hidden');
-            },
-
-            saveEdit() {
-                if (!openedPatientId || !currentEvolucaoId) return;
-                
-                const data = $('editEvolucaoData').value;
-                const texto = $('editEvolucaoTexto').value.trim();
-                
-                if (!texto) {
-                    Utils.showAlert('Escreva a evolução', 'warning');
-                    return;
-                }
-                
-                Evolucoes.update(openedPatientId, currentEvolucaoId, { date: data, text: texto });
-                Modals.closeEditEvolucao();
-                PatientsView.openFolder(openedPatientId);
-                Utils.showAlert('Evolução atualizada!', 'success');
-            },
-
-            delete(evolucaoId) {
-                if (!openedPatientId) return;
-                if (!confirm('Excluir esta evolução?')) return;
-                
-                Evolucoes.delete(openedPatientId, evolucaoId);
-                PatientsView.openFolder(openedPatientId);
-                Utils.showAlert('Evolução excluída!', 'success');
-            },
-
-            closeModal() {
-                $('evolucaoModal').classList.add('hidden');
-            },
-
-            closeEditModal() {
-                $('editEvolucaoModal').classList.add('hidden');
-                currentEvolucaoId = null;
             }
         };
 
-        // ============================================
-        // MODALS
-        // ============================================
-        const Modals = {
-            openEvolucao() { EvolucaoActions.openModal(); },
-            closeEvolucao() { EvolucaoActions.closeModal(); },
-            saveEvolucao() { EvolucaoActions.save(); },
-            closeEditEvolucao() { EvolucaoActions.closeEditModal(); },
-            saveEditEvolucao() { EvolucaoActions.saveEdit(); }
+        const DailyView = {
+            render() {
+                Tokens.verificarZerarMensal();
+                
+                const date = $('date')?.value || Utils.todayISO();
+                const search = $('search')?.value.toLowerCase() || '';
+                
+                this.renderSessionsList(date, search);
+                this.renderSummary(date);
+                this.renderCassemsCount(date);
+            },
+
+            renderSessionsList(date, search) {
+                const sessions = Sessions.getByDate(date);
+                const patients = Patients.getAll();
+                const tokens = Tokens.getAll();
+                
+                const filtered = sessions.filter(s => {
+                    const p = patients.find(pat => pat.id === s.patientId);
+                    return !search || (p?.name || '').toLowerCase().includes(search);
+                });
+                
+                const list = $('dayList');
+                if (!list) return;
+                
+                if (filtered.length === 0) {
+                    list.innerHTML = '<div class="muted" style="text-align: center; padding: 2rem;">Nenhuma sessão neste dia</div>';
+                    return;
+                }
+                
+                list.innerHTML = filtered.map(s => {
+                    const p = patients.find(pat => pat.id === s.patientId);
+                    const token = tokens[s.id];
+                    const photo = Photos.get(s.patientId);
+                    return Components.sessionCard(s, p, token, photo, true);
+                }).join('');
+            },
+
+            renderSummary(date) {
+                const sessions = Sessions.getByDate(date);
+                
+                $('sumDay').innerHTML = `Total: ${sessions.length}`;
+                $('sumMoney').innerHTML = `Total: ${Utils.fmtMoney(sessions.reduce((s, r) => s + (Number(r.value) || 0), 0))}`;
+                $('sumAbsences').innerHTML = sessions.filter(s => s.did === 'nao').length.toString();
+            },
+
+            renderCassemsCount(date) {
+                const sessions = Sessions.getByDate(date);
+                const patients = Patients.getAll();
+                const tokens = Tokens.getAll();
+                
+                const cassemsHoje = sessions.filter(s => {
+                    const p = patients.find(pat => pat.id === s.patientId);
+                    return p?.serviceType === 'cassems';
+                });
+
+                const enviados = cassemsHoje.filter(s => tokens[s.id]?.status === 'enviado').length;
+                const pendentes = cassemsHoje.filter(s => !tokens[s.id] || tokens[s.id]?.status === 'pendente').length;
+
+                $('cassemsHoje').textContent = cassemsHoje.length;
+                $('tokensEnviadosHoje').textContent = enviados;
+                $('tokensPendentesHoje').textContent = pendentes;
+            },
+
+            updateDefaultHint() {
+                const pid = $('pPatient')?.value;
+                const p = Patients.getById(pid);
+                const hint = $('hintDefault');
+                
+                if (!hint) return;
+                
+                if (!p) {
+                    hint.textContent = '';
+                    return;
+                }
+                
+                hint.textContent = `${SERVICE_TYPES[p.serviceType]?.label || 'Particular'} • Valor: ${Utils.fmtMoney(p.defaultValue || 0)}`;
+            },
+
+            renderPatientSelect() {
+                const patients = Patients.getAll();
+                const sel = $('pPatient');
+                if (!sel) return;
+                
+                sel.innerHTML = patients.length ?
+                    patients.map(p => `<option value="${p.id}">${Utils.escapeHtml(p.name)}${p.serviceType === 'cassems' ? ' (Cassems)' : ''}</option>`).join('') :
+                    '<option value="">(Cadastre pacientes)</option>';
+                
+                this.updateDefaultHint();
+            },
+
+            clearDay() {
+                const date = $('date')?.value;
+                if (!date) return;
+                
+                if (confirm(`Limpar todas as sessões de ${Utils.formatDate(date)}?`)) {
+                    const sessions = Sessions.getAll().filter(s => s.date !== date);
+                    Sessions.save(sessions);
+                    
+                    Sessions.getByDate(date).forEach(s => Tokens.deleteBySession(s.id));
+                    
+                    this.render();
+                    DashboardView.render();
+                    ScheduleView.render();
+                    Utils.showAlert('Dia limpo com sucesso!', 'success');
+                }
+            },
+
+            findInDay() {
+                const term = $('search')?.value.toLowerCase() || '';
+                const patient = Patients.getAll().find(p => p.name.toLowerCase().includes(term));
+                
+                if (patient) {
+                    $('pPatient').value = patient.id;
+                    this.updateDefaultHint();
+                    Utils.showAlert(`Paciente selecionado: ${patient.name}`, 'success');
+                }
+                
+                this.render();
+            }
         };
 
-        // ============================================
-        // PATIENTS VIEW
-        // ============================================
         const PatientsView = {
             renderFolders() {
                 Tokens.verificarZerarMensal();
@@ -2013,42 +2330,8 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
 
                 container.innerHTML = patients.map(p => {
                     const stats = Sessions.getPatientStats(p.id);
-                    return this.renderPatientCard(p, stats);
+                    return Components.patientFolderCard(p, stats);
                 }).join('');
-            },
-
-            renderPatientCard(patient, stats) {
-                const photo = Photos.get(patient.id);
-                const photoHtml = photo ? 
-                    `<img src="${photo}" class="avatar" style="width:50px; height:50px;">` : 
-                    `<div class="avatar-placeholder" style="width:50px; height:50px;"><i class="fas fa-user"></i></div>`;
-                
-                const serviceType = SERVICE_TYPES[patient.serviceType] || SERVICE_TYPES.particular;
-                const percent = stats.total > 0 ? (stats.realizadas / stats.total) * 100 : 0;
-
-                return `
-                    <div class="list-item" onclick="PatientsView.openFolder('${patient.id}')" style="cursor: pointer;">
-                        <div style="display: flex; gap: 1rem;">
-                            ${photoHtml}
-                            <div style="flex: 1;">
-                                <div style="display: flex; justify-content: space-between;">
-                                    <div>
-                                        <strong>${Utils.escapeHtml(patient.name)}</strong>
-                                        <span class="pill ${serviceType.pill}">${serviceType.label}</span>
-                                    </div>
-                                    ${stats.debt > 0 ? `<span class="pill pill-warning">${Utils.fmtMoney(stats.debt)}</span>` : ''}
-                                </div>
-                                <div style="display: flex; gap: 0.5rem; margin: 0.5rem 0;">
-                                    ${Components.pill(`✅ ${stats.realizadas}`, 'success')}
-                                    ${Components.pill(`❌ ${stats.faltas}`, 'error')}
-                                </div>
-                                <div class="progress-bar" style="width: 200px;">
-                                    <div class="progress-fill" style="width: ${percent}%;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
             },
 
             openFolder(id) {
@@ -2057,43 +2340,67 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 const photo = Photos.get(id);
                 const evolucoes = Evolucoes.getByPatient(id);
                 
-                $('foldersPane')?.classList.add('hidden');
-                $('folderOpenPane')?.classList.remove('hidden');
-                $('openPatientTitle').textContent = `📁 ${p?.name || 'Paciente'}`;
-                
+                const foldersPane = $('foldersPane');
+                const folderOpenPane = $('folderOpenPane');
+                const openPatientTitle = $('openPatientTitle');
+                const folderPatientPhoto = $('folderPatientPhoto');
+                const openPatientMeta = $('openPatientMeta');
                 const actionButtons = $('patientActionButtons');
+                
+                if (foldersPane) foldersPane.classList.add('hidden');
+                if (folderOpenPane) folderOpenPane.classList.remove('hidden');
+                if (openPatientTitle) openPatientTitle.textContent = `📁 ${p?.name || 'Paciente'}`;
+                
                 if (actionButtons) {
-                    actionButtons.innerHTML = `
+                    let buttonsHtml = `
                         <button class="btn btn-sm btn-secondary" onclick="PatientActions.openAnamnese()">
-                            <i class="fas fa-notes-medical"></i>
+                            <i class="fas fa-notes-medical"></i> Anamnese
                         </button>
                         <button class="btn btn-sm btn-secondary" onclick="PatientActions.openWhatsApp()">
-                            <i class="fab fa-whatsapp"></i>
+                            <i class="fab fa-whatsapp"></i> WhatsApp
                         </button>
                         <button class="btn btn-sm btn-secondary" onclick="PatientActions.rename()">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                        ${p?.serviceType === 'cassems' ? `
-                            <button class="btn btn-sm btn-primary" onclick="TokenActions.openManualModal('${id}')">
-                                <i class="fas fa-ticket-alt"></i>
-                            </button>
-                        ` : ''}
-                        <button class="btn btn-sm btn-danger" onclick="PatientActions.delete()">
-                            <i class="fas fa-trash"></i>
+                            <i class="fas fa-pen"></i> Renomear
                         </button>
                     `;
+                    
+                    if (p?.serviceType === 'cassems') {
+                        buttonsHtml += `
+                            <button class="btn btn-sm btn-primary" onclick="TokenActions.openManualModal('${id}')">
+                                <i class="fas fa-ticket-alt"></i> Tokens
+                            </button>
+                        `;
+                    }
+                    
+                    buttonsHtml += `
+                        <button class="btn btn-sm btn-danger" onclick="PatientActions.delete()">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    `;
+                    
+                    actionButtons.innerHTML = buttonsHtml;
                 }
                 
-                if (photo) {
-                    $('folderPatientPhoto').src = photo;
-                    $('folderPatientPhoto').classList.remove('hidden');
-                } else {
-                    $('folderPatientPhoto').classList.add('hidden');
+                if (folderPatientPhoto) {
+                    if (photo) {
+                        folderPatientPhoto.src = photo;
+                        folderPatientPhoto.classList.remove('hidden');
+                    } else {
+                        folderPatientPhoto.classList.add('hidden');
+                    }
                 }
 
                 this.renderProgresso(id);
                 this.renderHistorico(id);
                 this.renderEvolucoesSection(id);
+
+                if (openPatientMeta) {
+                    openPatientMeta.innerHTML = `
+                        ${SERVICE_TYPES[p?.serviceType]?.label || 'Particular'} • 
+                        ${p?.phone ? `📱 ${p.phone}` : ''} • 
+                        ${p?.email ? `📧 ${p.email}` : ''}
+                    `;
+                }
             },
 
             renderProgresso(id) {
@@ -2101,18 +2408,50 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 const stats = Sessions.getPatientStats(id);
                 const percent = stats.total > 0 ? (stats.realizadas / stats.total) * 100 : 0;
                 
+                const tokensPaciente = Tokens.countByPatient(id, 'enviado');
+                const tokensPendentes = Tokens.countByPatient(id, 'pendente');
+                const tokensProblema = Tokens.countByPatient(id, 'problema');
+                
+                const pendentes = stats.total - stats.realizadas - stats.faltas;
+
                 const html = `
                     <div class="card" style="margin-bottom: 1.5rem;">
-                        <div style="display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="margin: 0;"><i class="fas fa-chart-line" style="color: var(--primary-500);"></i> Progresso</h3>
+                            ${p?.serviceType === 'cassems' ? `
+                                <span class="token-badge">🎫 Tokens: ${tokensPaciente}</span>
+                            ` : ''}
+                        </div>
+                        
+                        <div style="display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;">
                             <div class="circular-progress" style="background: conic-gradient(var(--primary-500) ${percent * 3.6}deg, var(--border) 0deg);">
                                 <span class="progress-value">${Math.round(percent)}%</span>
                             </div>
                             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                                 ${Components.pill(`✅ Realizadas: ${stats.realizadas}`, 'success')}
                                 ${Components.pill(`❌ Faltas: ${stats.faltas}`, 'error')}
+                                ${Components.pill(`⏳ Pendentes: ${pendentes}`, 'warning')}
                                 ${Components.pill(`📊 Total: ${stats.total}`, 'info')}
                             </div>
                         </div>
+                        
+                        ${p?.serviceType === 'cassems' ? `
+                            <div class="token-counter" style="margin-top: 1.5rem;">
+                                <span>🎫 Tokens do mês:</span>
+                                <div class="token-progress">
+                                    <div class="token-progress-fill" style="width: ${stats.total > 0 ? (tokensPaciente / stats.total) * 100 : 0}%"></div>
+                                </div>
+                                <span style="font-weight: 600;">${tokensPaciente} enviados</span>
+                                ${tokensPendentes > 0 ? Components.pill(`⏳ ${tokensPendentes} pend`, 'warning') : ''}
+                                ${tokensProblema > 0 ? Components.pill(`❌ ${tokensProblema} prob`, 'error') : ''}
+                            </div>
+                        ` : ''}
+                        
+                        ${p?.startDate && p?.endDate ? `
+                            <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                                Período: ${Utils.formatDate(p.startDate)} a ${Utils.formatDate(p.endDate)}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
                 
@@ -2120,19 +2459,53 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
             },
 
             renderHistorico(id) {
+                const p = Patients.getById(id);
                 const sessions = Sessions.getByPatient(id).sort((a, b) => b.date.localeCompare(a.date));
+                const tokens = Tokens.getAll();
                 const container = $('patientHistory');
                 
                 if (!container) return;
                 
                 if (sessions.length === 0) {
-                    container.innerHTML = '<div class="muted" style="text-align: center; padding: 2rem;">Nenhuma sessão</div>';
+                    container.innerHTML = '<div class="muted" style="text-align: center; padding: 2rem;">Nenhuma sessão registrada</div>';
                     return;
                 }
                 
                 container.innerHTML = sessions.map(s => {
-                    const p = Patients.getById(id);
-                    return Components.sessionCard(s, p, null, null, false);
+                    const token = tokens[s.id];
+                    const tokenInfo = token ? 
+                        `<div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            🎫 Token: ${token.code || '—'} (${token.status})
+                        </div>` : 
+                        (p?.serviceType === 'cassems' ? '<div style="font-size: 0.875rem; color: var(--warning-500);">⏳ Token pendente</div>' : '');
+                    
+                    return `
+                        <div class="list-item">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
+                                        <strong>${Utils.formatDate(s.date)} ${s.time ? `às ${s.time}` : ''}</strong>
+                                        ${Components.pill(s.did === 'realizou' ? 'Realizou' : 'Não realizou', s.did === 'realizou' ? 'success' : 'error')}
+                                        ${Components.pill(s.paid === 'pago' ? 'Pago' : 'Não pago', s.paid === 'pago' ? 'success' : 'warning')}
+                                    </div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                        ${Utils.fmtMoney(s.value)}
+                                    </div>
+                                    ${tokenInfo}
+                                </div>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); SessionActions.togglePaid('${s.id}')">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </button>
+                                    ${p?.serviceType === 'cassems' ? `
+                                        <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); TokenActions.openModal('${s.id}', '${p.name}', '${s.date}')">
+                                            <i class="fas fa-ticket-alt"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 }).join('');
             },
 
@@ -2190,9 +2563,256 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
             }
         };
 
+        const ScheduleView = {
+            render() {
+                Tokens.verificarZerarMensal();
+                
+                const schedule = Schedule.get();
+                const times = schedule.times || [];
+                const patients = Patients.getAll();
+                const sessions = Sessions.getAll();
+                
+                const stats = {};
+                sessions.forEach(s => {
+                    if (!stats[s.patientId]) {
+                        stats[s.patientId] = { realizadas: 0, faltas: 0, total: 0 };
+                    }
+                    if (s.did === 'realizou') stats[s.patientId].realizadas++;
+                    else if (s.did === 'nao') stats[s.patientId].faltas++;
+                    stats[s.patientId].total++;
+                });
+
+                this.renderTable(times, patients, stats);
+            },
+
+            renderTable(times, patients, stats) {
+                const recurring = Schedule.getRecurring();
+                const table = $('schedTable');
+                if (!table) return;
+
+                let html = '<thead><tr><th class="timeCell">Horário</th>';
+                DAYS.forEach(day => html += `<th>${day}</th>`);
+                html += '</tr></thead><tbody>';
+
+                for (const time of times) {
+                    html += `<tr><td class="timeCell">${Utils.escapeHtml(time)}</td>`;
+
+                    for (let day = 0; day < 7; day++) {
+                        const key = Utils.recurKey(day, time);
+                        const entry = recurring[key];
+                        
+                        if (entry) {
+                            const patient = patients.find(p => p.id === entry.patientId);
+                            const patientStats = stats[patient?.id] || { realizadas: 0, faltas: 0, total: 0 };
+                            html += Components.scheduleSlot(day, time, entry, patient, patientStats);
+                        } else {
+                            html += Components.scheduleSlot(day, time, null);
+                        }
+                    }
+                    html += '</tr>';
+                }
+
+                html += '</tbody>';
+                table.innerHTML = html;
+
+                document.querySelectorAll('td[data-day]').forEach(td => {
+                    td.addEventListener('click', (e) => {
+                        const day = td.dataset.day;
+                        const time = td.dataset.time;
+                        ScheduleActions.handleSlotClick(parseInt(day), time);
+                    });
+                });
+            },
+
+            filterHoje() {
+                const hoje = new Date().getDay();
+                this.highlightDay(hoje);
+            },
+
+            filterAmanha() {
+                const amanha = (new Date().getDay() + 1) % 7;
+                this.highlightDay(amanha);
+            },
+
+            filterSemana() {
+                document.querySelectorAll('#schedTable tbody tr td:not(.timeCell)').forEach(cell => {
+                    cell.style.background = '';
+                });
+            },
+
+            highlightDay(day) {
+                document.querySelectorAll('#schedTable tbody tr').forEach(row => {
+                    const cells = row.querySelectorAll('td:not(.timeCell)');
+                    cells.forEach((cell, idx) => {
+                        if (idx === day) {
+                            cell.style.background = 'var(--primary-100)';
+                        }
+                    });
+                });
+            }
+        };
+
+        const ReportsView = {
+            generate() {
+                const month = Utils.todayISO().slice(0, 7);
+                
+                this.renderMonthSummary(month);
+                this.renderTokensReport();
+                this.renderDebtors();
+            },
+
+            renderMonthSummary(month) {
+                const stats = Sessions.getMonthStats(month);
+                const patients = Patients.getAll();
+                
+                $('monthSummary').innerHTML = `
+                    <div>Sessões: ${stats.total}</div>
+                    <div>Realizadas: ${stats.realizadas}</div>
+                    <div>Faltas: ${stats.faltas}</div>
+                `;
+                
+                $('absenceRate').innerHTML = stats.total ? `${((stats.faltas / stats.total) * 100).toFixed(1)}%` : '0%';
+                $('revenueStats').innerHTML = `
+                    <div>Faturado: ${Utils.fmtMoney(stats.faturamento)}</div>
+                    <div>A receber: ${Utils.fmtMoney(stats.aReceber)}</div>
+                `;
+                
+                $('activePatients').innerHTML = patients.length.toString();
+            },
+
+            renderTokensReport() {
+                const sessions = Sessions.getAll();
+                const patients = Patients.getAll();
+                const tokens = Tokens.getAll();
+                
+                const sessoesCassems = sessions.filter(s => {
+                    const p = patients.find(pat => pat.id === s.patientId);
+                    return p?.serviceType === 'cassems';
+                });
+
+                const enviados = Tokens.countTotalEnviados();
+                const pendentes = Object.values(tokens).filter(t => t.status === 'pendente').length;
+                const problema = Object.values(tokens).filter(t => t.status === 'problema').length;
+
+                $('totalSessoesCassems').textContent = sessoesCassems.length;
+                $('totalTokensEnviados').textContent = enviados;
+                $('totalTokensPendentes').textContent = pendentes;
+                $('totalTokensProblema').textContent = problema;
+            },
+
+            renderDebtors() {
+                const patients = Patients.getAll();
+                const sessions = Sessions.getAll();
+                
+                const debtors = patients.map(p => {
+                    const debt = sessions.filter(s => s.patientId === p.id && s.paid !== 'pago')
+                        .reduce((sum, s) => sum + (Number(s.value) || 0), 0);
+                    return { name: p.name, debt };
+                }).filter(d => d.debt > 0).sort((a, b) => b.debt - a.debt).slice(0, 5);
+
+                const container = $('topDebtors');
+                if (!container) return;
+                
+                if (debtors.length === 0) {
+                    container.innerHTML = '<div class="muted" style="text-align: center; padding: 2rem;">Nenhum devedor</div>';
+                } else {
+                    container.innerHTML = debtors.map(d => Components.devedorCard(d)).join('');
+                }
+            }
+        };
+
         // ============================================
-        // PATIENT ACTIONS
+        // ACTIONS
         // ============================================
+        const SessionActions = {
+            toggleDid(id) {
+                if (Sessions.toggleDid(id)) {
+                    this.refreshAll();
+                    Utils.showAlert('Sessão atualizada!', 'success');
+                }
+            },
+
+            togglePaid(id) {
+                if (Sessions.togglePaid(id)) {
+                    this.refreshAll();
+                    Utils.showAlert('Pagamento atualizado!', 'success');
+                }
+            },
+
+            editValue(id) {
+                const session = Sessions.getById(id);
+                if (!session) return;
+                
+                const newValue = prompt('Novo valor (R$):', session.value);
+                if (newValue !== null) {
+                    Sessions.updateValue(id, Utils.parseMoney(newValue));
+                    this.refreshAll();
+                    Utils.showAlert('Valor atualizado!', 'success');
+                }
+            },
+
+            delete(id) {
+                if (!confirm('Excluir esta sessão?')) return;
+                
+                Sessions.delete(id);
+                Tokens.deleteBySession(id);
+                
+                this.refreshAll();
+                Utils.showAlert('Sessão excluída!', 'success');
+            },
+
+            add() {
+                const date = $('date')?.value;
+                const patientId = $('pPatient')?.value;
+                const time = $('pTime')?.value;
+                const did = $('pDid')?.value;
+                const just = $('pJust')?.value;
+                const paid = $('pPaid')?.value;
+                const manualValue = $('pValue')?.value;
+
+                if (!date || !patientId) {
+                    Utils.showAlert('Selecione data e paciente', 'warning');
+                    return;
+                }
+
+                const p = Patients.getById(patientId);
+                let value = manualValue ? Utils.parseMoney(manualValue) : Patients.getDefaultValue(patientId);
+
+                const session = {
+                    id: Utils.uid(),
+                    date, patientId, time,
+                    did,
+                    just: did === 'nao' ? (just === 'na' ? 'nao_justificada' : just) : 'na',
+                    paid, value
+                };
+
+                Sessions.add(session);
+
+                if (p?.serviceType === 'cassems') {
+                    Tokens.register(session.id, {
+                        sessionId: session.id,
+                        date,
+                        patientName: p.name,
+                        code: '',
+                        status: 'pendente'
+                    });
+                }
+
+                $('pTime').value = '';
+                $('pValue').value = '';
+                
+                this.refreshAll();
+                Utils.showAlert('Sessão adicionada!', 'success');
+            },
+
+            refreshAll() {
+                DailyView.render();
+                DashboardView.render();
+                ScheduleView.render();
+                if (openedPatientId) PatientsView.openFolder(openedPatientId);
+            }
+        };
+
         const PatientActions = {
             add() {
                 const name = $('cName')?.value.trim();
@@ -2303,6 +2923,14 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 }
             },
 
+            sendBirthdayMessage(id) {
+                const p = Patients.getById(id);
+                if (p?.phone) {
+                    const msg = encodeURIComponent('🎂 Feliz aniversário! Desejo um dia maravilhoso e muitas realizações!');
+                    window.open(`https://wa.me/55${p.phone}?text=${msg}`, '_blank');
+                }
+            },
+
             handlePhotoUpload(input) {
                 const file = input.files[0];
                 if (!file) return;
@@ -2346,294 +2974,11 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 DashboardView.render();
             },
 
-            openFolder(id) { PatientsView.openFolder(id); }
-        };
-
-        // ============================================
-        // SESSION ACTIONS
-        // ============================================
-        const SessionActions = {
-            toggleDid(id) {
-                if (Sessions.toggleDid(id)) {
-                    this.refreshAll();
-                    Utils.showAlert('Sessão atualizada!', 'success');
-                }
-            },
-
-            togglePaid(id) {
-                if (Sessions.togglePaid(id)) {
-                    this.refreshAll();
-                    Utils.showAlert('Pagamento atualizado!', 'success');
-                }
-            },
-
-            editValue(id) {
-                const session = Sessions.getById(id);
-                if (!session) return;
-                
-                const newValue = prompt('Novo valor (R$):', session.value);
-                if (newValue !== null) {
-                    Sessions.updateValue(id, Utils.parseMoney(newValue));
-                    this.refreshAll();
-                    Utils.showAlert('Valor atualizado!', 'success');
-                }
-            },
-
-            delete(id) {
-                if (!confirm('Excluir esta sessão?')) return;
-                
-                Sessions.delete(id);
-                Tokens.deleteBySession(id);
-                
-                this.refreshAll();
-                Utils.showAlert('Sessão excluída!', 'success');
-            },
-
-            add() {
-                const date = $('date')?.value;
-                const patientId = $('pPatient')?.value;
-                const time = $('pTime')?.value;
-                const did = $('pDid')?.value;
-                const just = $('pJust')?.value;
-                const paid = $('pPaid')?.value;
-                const manualValue = $('pValue')?.value;
-
-                if (!date || !patientId) {
-                    Utils.showAlert('Selecione data e paciente', 'warning');
-                    return;
-                }
-
-                const p = Patients.getById(patientId);
-                let value = manualValue ? Utils.parseMoney(manualValue) : Patients.getDefaultValue(patientId);
-
-                const session = {
-                    id: Utils.uid(),
-                    date, patientId, time,
-                    did,
-                    just: did === 'nao' ? (just === 'na' ? 'nao_justificada' : just) : 'na',
-                    paid, value
-                };
-
-                Sessions.add(session);
-
-                if (p?.serviceType === 'cassems') {
-                    Tokens.register(session.id, {
-                        sessionId: session.id,
-                        date,
-                        patientName: p.name,
-                        code: '',
-                        status: 'pendente'
-                    });
-                }
-
-                $('pTime').value = '';
-                $('pValue').value = '';
-                
-                this.refreshAll();
-                Utils.showAlert('Sessão adicionada!', 'success');
-            },
-
-            refreshAll() {
-                DailyView.render();
-                DashboardView.render();
-                ScheduleView.render();
-                if (openedPatientId) PatientsView.openFolder(openedPatientId);
+            openFolder(id) {
+                PatientsView.openFolder(id);
             }
         };
 
-        // ============================================
-        // DAILY VIEW
-        // ============================================
-        const DailyView = {
-            render() {
-                Tokens.verificarZerarMensal();
-                
-                const date = $('date')?.value || Utils.todayISO();
-                const search = $('search')?.value.toLowerCase() || '';
-                
-                this.renderSessionsList(date, search);
-                this.renderSummary(date);
-            },
-
-            renderSessionsList(date, search) {
-                const sessions = Sessions.getByDate(date);
-                const patients = Patients.getAll();
-                const tokens = Tokens.getAll();
-                
-                const filtered = sessions.filter(s => {
-                    const p = patients.find(pat => pat.id === s.patientId);
-                    return !search || (p?.name || '').toLowerCase().includes(search);
-                });
-                
-                const list = $('dayList');
-                if (!list) return;
-                
-                if (filtered.length === 0) {
-                    list.innerHTML = '<div class="muted" style="text-align: center; padding: 2rem;">Nenhuma sessão</div>';
-                    return;
-                }
-                
-                list.innerHTML = filtered.map(s => {
-                    const p = patients.find(pat => pat.id === s.patientId);
-                    const token = tokens[s.id];
-                    const photo = Photos.get(s.patientId);
-                    return Components.sessionCard(s, p, token, photo, true);
-                }).join('');
-            },
-
-            renderSummary(date) {
-                const sessions = Sessions.getByDate(date);
-                
-                $('sumDay').innerHTML = `Total: ${sessions.length}`;
-                $('sumMoney').innerHTML = `Total: ${Utils.fmtMoney(sessions.reduce((s, r) => s + (Number(r.value) || 0), 0))}`;
-                $('sumAbsences').innerHTML = sessions.filter(s => s.did === 'nao').length.toString();
-            },
-
-            renderPatientSelect() {
-                const patients = Patients.getAll();
-                const sel = $('pPatient');
-                if (!sel) return;
-                
-                sel.innerHTML = patients.length ?
-                    patients.map(p => `<option value="${p.id}">${Utils.escapeHtml(p.name)}${p.serviceType === 'cassems' ? ' (Cassems)' : ''}</option>`).join('') :
-                    '<option value="">(Cadastre pacientes)</option>';
-            },
-
-            clearDay() {
-                const date = $('date')?.value;
-                if (!date) return;
-                
-                if (confirm(`Limpar todas as sessões de ${Utils.formatDate(date)}?`)) {
-                    const sessions = Sessions.getAll().filter(s => s.date !== date);
-                    Sessions.save(sessions);
-                    
-                    Sessions.getByDate(date).forEach(s => Tokens.deleteBySession(s.id));
-                    
-                    this.render();
-                    DashboardView.render();
-                    ScheduleView.render();
-                    Utils.showAlert('Dia limpo!', 'success');
-                }
-            },
-
-            findInDay() {
-                const term = $('search')?.value.toLowerCase() || '';
-                const patient = Patients.getAll().find(p => p.name.toLowerCase().includes(term));
-                
-                if (patient) {
-                    $('pPatient').value = patient.id;
-                    Utils.showAlert(`Paciente selecionado: ${patient.name}`, 'success');
-                }
-                
-                this.render();
-            }
-        };
-
-        // ============================================
-        // SCHEDULE VIEW
-        // ============================================
-        const ScheduleView = {
-            render() {
-                Tokens.verificarZerarMensal();
-                
-                const schedule = Schedule.get();
-                const times = schedule.times || [];
-                const patients = Patients.getAll();
-                const sessions = Sessions.getAll();
-                
-                const stats = {};
-                sessions.forEach(s => {
-                    if (!stats[s.patientId]) {
-                        stats[s.patientId] = { realizadas: 0, faltas: 0, total: 0 };
-                    }
-                    if (s.did === 'realizou') stats[s.patientId].realizadas++;
-                    else if (s.did === 'nao') stats[s.patientId].faltas++;
-                    stats[s.patientId].total++;
-                });
-
-                this.renderTable(times, patients, stats);
-            },
-
-            renderTable(times, patients, stats) {
-                const recurring = Schedule.getRecurring();
-                const table = $('schedTable');
-                if (!table) return;
-
-                let html = '<thead><tr><th>Horário</th>';
-                DAYS.forEach(day => html += `<th>${day}</th>`);
-                html += '</tr></thead><tbody>';
-
-                for (const time of times) {
-                    html += `<tr><td style="font-weight: 600;">${time}</td>`;
-
-                    for (let day = 0; day < 7; day++) {
-                        const key = Utils.recurKey(day, time);
-                        const entry = recurring[key];
-                        
-                        if (entry) {
-                            const patient = patients.find(p => p.id === entry.patientId);
-                            const serviceType = SERVICE_TYPES[patient?.serviceType] || SERVICE_TYPES.particular;
-                            
-                            html += `
-                                <td data-day="${day}" data-time="${time}" class="schedule-slot ${serviceType.class}">
-                                    <strong>${Utils.escapeHtml(patient?.name || '?')}</strong>
-                                    <div style="font-size: 0.875rem;">${serviceType.label}</div>
-                                </td>
-                            `;
-                        } else {
-                            html += `
-                                <td data-day="${day}" data-time="${time}" class="schedule-slot slot-empty">
-                                    <div style="text-align: center;">🟥 Vago</div>
-                                </td>
-                            `;
-                        }
-                    }
-                    html += '</tr>';
-                }
-
-                html += '</tbody>';
-                table.innerHTML = html;
-
-                document.querySelectorAll('td[data-day]').forEach(td => {
-                    td.addEventListener('click', (e) => {
-                        const day = td.dataset.day;
-                        const time = td.dataset.time;
-                        ScheduleActions.handleSlotClick(parseInt(day), time);
-                    });
-                });
-            },
-
-            filterHoje() {
-                const hoje = new Date().getDay();
-                this.highlightDay(hoje);
-            },
-
-            filterAmanha() {
-                const amanha = (new Date().getDay() + 1) % 7;
-                this.highlightDay(amanha);
-            },
-
-            filterSemana() {
-                document.querySelectorAll('#schedTable tbody tr td:not(.timeCell)').forEach(cell => {
-                    cell.style.background = '';
-                });
-            },
-
-            highlightDay(day) {
-                document.querySelectorAll('#schedTable tbody tr').forEach(row => {
-                    const cells = row.querySelectorAll('td:not(.timeCell)');
-                    cells.forEach((cell, idx) => {
-                        if (idx === day) {
-                            cell.style.background = 'var(--primary-100)';
-                        }
-                    });
-                });
-            }
-        };
-
-        // ============================================
-        // SCHEDULE ACTIONS
-        // ============================================
         const ScheduleActions = {
             handleSlotClick(day, time) {
                 const current = Schedule.getByDayTime(day, time);
@@ -2689,12 +3034,17 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 }
                 
                 $('newTime').value = '';
+            },
+
+            resetTimes() {
+                if (confirm('Restaurar horários padrão?')) {
+                    Schedule.resetTimes();
+                    ScheduleView.render();
+                    Utils.showAlert('Horários restaurados!', 'success');
+                }
             }
         };
 
-        // ============================================
-        // TOKEN ACTIONS
-        // ============================================
         const TokenActions = {
             openModal(sessionId, patientName, sessionDate) {
                 currentTokenSessionId = sessionId;
@@ -2723,6 +3073,8 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 DailyView.render();
                 DashboardView.render();
                 ScheduleView.render();
+                ReportsView.generate();
+                if (openedPatientId) PatientsView.openFolder(openedPatientId);
                 Utils.showAlert('Token registrado!', 'success');
             },
 
@@ -2756,24 +3108,32 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 const tokens = Tokens.getByPatient(patientId);
                 
                 if (tokens.length === 0) {
-                    container.innerHTML = '<div class="muted" style="text-align: center; padding: 2rem;">Nenhum token</div>';
+                    container.innerHTML = '<div class="muted" style="text-align: center; padding: 2rem;">Nenhum token registrado</div>';
                     return;
                 }
                 
-                container.innerHTML = tokens.map(t => `
-                    <div class="list-item" style="padding: 0.75rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                ${Components.pill(t.status === 'enviado' ? '✅ Enviado' : t.status === 'pendente' ? '⏳ Pendente' : '❌ Problema', 
-                                    t.status === 'enviado' ? 'success' : t.status === 'pendente' ? 'warning' : 'error')}
-                                <div style="font-size: 0.875rem;">${Utils.formatDate(t.date)}</div>
+                const porMes = {};
+                tokens.forEach(token => {
+                    const dataToken = new Date(token.date + 'T12:00:00');
+                    const mesToken = `${dataToken.getFullYear()}-${String(dataToken.getMonth() + 1).padStart(2, '0')}`;
+                    if (!porMes[mesToken]) porMes[mesToken] = [];
+                    porMes[mesToken].push(token);
+                });
+                
+                container.innerHTML = Object.keys(porMes).sort().reverse().map(mes => {
+                    const [ano, mesNum] = mes.split('-');
+                    const data = new Date(parseInt(ano), parseInt(mesNum) - 1, 1);
+                    const mesLabel = data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                    
+                    return `
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="margin-bottom: 0.75rem;">📅 ${mesLabel}</h4>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                ${porMes[mes].map(token => Components.manualTokenCard(token)).join('')}
                             </div>
-                            <button class="btn btn-sm btn-danger" onclick="TokenActions.deleteManual('${t.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             },
 
             addManual() {
@@ -2787,7 +3147,19 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 
                 Tokens.addManual(openedPatientId, monthSelect.value);
                 this.renderManualTokensList(openedPatientId);
+                PatientsView.openFolder(openedPatientId);
                 Utils.showAlert('Token adicionado!', 'success');
+            },
+
+            updateStatus(tokenId, status) {
+                if (Tokens.updateStatus(tokenId, status)) {
+                    if (openedPatientId) {
+                        this.renderManualTokensList(openedPatientId);
+                        PatientsView.openFolder(openedPatientId);
+                    }
+                    this.refreshAll();
+                    Utils.showAlert('Status atualizado!', 'success');
+                }
             },
 
             deleteManual(tokenId) {
@@ -2797,10 +3169,178 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 
                 if (openedPatientId) {
                     this.renderManualTokensList(openedPatientId);
+                    PatientsView.openFolder(openedPatientId);
                 }
                 
+                this.refreshAll();
                 Utils.showAlert('Token removido!', 'success');
+            },
+
+            refreshAll() {
+                DashboardView.render();
+                DailyView.render();
+                ScheduleView.render();
+                ReportsView.generate();
             }
+        };
+
+        const EvolucaoActions = {
+            openModal() {
+                if (!openedPatientId) return;
+                $('evolucaoData').value = Utils.todayISO();
+                $('evolucaoTexto').value = '';
+                $('evolucaoModal').classList.remove('hidden');
+                
+                this.showAISuggestions();
+            },
+
+            async showAISuggestions() {
+                const container = document.getElementById('aiSuggestions');
+                if (!container) return;
+                
+                container.innerHTML = '<div class="ai-loading"></div> Carregando sugestões...';
+                
+                const suggestions = await AIService.suggestEvolucao(openedPatientId);
+                
+                if (suggestions) {
+                    const suggestionsList = suggestions.split('\n').filter(s => s.trim());
+                    container.innerHTML = `
+                        <h4><i class="fas fa-robot"></i> Sugestões da IA</h4>
+                        ${suggestionsList.map(s => 
+                            `<span class="suggestion-chip" onclick="EvolucaoActions.useSuggestion('${s.replace(/'/g, "\\'")}')">${s}</span>`
+                        ).join('')}
+                    `;
+                } else {
+                    container.innerHTML = '<div class="muted">Não foi possível carregar sugestões</div>';
+                }
+            },
+
+            useSuggestion(text) {
+                $('evolucaoTexto').value = text;
+            },
+
+            async improveText() {
+                const textarea = $('evolucaoTexto');
+                const currentText = textarea.value;
+                
+                if (!currentText) {
+                    Utils.showAlert('Digite algum texto primeiro', 'warning');
+                    return;
+                }
+                
+                const improved = await AIService.improveEvolucao(currentText);
+                if (improved) {
+                    textarea.value = improved;
+                    Utils.showAlert('Texto melhorado!', 'success');
+                }
+            },
+
+            async summarizeText() {
+                const textarea = $('evolucaoTexto');
+                const currentText = textarea.value;
+                
+                if (!currentText) {
+                    Utils.showAlert('Digite algum texto primeiro', 'warning');
+                    return;
+                }
+                
+                const summary = await AIService.summarizeEvolucao(currentText);
+                if (summary) {
+                    textarea.value = summary;
+                    Utils.showAlert('Resumo criado!', 'success');
+                }
+            },
+
+            save() {
+                if (!openedPatientId) return;
+                
+                const data = $('evolucaoData').value;
+                const texto = $('evolucaoTexto').value.trim();
+                
+                if (!texto) {
+                    Utils.showAlert('Escreva a evolução', 'warning');
+                    return;
+                }
+                
+                Evolucoes.add(openedPatientId, { date: data, text: texto });
+                this.closeModal();
+                PatientsView.openFolder(openedPatientId);
+                Utils.showAlert('Evolução registrada!', 'success');
+            },
+
+            openEdit(evolucaoId) {
+                if (!openedPatientId) return;
+                
+                const evolucoes = Evolucoes.getByPatient(openedPatientId);
+                const evolucao = evolucoes.find(e => e.id === evolucaoId);
+                if (!evolucao) return;
+                
+                currentEvolucaoId = evolucaoId;
+                $('editEvolucaoData').value = evolucao.date;
+                $('editEvolucaoTexto').value = evolucao.text;
+                $('editEvolucaoModal').classList.remove('hidden');
+            },
+
+            saveEdit() {
+                if (!openedPatientId || !currentEvolucaoId) return;
+                
+                const data = $('editEvolucaoData').value;
+                const texto = $('editEvolucaoTexto').value.trim();
+                
+                if (!texto) {
+                    Utils.showAlert('Escreva a evolução', 'warning');
+                    return;
+                }
+                
+                Evolucoes.update(openedPatientId, currentEvolucaoId, { date: data, text: texto });
+                this.closeEditModal();
+                PatientsView.openFolder(openedPatientId);
+                Utils.showAlert('Evolução atualizada!', 'success');
+            },
+
+            delete(evolucaoId) {
+                if (!openedPatientId) return;
+                if (!confirm('Excluir esta evolução?')) return;
+                
+                Evolucoes.delete(openedPatientId, evolucaoId);
+                PatientsView.openFolder(openedPatientId);
+                Utils.showAlert('Evolução excluída!', 'success');
+            },
+
+            closeModal() {
+                $('evolucaoModal').classList.add('hidden');
+            },
+
+            closeEditModal() {
+                $('editEvolucaoModal').classList.add('hidden');
+                currentEvolucaoId = null;
+            }
+        };
+
+        // ============================================
+        // MODALS
+        // ============================================
+        const Modals = {
+            openAnamnese() { PatientActions.openAnamnese(); },
+            closeAnamnese() { $('anamneseModal').classList.add('hidden'); },
+            saveAnamnese() { PatientActions.saveAnamnese(); },
+
+            openToken(sessionId, patientName, sessionDate) {
+                TokenActions.openModal(sessionId, patientName, sessionDate);
+            },
+            closeToken() { $('tokenModal').classList.add('hidden'); currentTokenSessionId = null; },
+            saveToken() { TokenActions.saveToken(); },
+
+            openManualToken(patientId) { TokenActions.openManualModal(patientId); },
+            closeManualToken() { $('manualTokenModal').classList.add('hidden'); },
+
+            openEvolucao() { EvolucaoActions.openModal(); },
+            closeEvolucao() { EvolucaoActions.closeModal(); },
+            saveEvolucao() { EvolucaoActions.save(); },
+
+            openEditEvolucao(id) { EvolucaoActions.openEdit(id); },
+            closeEditEvolucao() { EvolucaoActions.closeEditModal(); },
+            saveEditEvolucao() { EvolucaoActions.saveEdit(); }
         };
 
         // ============================================
@@ -2872,7 +3412,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                                 <input type="time" class="hora-individual form-control" value="08:00" step="600">
                             </div>
                         </div>
-                        <button class="btn btn-sm btn-secondary" onclick="ScheduleForm.addIndividual()">
+                        <button class="btn btn-sm btn-secondary" onclick="ScheduleForm.addIndividual()" style="margin-top: 0.5rem;">
                             <i class="fas fa-plus"></i> Adicionar
                         </button>
                     `;
@@ -2930,6 +3470,76 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
         };
 
         // ============================================
+        // NOTIFICATIONS
+        // ============================================
+        const Notifications = {
+            async requestPermission() {
+                if (!('Notification' in window)) {
+                    Utils.showAlert('Navegador não suporta notificações', 'error');
+                    return false;
+                }
+                
+                const permission = await Notification.requestPermission();
+                notificationsEnabled = permission === 'granted';
+                
+                if (notificationsEnabled) {
+                    Storage.save(STORAGE_KEYS.NOTIFICATIONS, 'granted');
+                    this.startChecker();
+                    Utils.showAlert('Notificações ativadas!', 'success');
+                    $('notificationModal')?.classList.add('hidden');
+                }
+                
+                return notificationsEnabled;
+            },
+
+            startChecker() {
+                if (notificationInterval) clearInterval(notificationInterval);
+                notificationInterval = setInterval(() => this.checkUpcoming(), 60000);
+            },
+
+            checkUpcoming() {
+                if (!notificationsEnabled) return;
+                
+                const agora = Utils.nowTime();
+                const hoje = new Date().getDay();
+                const schedule = Schedule.get();
+                
+                Object.entries(schedule.recurring || {}).forEach(([key, entry]) => {
+                    const [day, time] = key.split('|');
+                    if (parseInt(day) === hoje) {
+                        const [h1, m1] = time.split(':').map(Number);
+                        const [h2, m2] = agora.split(':').map(Number);
+                        const diff = (h1 * 60 + m1) - (h2 * 60 + m2);
+                        
+                        if (diff === 15) {
+                            const patient = Patients.getById(entry.patientId);
+                            if (patient) {
+                                new Notification('🔔 Próximo atendimento!', {
+                                    body: `${patient.name} em 15 minutos (${time})`,
+                                    silent: false
+                                });
+                            }
+                        }
+                    }
+                });
+            },
+
+            init() {
+                const status = Storage.load(STORAGE_KEYS.NOTIFICATIONS);
+                if (status === 'granted') {
+                    notificationsEnabled = true;
+                    this.startChecker();
+                } else if (window.Notification && Notification.permission === 'granted') {
+                    notificationsEnabled = true;
+                    Storage.save(STORAGE_KEYS.NOTIFICATIONS, 'granted');
+                    this.startChecker();
+                } else if (window.Notification && Notification.permission !== 'denied') {
+                    setTimeout(() => $('notificationModal')?.classList.remove('hidden'), 30000);
+                }
+            }
+        };
+
+        // ============================================
         // UI
         // ============================================
         const Tabs = {
@@ -2938,8 +3548,9 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 $('viewDaily')?.classList.toggle('hidden', tab !== 'daily');
                 $('viewPatients')?.classList.toggle('hidden', tab !== 'patients');
                 $('viewSchedule')?.classList.toggle('hidden', tab !== 'schedule');
+                $('viewReports')?.classList.toggle('hidden', tab !== 'reports');
 
-                ['tabDashboard', 'tabDaily', 'tabPatients', 'tabSchedule'].forEach(id => {
+                ['tabDashboard', 'tabDaily', 'tabPatients', 'tabSchedule', 'tabReports'].forEach(id => {
                     $(id)?.classList.remove('active');
                 });
                 
@@ -2948,6 +3559,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 switch(tab) {
                     case 'dashboard': DashboardView.render(); break;
                     case 'schedule': ScheduleView.render(); break;
+                    case 'reports': ReportsView.generate(); break;
                 }
             },
 
@@ -2956,6 +3568,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 $('tabDaily')?.addEventListener('click', () => this.set('daily'));
                 $('tabPatients')?.addEventListener('click', () => this.set('patients'));
                 $('tabSchedule')?.addEventListener('click', () => this.set('schedule'));
+                $('tabReports')?.addEventListener('click', () => this.set('reports'));
             }
         };
 
@@ -2964,8 +3577,13 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 document.addEventListener('keydown', (e) => {
                     if (e.ctrlKey) {
                         switch (e.key) {
-                            case 'n': e.preventDefault(); Tabs.set('patients'); $('cName')?.focus(); break;
-                            case 'f': e.preventDefault(); 
+                            case 'n':
+                                e.preventDefault();
+                                Tabs.set('patients');
+                                $('cName')?.focus();
+                                break;
+                            case 'f':
+                                e.preventDefault(); 
                                 if ($('viewDaily')?.classList.contains('hidden')) Tabs.set('daily');
                                 $('search')?.focus(); 
                                 break;
@@ -2973,6 +3591,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                             case '2': e.preventDefault(); Tabs.set('daily'); break;
                             case '3': e.preventDefault(); Tabs.set('patients'); break;
                             case '4': e.preventDefault(); Tabs.set('schedule'); ScheduleView.render(); break;
+                            case '5': e.preventDefault(); Tabs.set('reports'); ReportsView.generate(); break;
                         }
                     }
                 });
@@ -2994,6 +3613,29 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 if (saved === 'light') {
                     document.body.classList.add('light-mode');
                     $('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            }
+        };
+
+        const PWA = {
+            init() {
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    $('installPWA').style.display = 'inline-block';
+                });
+            },
+
+            install() {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choice) => {
+                        if (choice.outcome === 'accepted') {
+                            Utils.showAlert('App instalado!', 'success');
+                        }
+                        deferredPrompt = null;
+                        $('installPWA').style.display = 'none';
+                    });
                 }
             }
         };
@@ -3021,6 +3663,17 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                                 <button class="theme-toggle" id="themeToggle" onclick="Theme.toggle()">
                                     <i class="fas fa-moon"></i>
                                 </button>
+                                <button class="theme-toggle" id="installPWA" style="display: none;" onclick="PWA.install()">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <div class="backup-bar">
+                                    <button class="btn btn-sm btn-secondary" onclick="Storage.exportAll()">
+                                        <i class="fas fa-download"></i> Exportar
+                                    </button>
+                                    <button class="btn btn-sm btn-secondary" onclick="$('importFile').click()">
+                                        <i class="fas fa-upload"></i> Importar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </header>
@@ -3031,6 +3684,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                             <button class="nav-tab" id="tabDaily"><i class="fas fa-calendar-day"></i> Diário</button>
                             <button class="nav-tab" id="tabPatients"><i class="fas fa-users"></i> Pacientes</button>
                             <button class="nav-tab" id="tabSchedule"><i class="fas fa-calendar-alt"></i> Agenda</button>
+                            <button class="nav-tab" id="tabReports"><i class="fas fa-chart-bar"></i> Relatórios</button>
                         </div>
                     </nav>
 
@@ -3078,10 +3732,23 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                                 <div class="card">
                                     <div class="stat-label">✅ Enviados</div>
                                     <div class="stat-value" style="font-size: 1.5rem;" id="tokensEnviados">0</div>
+                                    <div class="stat-detail" id="tokensEnviadosDetalhe"></div>
                                 </div>
                                 <div class="card">
                                     <div class="stat-label">⏳ Pendentes</div>
                                     <div class="stat-value" style="font-size: 1.5rem;" id="tokensPendentes">0</div>
+                                    <div class="stat-detail" id="tokensPendentesDetalhe"></div>
+                                </div>
+                            </div>
+
+                            <div class="grid-2" style="margin-top: 1.5rem;">
+                                <div class="card">
+                                    <h3 class="card-title"><i class="fas fa-birthday-cake"></i> Aniversariantes</h3>
+                                    <div id="aniversariantes" class="list"></div>
+                                </div>
+                                <div class="card">
+                                    <h3 class="card-title"><i class="fas fa-calendar-check"></i> Próximos Atendimentos</h3>
+                                    <div id="proximosAtendimentos" class="list"></div>
                                 </div>
                             </div>
                         </section>
@@ -3106,7 +3773,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
 
                                 <div class="grid-3" style="margin-bottom: 1.5rem;">
                                     <div class="cardMini">
-                                        <div class="stat-label">Sessões</div>
+                                        <div class="stat-label">Sessões hoje</div>
                                         <div class="stat-value" style="font-size: 1.5rem;" id="sumDay">0</div>
                                     </div>
                                     <div class="cardMini">
@@ -3119,29 +3786,65 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                                     </div>
                                 </div>
 
-                                <hr>
-
-                                <h3>➕ Adicionar Sessão</h3>
-                                <div class="grid-2">
-                                    <select id="pPatient" class="form-control" onchange="DailyView.updateDefaultHint()"></select>
-                                    <input type="time" id="pTime" class="form-control">
-                                    <select id="pDid" class="form-control">
-                                        <option value="realizou">✅ Realizou</option>
-                                        <option value="nao">❌ Não realizou</option>
-                                    </select>
-                                    <select id="pJust" class="form-control">
-                                        <option value="na">—</option>
-                                        <option value="justificada">📝 Justificada</option>
-                                        <option value="nao_justificada">⚠️ Não justificada</option>
-                                    </select>
-                                    <select id="pPaid" class="form-control">
-                                        <option value="nao_pago">💸 Não pago</option>
-                                        <option value="pago">💰 Pago</option>
-                                    </select>
-                                    <input type="text" id="pValue" class="form-control" placeholder="Valor">
+                                <div class="grid-3" style="margin-bottom: 1.5rem;">
+                                    <div class="cardMini">
+                                        <div class="stat-label">🎫 Pacientes Cassems</div>
+                                        <div class="stat-value" style="font-size: 1.5rem; color: var(--cassems);" id="cassemsHoje">0</div>
+                                    </div>
+                                    <div class="cardMini">
+                                        <div class="stat-label">✅ Tokens Enviados</div>
+                                        <div class="stat-value" style="font-size: 1.5rem; color: var(--success);" id="tokensEnviadosHoje">0</div>
+                                    </div>
+                                    <div class="cardMini">
+                                        <div class="stat-label">⏳ Pendentes</div>
+                                        <div class="stat-value" style="font-size: 1.5rem; color: var(--warning);" id="tokensPendentesHoje">0</div>
+                                    </div>
                                 </div>
 
-                                <button class="btn btn-primary" onclick="SessionActions.add()">Adicionar</button>
+                                <hr style="margin: 1.5rem 0;">
+
+                                <h3 style="margin-bottom: 1rem;">➕ Adicionar Sessão</h3>
+                                <div class="grid-2" style="margin-bottom: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Paciente</label>
+                                        <select id="pPatient" class="form-control" onchange="DailyView.updateDefaultHint()"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Horário</label>
+                                        <input type="time" id="pTime" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Sessão</label>
+                                        <select id="pDid" class="form-control">
+                                            <option value="realizou">✅ Realizou</option>
+                                            <option value="nao">❌ Não realizou</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Justificativa</label>
+                                        <select id="pJust" class="form-control">
+                                            <option value="na">—</option>
+                                            <option value="justificada">📝 Justificada</option>
+                                            <option value="nao_justificada">⚠️ Não justificada</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Pagamento</label>
+                                        <select id="pPaid" class="form-control">
+                                            <option value="nao_pago">💸 Não pago</option>
+                                            <option value="pago">💰 Pago</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Valor</label>
+                                        <input type="text" id="pValue" class="form-control" placeholder="80,00">
+                                        <small id="hintDefault" class="muted"></small>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary" onclick="SessionActions.add()" style="width: 100%;">
+                                    <i class="fas fa-plus"></i> Adicionar Sessão
+                                </button>
 
                                 <div id="dayList" class="list" style="margin-top: 2rem;"></div>
                             </div>
@@ -3149,7 +3852,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
 
                         <!-- PACIENTES -->
                         <section id="viewPatients" class="hidden">
-                            <div class="grid-2">
+                            <div class="split">
                                 <div class="card">
                                     <h3 class="card-title"><i class="fas fa-user-plus"></i> Novo Paciente</h3>
                                     
@@ -3165,66 +3868,103 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                                     </div>
 
                                     <div class="grid-2">
-                                        <input type="text" id="cName" class="form-control" placeholder="Nome *">
-                                        <input type="tel" id="cPhone" class="form-control" placeholder="WhatsApp">
+                                        <div class="form-group">
+                                            <label class="form-label">Nome *</label>
+                                            <input type="text" id="cName" class="form-control" placeholder="Nome completo">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">WhatsApp</label>
+                                            <input type="tel" id="cPhone" class="form-control" placeholder="67999999999">
+                                        </div>
                                     </div>
 
                                     <div class="grid-2">
-                                        <select id="cServiceType" class="form-control">
-                                            <option value="particular">Particular</option>
-                                            <option value="cassems">Cassems</option>
-                                            <option value="unimed">Unimed</option>
-                                            <option value="outros">Outros</option>
-                                        </select>
-                                        <input type="text" id="cValue" class="form-control" placeholder="Valor">
+                                        <div class="form-group">
+                                            <label class="form-label">Convênio</label>
+                                            <select id="cServiceType" class="form-control">
+                                                <option value="particular">Particular</option>
+                                                <option value="cassems">Cassems</option>
+                                                <option value="unimed">Unimed</option>
+                                                <option value="outros">Outros</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Valor padrão</label>
+                                            <input type="text" id="cValue" class="form-control" placeholder="80,00">
+                                        </div>
                                     </div>
 
                                     <div class="grid-2">
-                                        <select id="cBillingType" class="form-control" onchange="ScheduleForm.updateDays()">
-                                            <option value="pack4">4 sessões</option>
-                                            <option value="pack8">8 sessões</option>
-                                            <option value="individual">Individual</option>
-                                        </select>
+                                        <div class="form-group">
+                                            <label class="form-label">Pacote</label>
+                                            <select id="cBillingType" class="form-control" onchange="ScheduleForm.updateDays()">
+                                                <option value="pack4">4 sessões</option>
+                                                <option value="pack8">8 sessões</option>
+                                                <option value="individual">Individual</option>
+                                            </select>
+                                        </div>
+                                        <div></div>
                                     </div>
 
                                     <div class="grid-2">
-                                        <input type="date" id="cStartDate" class="form-control">
-                                        <input type="date" id="cEndDate" class="form-control">
+                                        <div class="form-group">
+                                            <label class="form-label">Início</label>
+                                            <input type="date" id="cStartDate" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Término</label>
+                                            <input type="date" id="cEndDate" class="form-control">
+                                        </div>
                                     </div>
 
-                                    <div id="horariosContainer"></div>
-                                    <textarea id="cNotes" class="form-control" rows="2" placeholder="Observações"></textarea>
+                                    <div class="form-group">
+                                        <label class="form-label">Horários das sessões</label>
+                                        <div id="horariosContainer"></div>
+                                        <small class="muted">Serão automaticamente agendados</small>
+                                    </div>
 
-                                    <button class="btn btn-primary" onclick="PatientActions.add()">Salvar</button>
+                                    <div class="form-group">
+                                        <label class="form-label">Observações</label>
+                                        <textarea id="cNotes" class="form-control" rows="2" placeholder="Observações relevantes..."></textarea>
+                                    </div>
+
+                                    <button class="btn btn-primary" onclick="PatientActions.add()" style="width: 100%;">
+                                        <i class="fas fa-save"></i> Salvar Paciente
+                                    </button>
                                 </div>
 
                                 <div class="card">
                                     <div id="foldersPane">
-                                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
                                             <input type="text" id="pSearch" class="form-control" placeholder="Buscar..." oninput="PatientsView.renderFolders()">
                                             <button id="onlyDebtFolders" class="btn btn-sm btn-secondary" onclick="PatientsView.toggleDebtFilter()">
-                                                <i class="fas fa-dollar-sign"></i>
+                                                <i class="fas fa-dollar-sign"></i> Débito
                                             </button>
                                         </div>
                                         <div id="patientFolders" class="list"></div>
                                     </div>
 
                                     <div id="folderOpenPane" class="hidden">
-                                        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                                        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
                                             <button class="btn btn-sm btn-secondary" onclick="PatientsView.closeFolder()">
-                                                <i class="fas fa-arrow-left"></i>
+                                                <i class="fas fa-arrow-left"></i> Voltar
                                             </button>
                                             <img id="folderPatientPhoto" class="avatar avatar-sm hidden">
                                             <div style="flex: 1;">
                                                 <h3 id="openPatientTitle" style="margin: 0;">Paciente</h3>
                                                 <div class="muted" id="openPatientMeta"></div>
                                             </div>
-                                            <div id="patientActionButtons"></div>
+                                            <div id="patientActionButtons" style="display: flex; gap: 0.5rem;"></div>
                                         </div>
 
                                         <div id="pacoteProgresso"></div>
-                                        <div id="patientHistory" class="list"></div>
-                                        <div id="evolucoesSection"></div>
+                                        
+                                        <div style="margin-top: 2rem;">
+                                            <h3 class="card-title"><i class="fas fa-history"></i> Histórico</h3>
+                                            <div id="patientHistory" class="list"></div>
+                                        </div>
+
+                                        <div id="evolucoesSection" style="margin-top: 2rem;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -3233,37 +3973,127 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                         <!-- AGENDA -->
                         <section id="viewSchedule" class="hidden">
                             <div class="card">
-                                <div class="grid-3" style="margin-bottom: 1rem;">
-                                    <input type="date" id="schedRef" class="form-control" onchange="ScheduleView.render()">
-                                    <div class="input-group">
-                                        <input type="time" id="newTime" class="form-control" placeholder="07:00">
-                                        <button class="btn btn-primary" onclick="ScheduleActions.addTime()"><i class="fas fa-plus"></i></button>
+                                <div class="grid-3" style="margin-bottom: 1.5rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Data referência</label>
+                                        <input type="date" id="schedRef" class="form-control" onchange="ScheduleView.render()">
                                     </div>
-                                    <div style="display: flex; gap: 0.5rem;">
-                                        <button class="btn btn-sm btn-secondary" onclick="ScheduleView.filterHoje()">Hoje</button>
-                                        <button class="btn btn-sm btn-secondary" onclick="ScheduleView.filterAmanha()">Amanhã</button>
-                                        <button class="btn btn-sm btn-secondary" onclick="ScheduleView.filterSemana()">Todos</button>
+                                    <div class="form-group">
+                                        <label class="form-label">Adicionar horário</label>
+                                        <div class="input-group">
+                                            <input type="time" id="newTime" class="form-control" placeholder="07:00">
+                                            <button class="btn btn-primary" onclick="ScheduleActions.addTime()">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Filtro</label>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <button class="btn btn-sm btn-secondary" onclick="ScheduleView.filterHoje()">Hoje</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="ScheduleView.filterAmanha()">Amanhã</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="ScheduleView.filterSemana()">Todos</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="ScheduleActions.resetTimes()">Restaurar</button>
+                                        </div>
                                     </div>
                                 </div>
 
-                                <div class="table-container">
-                                    <table id="schedTable"></table>
+                                <div class="schedWrap">
+                                    <table class="sched" id="schedTable"></table>
                                 </div>
+
+                                <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+                                    <span class="pill pill-cassems">🟢 Cassems</span>
+                                    <span class="pill pill-particular">🟡 Particular</span>
+                                    <span class="pill pill-info">🔵 Unimed/Outros</span>
+                                    <span class="pill">🔴 Vago</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- RELATÓRIOS -->
+                        <section id="viewReports" class="hidden">
+                            <div class="grid-2" style="margin-bottom: 1.5rem;">
+                                <div class="card">
+                                    <h3 class="card-title"><i class="fas fa-calendar-alt"></i> Resumo do Mês</h3>
+                                    <div id="monthSummary" class="muted" style="margin-top: 1rem;"></div>
+                                </div>
+                                <div class="card">
+                                    <h3 class="card-title"><i class="fas fa-percent"></i> Taxa de Faltas</h3>
+                                    <div class="stat-value" style="font-size: 2rem;" id="absenceRate">0%</div>
+                                </div>
+                                <div class="card">
+                                    <h3 class="card-title"><i class="fas fa-dollar-sign"></i> Faturamento</h3>
+                                    <div id="revenueStats" class="muted" style="margin-top: 1rem;"></div>
+                                </div>
+                                <div class="card">
+                                    <h3 class="card-title"><i class="fas fa-users"></i> Pacientes Ativos</h3>
+                                    <div class="stat-value" style="font-size: 2rem;" id="activePatients">0</div>
+                                </div>
+                            </div>
+
+                            <div class="card" style="margin-bottom: 1.5rem;">
+                                <h3 class="card-title"><i class="fas fa-ticket-alt"></i> Controle de Tokens</h3>
+                                <div class="grid-4" style="margin-top: 1rem;">
+                                    <div class="cardMini">
+                                        <div class="stat-label">Total de sessões Cassems</div>
+                                        <div class="stat-value" style="font-size: 1.5rem;" id="totalSessoesCassems">0</div>
+                                    </div>
+                                    <div class="cardMini">
+                                        <div class="stat-label">Tokens Enviados</div>
+                                        <div class="stat-value" style="font-size: 1.5rem; color: var(--success);" id="totalTokensEnviados">0</div>
+                                    </div>
+                                    <div class="cardMini">
+                                        <div class="stat-label">Tokens Pendentes</div>
+                                        <div class="stat-value" style="font-size: 1.5rem; color: var(--warning);" id="totalTokensPendentes">0</div>
+                                    </div>
+                                    <div class="cardMini">
+                                        <div class="stat-label">Tokens com Problema</div>
+                                        <div class="stat-value" style="font-size: 1.5rem; color: var(--error);" id="totalTokensProblema">0</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3 class="card-title"><i class="fas fa-exclamation-triangle"></i> Maiores Devedores</h3>
+                                <div id="topDebtors" class="list" style="margin-top: 1rem;"></div>
                             </div>
                         </section>
                     </main>
 
                     <div class="shortcuts-hint" onclick="Shortcuts.togglePanel()">
-                        <i class="fas fa-keyboard"></i>
+                        <i class="fas fa-keyboard"></i> Atalhos
                     </div>
                     <div class="shortcuts-panel hidden" id="shortcutsPanel">
-                        <h4>Atalhos</h4>
-                        <div class="shortcut-item"><span>Novo paciente</span> <span class="shortcut-key">Ctrl+N</span></div>
-                        <div class="shortcut-item"><span>Buscar</span> <span class="shortcut-key">Ctrl+F</span></div>
-                        <div class="shortcut-item"><span>Dashboard</span> <span class="shortcut-key">Ctrl+1</span></div>
-                        <div class="shortcut-item"><span>Diário</span> <span class="shortcut-key">Ctrl+2</span></div>
-                        <div class="shortcut-item"><span>Pacientes</span> <span class="shortcut-key">Ctrl+3</span></div>
-                        <div class="shortcut-item"><span>Agenda</span> <span class="shortcut-key">Ctrl+4</span></div>
+                        <h4 style="margin-bottom: 1rem;">Atalhos de Teclado</h4>
+                        <div class="shortcut-item">
+                            <span>Novo paciente</span>
+                            <span class="shortcut-key">Ctrl+N</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Buscar</span>
+                            <span class="shortcut-key">Ctrl+F</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Dashboard</span>
+                            <span class="shortcut-key">Ctrl+1</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Diário</span>
+                            <span class="shortcut-key">Ctrl+2</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Pacientes</span>
+                            <span class="shortcut-key">Ctrl+3</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Agenda</span>
+                            <span class="shortcut-key">Ctrl+4</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <span>Relatórios</span>
+                            <span class="shortcut-key">Ctrl+5</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -3277,8 +4107,13 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 <!-- NOTIFICATION MODAL -->
                 <div id="notificationModal" class="modal-overlay hidden">
                     <div class="modal">
-                        <h3>🔔 Notificações</h3>
-                        <p>Ativar lembretes de atendimento?</p>
+                        <div class="modal-header">
+                            <h2 class="modal-title">🔔 Ativar Notificações</h2>
+                            <button class="modal-close" onclick="$('notificationModal').classList.add('hidden')">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="muted">Receba lembretes 15 minutos antes de cada atendimento.</p>
+                        </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" onclick="$('notificationModal').classList.add('hidden')">Agora não</button>
                             <button class="btn btn-primary" onclick="Notifications.requestPermission()">Ativar</button>
@@ -3289,13 +4124,27 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 <!-- ANAMNESE MODAL -->
                 <div id="anamneseModal" class="modal-overlay hidden">
                     <div class="modal">
-                        <h3>📋 Anamnese</h3>
-                        <textarea id="aQueixa" class="form-control" rows="2" placeholder="Queixa principal"></textarea>
-                        <textarea id="aHistorico" class="form-control" rows="2" placeholder="Histórico"></textarea>
-                        <textarea id="aObs" class="form-control" rows="3" placeholder="Observações"></textarea>
+                        <div class="modal-header">
+                            <h2 class="modal-title">📋 Anamnese</h2>
+                            <button class="modal-close" onclick="Modals.closeAnamnese()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="form-label">Queixa principal</label>
+                                <textarea id="aQueixa" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Histórico</label>
+                                <textarea id="aHistorico" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Observações</label>
+                                <textarea id="aObs" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="$('anamneseModal').classList.add('hidden')">Fechar</button>
-                            <button class="btn btn-primary" onclick="PatientActions.saveAnamnese()">Salvar</button>
+                            <button class="btn btn-secondary" onclick="Modals.closeAnamnese()">Cancelar</button>
+                            <button class="btn btn-primary" onclick="Modals.saveAnamnese()">Salvar</button>
                         </div>
                     </div>
                 </div>
@@ -3303,18 +4152,35 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 <!-- TOKEN MODAL -->
                 <div id="tokenModal" class="modal-overlay hidden">
                     <div class="modal">
-                        <h3>🎫 Token</h3>
-                        <input type="date" id="tokenDate" class="form-control" readonly>
-                        <input type="text" id="tokenPatient" class="form-control" readonly>
-                        <input type="text" id="tokenCode" class="form-control" placeholder="Código">
-                        <select id="tokenStatus" class="form-control">
-                            <option value="enviado">✅ Enviado</option>
-                            <option value="pendente">⏳ Pendente</option>
-                            <option value="problema">❌ Problema</option>
-                        </select>
+                        <div class="modal-header">
+                            <h2 class="modal-title">🎫 Registrar Token</h2>
+                            <button class="modal-close" onclick="Modals.closeToken()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="form-label">Data</label>
+                                <input type="date" id="tokenDate" class="form-control" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Paciente</label>
+                                <input type="text" id="tokenPatient" class="form-control" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Token</label>
+                                <input type="text" id="tokenCode" class="form-control" placeholder="CASS-123456">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <select id="tokenStatus" class="form-control">
+                                    <option value="enviado">✅ Enviado</option>
+                                    <option value="pendente">⏳ Pendente</option>
+                                    <option value="problema">❌ Problema</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="$('tokenModal').classList.add('hidden')">Cancelar</button>
-                            <button class="btn btn-primary" onclick="TokenActions.saveToken()">Salvar</button>
+                            <button class="btn btn-secondary" onclick="Modals.closeToken()">Cancelar</button>
+                            <button class="btn btn-primary" onclick="Modals.saveToken()">Salvar</button>
                         </div>
                     </div>
                 </div>
@@ -3322,18 +4188,29 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 <!-- MANUAL TOKEN MODAL -->
                 <div id="manualTokenModal" class="modal-overlay hidden">
                     <div class="modal">
-                        <h3>🎫 Tokens Manuais</h3>
-                        <p id="manualTokenPatientName"></p>
-                        
-                        <div class="grid-2" style="margin-bottom: 1rem;">
-                            <select id="manualTokenMonth" class="form-control"></select>
-                            <button class="btn btn-primary" onclick="TokenActions.addManual()">Adicionar</button>
+                        <div class="modal-header">
+                            <h2 class="modal-title">🎫 Gerenciar Tokens</h2>
+                            <button class="modal-close" onclick="Modals.closeManualToken()">&times;</button>
                         </div>
+                        <div class="modal-body">
+                            <p class="muted" id="manualTokenPatientName"></p>
+                            
+                            <div style="margin: 1.5rem 0;">
+                                <label class="form-label">Adicionar token manual</label>
+                                <div class="grid-2">
+                                    <select id="manualTokenMonth" class="form-control"></select>
+                                    <button class="btn btn-primary" onclick="TokenActions.addManual()">
+                                        <i class="fas fa-plus"></i> Adicionar
+                                    </button>
+                                </div>
+                            </div>
 
-                        <div id="manualTokensList" class="list"></div>
-                        
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="$('manualTokenModal').classList.add('hidden')">Fechar</button>
+                            <hr>
+
+                            <div style="margin-top: 1.5rem;">
+                                <label class="form-label">Tokens registrados</label>
+                                <div id="manualTokensList" class="list" style="max-height: 300px; overflow-y: auto;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3341,32 +4218,35 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 <!-- EVOLUCAO MODAL COM IA -->
                 <div id="evolucaoModal" class="modal-overlay hidden">
                     <div class="modal">
-                        <h3><i class="fas fa-robot" style="color: #8b5cf6;"></i> Evolução com IA</h3>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Data</label>
-                            <input type="date" id="evolucaoData" class="form-control">
+                        <div class="modal-header">
+                            <h2 class="modal-title"><i class="fas fa-robot" style="color: #8b5cf6;"></i> Evolução com IA</h2>
+                            <button class="modal-close" onclick="EvolucaoActions.closeModal()">&times;</button>
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Evolução</label>
-                            <textarea id="evolucaoTexto" class="form-control" rows="5" placeholder="Descreva a evolução..."></textarea>
-                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="form-label">Data</label>
+                                <input type="date" id="evolucaoData" class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Evolução</label>
+                                <textarea id="evolucaoTexto" class="form-control" rows="5" placeholder="Descreva a evolução..."></textarea>
+                            </div>
 
-                        <div class="ai-suggestions" id="aiSuggestions">
-                            <h4><i class="fas fa-robot"></i> Sugestões da IA</h4>
-                            <div class="ai-loading"></div> Carregando...
-                        </div>
+                            <div class="ai-suggestions" id="aiSuggestions">
+                                <h4><i class="fas fa-robot"></i> Sugestões da IA</h4>
+                                <div class="ai-loading"></div> Carregando...
+                            </div>
 
-                        <div style="display: flex; gap: 0.5rem; margin: 1rem 0;">
-                            <button class="btn btn-sm btn-ai" onclick="EvolucaoActions.improveText()">
-                                <i class="fas fa-magic"></i> Melhorar
-                            </button>
-                            <button class="btn btn-sm btn-ai" onclick="EvolucaoActions.summarizeText()">
-                                <i class="fas fa-compress"></i> Resumir
-                            </button>
+                            <div style="display: flex; gap: 0.5rem; margin: 1rem 0;">
+                                <button class="btn btn-sm btn-ai" onclick="EvolucaoActions.improveText()">
+                                    <i class="fas fa-magic"></i> Melhorar
+                                </button>
+                                <button class="btn btn-sm btn-ai" onclick="EvolucaoActions.summarizeText()">
+                                    <i class="fas fa-compress"></i> Resumir
+                                </button>
+                            </div>
                         </div>
-
                         <div class="modal-footer">
                             <button class="btn btn-secondary" onclick="EvolucaoActions.closeModal()">Cancelar</button>
                             <button class="btn btn-primary" onclick="EvolucaoActions.save()">Salvar</button>
@@ -3377,9 +4257,20 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 <!-- EDIT EVOLUCAO MODAL -->
                 <div id="editEvolucaoModal" class="modal-overlay hidden">
                     <div class="modal">
-                        <h3>✏️ Editar Evolução</h3>
-                        <input type="date" id="editEvolucaoData" class="form-control">
-                        <textarea id="editEvolucaoTexto" class="form-control" rows="5"></textarea>
+                        <div class="modal-header">
+                            <h2 class="modal-title">✏️ Editar Evolução</h2>
+                            <button class="modal-close" onclick="EvolucaoActions.closeEditModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="form-label">Data</label>
+                                <input type="date" id="editEvolucaoData" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Evolução</label>
+                                <textarea id="editEvolucaoTexto" class="form-control" rows="5"></textarea>
+                            </div>
+                        </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" onclick="EvolucaoActions.closeEditModal()">Cancelar</button>
                             <button class="btn btn-primary" onclick="EvolucaoActions.saveEdit()">Salvar</button>
@@ -3390,36 +4281,6 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
 
             document.body.insertAdjacentHTML('beforeend', modals);
         }
-
-        // ============================================
-        // NOTIFICATIONS
-        // ============================================
-        const Notifications = {
-            async requestPermission() {
-                if (!('Notification' in window)) return;
-                
-                const permission = await Notification.requestPermission();
-                notificationsEnabled = permission === 'granted';
-                
-                if (notificationsEnabled) {
-                    Storage.save(STORAGE_KEYS.NOTIFICATIONS, 'granted');
-                    Utils.showAlert('Notificações ativadas!', 'success');
-                    $('notificationModal')?.classList.add('hidden');
-                }
-            },
-
-            init() {
-                const status = Storage.load(STORAGE_KEYS.NOTIFICATIONS);
-                if (status === 'granted') {
-                    notificationsEnabled = true;
-                } else if (window.Notification && Notification.permission === 'granted') {
-                    notificationsEnabled = true;
-                    Storage.save(STORAGE_KEYS.NOTIFICATIONS, 'granted');
-                } else if (window.Notification && Notification.permission !== 'denied') {
-                    setTimeout(() => $('notificationModal')?.classList.remove('hidden'), 30000);
-                }
-            }
-        };
 
         // ============================================
         // INIT
@@ -3446,6 +4307,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
                 Storage.importFromFile(e.target.files[0], () => location.reload());
             });
 
+            PWA.init();
             Shortcuts.init();
             Tabs.init();
 
@@ -3454,6 +4316,7 @@ Liste os pontos-chave em formato de tópicos simples, um por linha.`;
             PatientsView.renderFolders();
             ScheduleView.render();
             DashboardView.render();
+            ReportsView.generate();
 
             setTimeout(() => ScheduleForm.updateDays(), 100);
         }
